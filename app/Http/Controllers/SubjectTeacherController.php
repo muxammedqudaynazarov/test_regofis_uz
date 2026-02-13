@@ -23,10 +23,15 @@ class SubjectTeacherController extends Controller
     {
         $request->validate([
             'subject_id' => 'required|exists:subjects,id',
-            'user_ids' => 'required|array',
+            'user_ids' => 'nullable|array', // nullable bo'lishi kerak, hamma o'qituvchini olib tashlash uchun
         ]);
+
         $subject = Subject::findOrFail($request->subject_id);
-        $subject->teachers()->sync($request->user_ids);
-        return redirect()->back()->with('success', 'Ma’lumotlar yangilandi');
+
+        // Agar user_ids bo'sh kelsa (hamma o'qituvchi olib tashlansa),
+        // sync([]) bo'sh massiv bilan eski bog'lanishlarni o'chiradi.
+        $subject->teachers()->sync($request->input('user_ids', []));
+
+        return redirect()->back()->with('success', 'Ma’lumotlar yangilandi!');
     }
 }
