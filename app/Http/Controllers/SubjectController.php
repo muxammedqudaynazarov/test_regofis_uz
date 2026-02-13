@@ -15,6 +15,8 @@ class SubjectController extends Controller
         $user = auth($user_guard)->user();
 
         $subjects = GroupSubject::where('student_id', auth('student')->id())->get();
+
+        //dd($subjects);
         return view('pages.student.subjects.index', compact(['subjects', 'user', 'user_guard']));
     }
 }
