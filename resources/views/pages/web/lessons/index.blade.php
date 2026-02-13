@@ -2,113 +2,74 @@
 
 @section('content')
     <div class="content-wrapper">
-        <div class="content-header">
+        <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Biriktirilgan fanlar</h1>
+                        <h1>Mening fanlarim</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item active">Asosiy sahifa</li>
-                            <li class="breadcrumb-item active">Qarzdor fanlar</li>
+                            <li class="breadcrumb-item"><a href="{{ route('home') }}">Asosiy</a></li>
+                            <li class="breadcrumb-item active">Fanlar</li>
                         </ol>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <section class="content">
             <div class="container-fluid">
-                <div class="card">
-                    <div class="card-header font-weight-bold">
-                        <div class="d-flex">
-                            <div class="p-1 flex-grow-1">
-                                Fanlar ro‘yxati
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title text-sm">Biriktirilgan fanlar ro'yxati</h3>
                             </div>
-                            {{--<div class="p-1">
-                                <form action="{{ route('applications.store') }}" method="POST" class="d-flex">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success btn-sm">
-                                        Yangilash
-                                    </button>
-                                </form>
-                            </div>--}}
+                            <div class="card-body table-responsive p-0">
+                                <table class="table table-hover text-nowrap text-sm text-center">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 50px">#</th>
+                                        <th>Fan nomi</th>
+                                        <th>Guruh va semestri</th>
+                                        <th>Ma’sul o‘qituvchilar</th>
+                                        <th class="text-right">Amallar</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @forelse($subjects as $index => $subject)
+                                        <tr>
+                                            <td>#{{ $subject->subject_id }}</td>
+                                            <td class="font-weight-bold">{{ $subject->name }}</td>
+                                            <td>
+                                                @foreach($subject->groups as $group)
+                                                    {{ $group->group->name ?? 'Nomalum' }} /
+                                                    {{ $group->semester->name ?? 'Nomalum' }}
+                                                @endforeach
+                                            </td>
+                                            <td></td>
+                                            <td class="text-right">
+                                                <a href="{{ route('lessons.show', $subject->id) }}"
+                                                   class="btn btn-primary btn-xs px-3">
+                                                    <i class="fas fa-folder-open mr-1"></i> Resurslar
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4 text-muted">
+                                                Sizga hali fanlar biriktirilmagan.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        @foreach($subjects as $subject)
-                            <div class="row row-cols-1 row-cols-md-3 g-3">
-                                <div class="col">
-                                    <div class="card border">
-                                        <div class="card-body">
-                                            <div class="card-title font-weight-bold">
-                                                {{ $subject->name }}
-                                            </div>
-                                            <div class="card-text">
-                                                <div class="m-0 p-0">Nazoratlar: 0</div>
-                                                <div class="m-0 p-0">Savollar: 0</div>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer" style="text-align: right">
-                                            <button class="btn btn-success btn-sm">
-                                                Nazorat yaratish
-                                            </button>
-                                            <button class="btn btn-primary btn-sm">
-                                                Savol qo‘shish
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    {{--<div class="card-body">
-                        <div class="card card-primary card-outline">
-                            <div class="card-body box-profile">
-                                <div class="text-center">
-                                    <img class="profile-user-img img-fluid img-circle" src="../../dist/img/user4-128x128.jpg" alt="User profile picture">
-                                </div>
-
-                                <h3 class="profile-username text-center">Nina Mcintire</h3>
-
-                                <p class="text-muted text-center">Software Engineer</p>
-
-                                <ul class="list-group list-group-unbordered mb-3">
-                                    <li class="list-group-item">
-                                        <b>Followers</b> <a class="float-right">1,322</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <b>Following</b> <a class="float-right">543</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <b>Friends</b> <a class="float-right">13,287</a>
-                                    </li>
-                                </ul>
-
-                                <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
-                            </div>
-                            <!-- /.card-body -->
-                        </div>
-
-
-                        <table class="table table-hover text-center">
-                            <thead>
-                            <tr>
-                                <th style="width: 7%">#</th>
-                                <th style="text-align: start">Nomi va guruhi</th>
-                                <th>Semestr</th>
-                                <th>Kredit</th>
-                                <th>Savollar</th>
-                                <th style="width: 14%">Nazorat</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
-                    </div>--}}
                 </div>
             </div>
         </section>
+    </div>
 @endsection

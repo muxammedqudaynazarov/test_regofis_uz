@@ -40,8 +40,6 @@ Route::prefix('home')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::resource('subjects', SubjectController::class);
     Route::resource('lessons', SubjectTeacherController::class);
-    Route::prefix('subjects-register')->group(function () {
-        Route::get('/', [CourseController::class, 'index'])->name('subjects-register.index');
-    });
+    Route::resource('subjects-register', SubjectTeacherController::class);
     Route::resource('applications', ApplicationController::class)->only(['store']);
 });

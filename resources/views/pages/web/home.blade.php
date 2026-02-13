@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.web')
 @section('style')
     <style>
         .small-box {
@@ -32,7 +32,7 @@
     </style>
 @endsection
 @section('content')
-    <div class="content-wrapper" style="background-color: #f4f6f9; padding-bottom: 20px;">
+    <div class="content-wrapper">
 
         <div class="content-header">
             <div class="container-fluid">
@@ -54,75 +54,7 @@
 
         <section class="content">
             <div class="container-fluid">
-
-                <div class="row">
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box shadow-sm border-0"
-                             style="border-radius: 15px; background: linear-gradient(45deg, #4e73df, #224abe); color: white;">
-                            <div class="inner p-4">
-                                <h3>150</h3>
-                                <p>Jami talabalar</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-user-graduate" style="opacity: 0.3;"></i>
-                            </div>
-                            <a href="#" class="small-box-footer"
-                               style="background: rgba(0,0,0,0.1); border-radius: 0 0 15px 15px;">Batafsil <i
-                                    class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box shadow-sm border-0"
-                             style="border-radius: 15px; background: linear-gradient(45deg, #1cc88a, #13855c); color: white;">
-                            <div class="inner p-4">
-                                <h3>12</h3>
-                                <p>Faol guruhlar</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-layer-group" style="opacity: 0.3;"></i>
-                            </div>
-                            <a href="#" class="small-box-footer"
-                               style="background: rgba(0,0,0,0.1); border-radius: 0 0 15px 15px;">Batafsil <i
-                                    class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box shadow-sm border-0"
-                             style="border-radius: 15px; background: linear-gradient(45deg, #f6c23e, #dda20a); color: white;">
-                            <div class="inner p-4">
-                                <h3>28</h3>
-                                <p>Topshiriqlar</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-tasks" style="opacity: 0.3;"></i>
-                            </div>
-                            <a href="#" class="small-box-footer"
-                               style="background: rgba(0,0,0,0.1); border-radius: 0 0 15px 15px;">Batafsil <i
-                                    class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box shadow-sm border-0"
-                             style="border-radius: 15px; background: linear-gradient(45deg, #e74a3b, #be2617); color: white;">
-                            <div class="inner p-4">
-                                <h3>5</h3>
-                                <p>Yangi xabarlar</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-bell" style="opacity: 0.3;"></i>
-                            </div>
-                            <a href="#" class="small-box-footer"
-                               style="background: rgba(0,0,0,0.1); border-radius: 0 0 15px 15px;">Batafsil <i
-                                    class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="row mt-3">
-
                     <div class="col-lg-8 col-md-12">
                         <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
                             <div class="card-header border-0 bg-white py-3">
