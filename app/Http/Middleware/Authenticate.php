@@ -12,6 +12,12 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('login');
+        if (! $request->expectsJson()) {
+            // Agar so'rov student login sahifasiga o'xshasa yoki shunga mos mantiq bo'lsa
+            if ($request->is('student/*')) {
+                return route('login.student');
+            }
+            return route('login.user');
+        }
     }
 }

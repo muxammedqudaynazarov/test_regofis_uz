@@ -11,5 +11,5 @@ class Language extends Model
 
     public $incrementing = false;
     protected $primaryKey = 'id';
-    protected $fillable = ['id', 'name'];
+    protected $fillable = ['id', 'name', 'status'];
 }

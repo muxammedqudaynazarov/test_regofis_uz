@@ -2,12 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Question;
+use App\Models\Subject;
+use App\Models\SubjectList;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LessonController extends Controller
 {
     public function index()
     {
+        $user_guard = Auth::guard('student')->check() ? 'student' : 'web';
+        $user = auth($user_guard)->user();
 
+        $subjects = SubjectList::whereHas('teachers', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->with('teachers')->paginate(20);
+
+        return view('pages.web.lessons.index', compact('subjects'));
+    }
+
+    public function show($id)
+    {
+        $subject = Subject::with(['teachers'])->findOrFail($id);
+        $test = $subject->test ?? null;
+        $questions = null;
+        if ($test)
+            $questions = Question::where('test_id', $test->id)->paginate(20);
+        if (!$subject->teachers->contains(Auth::id())) {
+            abort(403, 'Bu fanga kirish huquqingiz yo‘q.');
+        }
+        return view('pages.web.lessons.show', compact(['subject', 'test', 'questions']));
     }
 }

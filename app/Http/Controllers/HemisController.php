@@ -3,24 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Curriculum;
 use App\Models\Department;
+use App\Models\EduYear;
 use App\Models\Language;
 use App\Models\Level;
 use App\Models\Specialty;
 use App\Models\Student;
 use App\Models\StudentCourse;
+use App\Models\Subject;
+use App\Models\SubjectList;
 use App\Models\User;
+use App\Models\UserDepartment;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
 
 class HemisController extends Controller
 {
+    public function data()
+    {
+        $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/curriculum-list', [
+            '_department' => 11, 'limit' => 200
+        ]);
+        $currs = $response->json();
+        foreach ($currs['data']['items'] as $curr) {
+            dd($curr);
+            Curriculum::firstOrCreate([
+                'id' => $curr['id'],
+                'department_id' => $curr['department']['id'],
+                'specialty_id' => $curr['specialty']['id'],
+            ], [
+                'name' => $curr['name'],
+            ]);
+        }
+
+
+        $departments = Department::where('structure', '12')->get()->pluck('id')->toArray();
+        foreach ($departments as $faculty) {
+            $page = 1;
+            do {
+                $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/curriculum-subject-list', [
+                    '_department' => $faculty, 'limit' => 200, 'page' => $page
+                ]);
+                $resData = $response->json();
+                if (isset($resData['data']['items'])) {
+                    $i = 1;
+                    foreach ($resData['data']['items'] as $curr) {
+                        Subject::firstOrCreate([
+                            'id' => $curr['subject']['id'],
+                        ], [
+                            'name' => $curr['subject']['name'],
+                            'code' => $curr['subject']['code'],
+                        ]);
+                        SubjectList::firstOrCreate([
+                            'id' => $curr['id'],
+                        ], [
+                            'department_id' => $curr['department']['id'],
+                            'curriculum_id' => $curr['_curriculum'],
+                            'semester_id' => $curr['semester']['code'],
+                        ]);
+                    }
+                }
+                $pageCount = $resData['data']['pagination']['pageCount'] ?? 1;
+                $page++;
+            } while ($page <= $pageCount);
+        }
+
+
+    }
+
     /**
      * Handle OAuth authorization process
      *
@@ -77,7 +135,8 @@ class HemisController extends Controller
             ]);
             $resourceOwner = $employeeProvider->getResourceOwner($accessToken);
             $user_array = $resourceOwner->toArray();
-
+            $roles = [];
+            foreach ($user_array['roles'] as $role) $roles[] = $role['code'];
             $user = User::firstOrCreate(
                 ['id' => $user_array['employee_id']],
                 [
@@ -89,11 +148,17 @@ class HemisController extends Controller
                         'short_name' => $user_array['surname'] . ' ' . $user_array['firstname'][0] . '. ' . $user_array['patronymic'][0],
                     ]),
                     'hemis_id' => $user_array['employee_id_number'],
+                    'hemis_roles' => json_encode($roles),
                     'uuid' => $user_array['uuid'],
                     'picture' => $user_array['picture'],
                 ]
             );
-
+            foreach ($user_array['departments'] as $department) {
+                UserDepartment::firstOrCreate([
+                    'user_id' => $user_array['employee_id'],
+                    'department_id' => $department['department']['id'],
+                ]);
+            }
             Auth::login($user);
             return redirect('/home');
         } catch (IdentityProviderException $e) {

@@ -7,19 +7,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('answers', function (Blueprint $table) {
+        Schema::create('question_pos', function (Blueprint $table) {
             $table->id();
-            $table->text('answer');
+            $table->foreignId('test_id')->constrained('tests')->cascadeOnDelete();
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('question_id')->constrained('questions')->cascadeOnDelete();
-            $table->enum('type', ['text', 'math',])->default('text');
-            $table->enum('correct', ['0', '1'])->default('0');
-            $table->enum('status', ['0', '1'])->default('1');
+            $table->integer('pos');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('answers');
+        Schema::dropIfExists('question_pos');
     }
 };

@@ -37,48 +37,74 @@
         <section class="content text-sm">
             <div class="container-fluid">
                 <div class="card card-outline card-primary shadow-sm">
-                    <div class="card-header">
-                        <h3 class="card-title text-bold">Mavjud fanlar ro‘yxati</h3>
-                    </div>
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover text-nowrap text-center">
+                        <table class="table table-hover text-center">
                             <thead>
                             <tr>
-                                <th style="width: 50px">#</th>
-                                <th>Fan nomi</th>
+                                <th>#</th>
+                                <th style="text-align: left">Fan nomi</th>
+                                <th>Kafedra</th>
+                                <th>O‘quv rejalar</th>
+                                <th>O‘quv yili</th>
+                                <th>Semestrlar</th>
                                 <th>Masul o‘qituvchilar</th>
-                                <th class="text-right">Amal</th>
+                                <th class="text-right"></th>
                             </tr>
                             </thead>
                             <tbody>
                             @forelse($subjects as $index => $lesson)
                                 <tr>
-                                    <td>#{{ $lesson->subject_id }}</td>
-                                    <td class="font-weight-bold">{{ $lesson->name }}</td>
-                                    <td>
+                                    <td style="vertical-align: middle">#{{ $lesson->id }}</td>
+                                    <td style="text-align: left; vertical-align: middle">
+                                        <div class="font-weight-bold">
+                                            {{ $lesson->subject->name }}
+                                        </div>
+                                        <div class="small">
+                                            {{ $lesson->code }}
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        {{ $lesson->department->name }}
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        {{ $lesson->curriculum->name }}
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        <div class="badge badge-primary">
+                                            {{ $lesson->curriculum->edu_year->name }}
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        <div class="badge badge-success">
+                                            {{ $lesson->semester->name }}
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: middle">
                                         @forelse($lesson->teachers as $teacher)
                                             <span class="badge bg-purple">
-                                                {{ json_decode($teacher->name)->short_name ?? $teacher->short_name }}
-                                            </span>
+                                                 {{ json_decode($teacher->name)->short_name ?? $teacher->short_name }}
+                                             </span>
                                         @empty
                                             <span class="text-muted small">
-                                                O‘qituvchi biriktirilmagan
-                                            </span>
+                                                 O‘qituvchi biriktirilmagan
+                                             </span>
                                         @endforelse
                                     </td>
-                                    <td class="text-right">
-                                        <button type="button"
-                                                class="btn btn-default btn-sm"
-                                                data-toggle="modal"
+                                    <td style="vertical-align: middle" class="text-right text-nowrap">
+                                        <button type="button" style="font-size: 11px"
+                                                class="btn btn-default btn-sm" data-toggle="modal"
                                                 data-target="#assignModal{{ $lesson->id }}">
-                                            <i class="fas fa-user-plus mr-1 text-purple"></i>
-                                            Biriktirish
+                                            <i class="fas fa-user-plus mr-1"></i>
+                                            O‘qituvchi qo‘shish
                                         </button>
+                                        <a href="#" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
                                     </td>
                                 </tr>
 
                                 <div class="modal fade" id="assignModal{{ $lesson->id }}" tabindex="-1" role="dialog"
-                                     aria-hidden="true">
+                                     aria-hidden="true" data-backdrop="static" data-keyboard="false">
                                     <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <form action="{{ route('subjects-register.store') }}" method="POST">
@@ -130,6 +156,18 @@
                             @endforelse
                             </tbody>
                         </table>
+                        <div class="card-footer bg-white clearfix">
+                            <div class="float-right">
+                                {{ $subjects->links() }}
+                            </div>
+                            @if($subjects->total())
+                                <div class="text-muted small mt-2">
+                                    Jami: <b>{{ $subjects->total() }}</b> ta savoldan
+                                    <b>{{ $subjects->firstItem() }}</b>-<b>{{ $subjects->lastItem() }}</b>
+                                    ko'rsatilmoqda
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

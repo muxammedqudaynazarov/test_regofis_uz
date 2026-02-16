@@ -69,7 +69,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('tests.index') }}" class="nav-link {{ Request::is('home/tests*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-pen-square"></i>
                             <p>Testga kirish</p>
                         </a>

@@ -12,7 +12,12 @@ class Subject extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['id', 'name', 'failed_subject_id', 'subject_id'];
+    protected $fillable = ['id', 'name', 'code'];
+
+    public function lists(): hasMany
+    {
+        return $this->hasMany(SubjectList::class, 'subject_id', 'id');
+    }
 
     public function tests(): HasMany
     {
@@ -29,5 +34,10 @@ class Subject extends Model
         // oraliq jadval: subject_teachers
         // kalitlar: subject_id va user_id
         return $this->belongsToMany(User::class, 'subject_teachers', 'subject_id', 'user_id');
+    }
+
+    public function test(): hasOne
+    {
+        return $this->hasOne(Test::class, 'subject_id', 'id');
     }
 }

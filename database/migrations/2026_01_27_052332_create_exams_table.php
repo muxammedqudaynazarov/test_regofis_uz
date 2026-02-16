@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('test_id')->constrained('tests')->cascadeOnDelete();
             $table->enum('status', ['0', '1', '2', '3', '4'])->default('0');
+            $table->timestamp('finished_at')->nullable();
             // 0 - baslanbagan, 1 - processte, 2 - juwmaqlagan, 3 - juwmaqlangan, 4 - sessiya uzilgen
             $table->timestamp('last_activity_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamps();

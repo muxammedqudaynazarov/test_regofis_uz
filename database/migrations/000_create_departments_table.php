@@ -11,6 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->text('name');
             $table->integer('structure');
+            $table->foreignId('parent_id')->nullable()->constrained('departments')->nullOnDelete();
+            $table->enum('access', ['0', '1'])->default('0');
             $table->enum('status', ['0', '1'])->default('1');
             $table->timestamps();
         });

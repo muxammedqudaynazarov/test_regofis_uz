@@ -7,17 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('subjects', function (Blueprint $table) {
+        Schema::create('languages', function (Blueprint $table) {
             $table->id();
-            $table->text('name');
-            $table->unsignedBigInteger('failed_subject_id')->index();
-            $table->unsignedBigInteger('subject_id')->index();
+            $table->string('name');
+            $table->enum('status', ['0', '1'])->default('1');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('subjects');
+        Schema::dropIfExists('languages');
     }
 };

@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
     <style>
         body {
             font-family: 'Google Sans', sans-serif;
@@ -70,11 +70,41 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="{{ route('departments.show', 'faculties') }}"
+                           class="nav-link {{ Request::is('home/departments/faculties*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>
+                                Fakultetlar ro‘yxati
+                            </p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('departments.show', 'show') }}"
+                           class="nav-link {{ Request::is('home/departments/show*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>
+                                Kafedralar ro‘yxati
+                            </p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('curriculum.index') }}"
+                           class="nav-link {{ Request::is('home/curriculum*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>
+                                O‘quv rejalar
+                            </p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href=""
                            class="nav-link {{ Request::is('home/applications*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-clipboard-list"></i>
                             <p>
-                                Arizalar royxati
+                                Arizalar ro‘yxati
                             </p>
                         </a>
                     </li>
@@ -84,10 +114,11 @@
                            class="nav-link {{ Request::is('home/subjects-register*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-map-pin"></i>
                             <p>
-                                Fanlarni biriktirish
+                                Fanlar ro‘yxati
                             </p>
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a href="{{ route('lessons.index') }}"
                            class="nav-link {{ Request::is('home/lessons*') ? 'active' : '' }}">
@@ -99,12 +130,6 @@
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-pen-square"></i>
-                            <p>Testga kirish</p>
-                        </a>
-                    </li>
                 </ul>
             </nav>
         </div>
@@ -124,6 +149,43 @@
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
+<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+<script>
+    $(function () {
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        // Muvaffaqiyatli xabar (Success)
+        @if(session('success'))
+        Toast.fire({
+            icon: 'success',
+            title: '{{ session('success') }}'
+        });
+        @endif
+
+        // Xatolik xabari (Error)
+        @if(session('error'))
+        Toast.fire({
+            icon: 'error',
+            title: '{{ session('error') }}'
+        });
+        @endif
+
+        // Validatsiya xatolari (Validation Errors)
+        @if($errors->any())
+        @foreach($errors->all() as $error)
+        Toast.fire({
+            icon: 'warning',
+            title: '{{ $error }}'
+        });
+        @endforeach
+        @endif
+    });
+</script>
 @stack('scripts')
 </body>
 </html>

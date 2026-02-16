@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                             <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-nowrap text-center">
+                                <table class="table table-hover text-center">
                                     <thead>
                                     <tr>
                                         <th style="width: 7%">ID</th>

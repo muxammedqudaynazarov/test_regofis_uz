@@ -9,8 +9,9 @@ return new class extends Migration {
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->text('question');
-            $table->foreignId('test_id')->constrained('tests')->cascadeOnDelete();
+            $table->text('question_text');
+            $table->foreignId('subject_id')->constrained('subject_lists')->cascadeOnDelete();
+            $table->foreignId('language_id')->constrained('languages')->cascadeOnDelete();
             $table->enum('type', ['text', 'math',])->default('text');
             $table->enum('status', ['0', '1'])->default('1');
             $table->timestamps();

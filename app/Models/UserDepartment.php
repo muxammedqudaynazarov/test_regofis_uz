@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Specialty extends Model
+class UserDepartment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['id', 'name', 'code', 'uuid', 'department_id'];
+    protected $fillable = [
+        'user_id',
+        'department_id',
+    ];
 }
