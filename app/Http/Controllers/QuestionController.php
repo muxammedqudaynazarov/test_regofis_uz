@@ -134,6 +134,7 @@ class QuestionController extends Controller
             foreach ($validQuestions as $data) {
                 $question = Question::create([
                     'question_text' => $data['question'],
+                    'user_id' => auth('web')->id(),
                     'subject_id' => $id,
                     'language_id' => $request->language_id,
                     'type' => $data['type'],
