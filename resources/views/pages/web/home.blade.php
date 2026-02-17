@@ -116,6 +116,17 @@
             border-radius: 15px;
             border-left: 5px solid #667eea;
         }
+
+        .blink-colon {
+            animation: blink 1s step-start infinite;
+        }
+
+        /* Animatsiya keyframesi */
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
 @endsection
 
@@ -131,11 +142,17 @@
                                  style="z-index: 1;">
                                 <div>
                                     <h5 class="mb-1" style="opacity: 0.9;">
-                                        <i class="far fa-calendar-alt mr-2"></i> {{ date('d.m.Y') }} | <span
-                                            id="clock">{{ date('H:i') }}</span>
+                                        <i class="far fa-calendar-alt mr-2"></i> {{ date('d.m.Y') }} |
+                                        <div id="clock-wrapper" style="display: inline-block">
+                                            <span id="hours">{{ date('H') }}</span>
+                                            <span class="blink-colon">:</span>
+                                            <span id="minutes">{{ date('i') }}</span>
+                                        </div>
                                     </h5>
+
                                     <h1 class="font-weight-bold display-5 mb-1">
-                                        Assalomu alaykum, {{ json_decode(auth('web')->user()->name)->first_name }}! 👋
+                                        Assalomu alaykum,
+                                        {{ json_decode(auth('web')->user()->name)->first_name ?? 'Foydalanuvchi' }}! 👋
                                     </h1>
                                     {{--<p class="mb-0" style="font-size: 1.1rem; opacity: 0.9;">
                                         Bugungi mashg'ulotlaringizda omad tilaymiz. Sizda bugun <b>3 ta dars</b> bor.
@@ -338,6 +355,16 @@
 
 @section('scripts')
     <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('hours').innerText = hours;
+            document.getElementById('minutes').innerText = minutes;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
         // Oddiy soat skripti
         setInterval(function () {
             var now = new Date();
