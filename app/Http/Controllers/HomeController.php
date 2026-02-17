@@ -33,9 +33,8 @@ class HomeController extends Controller
             $user->current_role = $role;
             $user->assignRole($role);
             $user->save();
-            return redirect()->back()->with('success', 'Rol o‘zgartirildi');
+            return redirect(route('home'))->with('success', 'Rol o‘zgartirildi');
         }
-
-        return redirect()->back()->with('error', 'Sizda bu rol mavjud emas!');
+        return redirect(route('home'))->with('error', 'Sizda bu rol mavjud emas!');
     }
 }
