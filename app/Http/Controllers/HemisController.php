@@ -127,7 +127,7 @@ class HemisController extends Controller
                         'short_name' => $user_array['surname'] . ' ' . $user_array['firstname'][0] . '. ' . $user_array['patronymic'][0],
                     ]),
                     'hemis_id' => $user_array['employee_id_number'],
-                    'hemis_roles' => json_encode($roles),
+                    'hemis_roles' => $roles,
                     'uuid' => $user_array['uuid'],
                     'picture' => $user_array['picture'],
                 ]
