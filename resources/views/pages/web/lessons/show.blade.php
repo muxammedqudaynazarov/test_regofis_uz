@@ -103,11 +103,18 @@
                                                 </div>
                                             </div>
                                             <div class="btn-group">
-                                                <button type="button"
-                                                        class="btn btn-sm btn-outline-danger shadow-none ml-1"
-                                                        title="O'chirish">
-                                                    <i class="far fa-trash-alt"></i>
-                                                </button>
+                                                <form action="{{ route('questions.destroy', $file->id) }}"
+                                                      method="POST"
+                                                      onsubmit="return confirm('Haqiqatan ham ushbu savolni o‘chirmoqchimisiz?');"
+                                                      style="display: inline-block;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger shadow-none ml-1"
+                                                            title="O'chirish">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     @empty

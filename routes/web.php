@@ -51,7 +51,7 @@ Route::prefix('home')->middleware('auth:web,student')->group(function () {
     Route::resource('subjects-register', SubjectTeacherController::class);
     Route::resource('lessons', LessonController::class);
     Route::resource('languages', LanguageController::class)->only(['index', 'update']);
-    Route::resource('questions', QuestionController::class);
+    Route::resource('questions', QuestionController::class)->only(['update', 'destroy']);
     Route::resource('tests', TestController::class);
     Route::resource('exams', ExamController::class)->only(['show', 'update']);
     Route::post('exams/answer/upload', [ExamController::class, 'upload_answer']);
