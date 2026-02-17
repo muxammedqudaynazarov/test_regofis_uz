@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table('question', function (Blueprint $table) {
-            $table->foreignId('user_id')->after('question_text')->constrained('users')->cascadeOnDelete();
+        Schema::table('questions', function (Blueprint $table) {
+            $table->foreignId('user_id')->default(1568)->after('question_text')->constrained('users')->cascadeOnDelete();
         });
     }
 
