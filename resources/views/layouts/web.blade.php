@@ -9,7 +9,7 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="https://karsu.uz/logo.ico">
+    <link rel="icon" href="{{ asset('dist/img/logo.ico') }}">
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
 
@@ -74,7 +74,7 @@
 
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="{{ route('home') }}" class="brand-link border-bottom-0">
-            <img src="https://karsu.uz/logo.ico" alt="Logo" class="brand-image img-circle elevation-3"
+            <img src="{{ asset('dist/img/logo.ico') }}" alt="Logo" class="brand-image img-circle elevation-3"
                  style="opacity: .8">
             <span class="brand-text font-weight-light">RegOFIS.uz</span>
         </a>

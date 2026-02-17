@@ -173,7 +173,9 @@ class QuestionController extends Controller
     public function destroy($id)
     {
         $question = Question::findOrFail($id);
-        $question->delete();
-        return redirect()->back()->with('success', 'Savol muvaffaqiyatli o‘chirildi!');
+        if ($question->user_id == auth('web')->id()) {
+            $question->delete();
+            return redirect()->back()->with('success', 'Savol o‘chirildi.');
+        } else return redirect()->back()->with('error', 'Savolni o‘chirib bo‘lmaydi!');
     }
 }
