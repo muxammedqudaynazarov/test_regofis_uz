@@ -18,15 +18,20 @@ class HomeController extends Controller
 
     public function switch_role($role)
     {
-        $rols = Auth::user()->hemis_roles;
+        $user = Auth::user();
+        $rols = $user->hemis_roles;
+        if (is_string($rols)) {
+            $rols = json_decode($rols, true);
+        }
+        if (!is_array($rols)) {
+            $rols = [];
+        }
         if (in_array($role, $rols)) {
-            $user = Auth::user();
-            $user->removeRole($user->current_role);
-            $user->assignRole($role);
             $user->current_role = $role;
             $user->save();
-            return redirect('/home')->with('success', 'Foydalanuvchi roli o‘zgartirildi.');
+            return redirect()->back()->with('success', 'Rol o‘zgartirildi');
         }
-        return redirect('/home')->with('success', 'Tizim xatoligi bo‘ldi.');
+
+        return redirect()->back()->with('error', 'Sizda bu rol mavjud emas!');
     }
 }
