@@ -12,6 +12,10 @@ class User extends Authenticatable
 {
     use HasFactory, HasRoles, HasPermissions;
 
+    protected $casts = [
+        'hemis_roles' => 'array',
+    ];
+
     protected $fillable = ['id', 'name', 'current_role', 'hemis_roles', 'hemis_id', 'uuid', 'picture'];
 
     public function workplaces(): HasMany

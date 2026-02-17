@@ -49,7 +49,12 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     @php
-                        $userRoleNames = json_decode(Auth::user()->hemis_roles, true) ?? [];
+                        $hemisRoles = Auth::user()->hemis_roles;
+                        if (is_array($hemisRoles)) {
+                            $userRoleNames = $hemisRoles;
+                        } else {
+                            $userRoleNames = json_decode($hemisRoles, true) ?? [];
+                        }
                         $roles = \Spatie\Permission\Models\Role::whereIn('name', $userRoleNames)->get();
                     @endphp
                     @if($roles->count() > 1)

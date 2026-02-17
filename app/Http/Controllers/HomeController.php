@@ -18,7 +18,7 @@ class HomeController extends Controller
 
     public function switch_role($role)
     {
-        $rols = json_decode(Auth::user()->hemis_roles);
+        $rols = Auth::user()->hemis_roles;
         if (in_array($role, $rols)) {
             $user = Auth::user();
             $user->removeRole($user->current_role);

@@ -16,34 +16,23 @@ class SubjectTeacherController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-
-        // 1. FILTRLASH MANTIGI (SESSION)
         if ($request->has('filter_submit')) {
             session(['sub_reg_curriculum_id' => $request->curriculum_id]);
             session(['sub_reg_status' => $request->status]);
         } elseif ($request->has('filter_clear')) {
             session()->forget(['sub_reg_curriculum_id', 'sub_reg_status']);
         }
-
         $filterCurriculum = session('sub_reg_curriculum_id');
         $filterStatus = session('sub_reg_status');
-
-        // 2. QUERY YARATISH
         $query = SubjectList::with(['subject', 'department', 'curriculum', 'semester', 'teachers']);
-
-        // Kafedra ID sini saqlash uchun o'zgaruvchi
         $departmentId = null;
-
-        // KAFEDRA MUDIRINI ANIQLASH
         if ($user->current_role == 'department') {
             $dep = Workplace::where('user_id', $user->id)->where('head_type', 'department')->first();
             if ($dep) {
                 $query->where('department_id', $dep->department_id);
-                $departmentId = $dep->department_id; // ID ni eslab qolamiz
+                $departmentId = $dep->department_id;
             }
         }
-
-        // 3. FILTRLARNI QO'LLASH
         if ($filterCurriculum) {
             $query->where('curriculum_id', $filterCurriculum);
         }
