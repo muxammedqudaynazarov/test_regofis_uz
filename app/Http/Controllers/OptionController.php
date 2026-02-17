@@ -13,6 +13,7 @@ class OptionController extends Controller
             $options = Option::all();
             return view('pages.web.options.index', compact('options'));
         }
+        abort(404);
     }
 
     public function update(Request $request, $id)
@@ -26,5 +27,6 @@ class OptionController extends Controller
             $option->save();
             return redirect()->back()->with('success', 'Sozlama muvaffaqiyatli yangilandi!');
         }
+        abort(404);
     }
 }

@@ -58,6 +58,7 @@ class SubjectTeacherController extends Controller
             }
             return view('pages.web.subject_register.index', compact(['user', 'subjects', 'users', 'curriculums', 'filterCurriculum', 'filterStatus']));
         }
+        abort(404);
     }
 
     public function store(Request $request)
@@ -72,5 +73,6 @@ class SubjectTeacherController extends Controller
 
             return redirect()->back()->with('success', 'Ma’lumotlar yangilandi!');
         }
+        abort(404);
     }
 }

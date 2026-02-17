@@ -170,6 +170,7 @@ class QuestionController extends Controller
                 return redirect()->back()->with('error', 'Tizim xatoligi: ' . $e->getMessage());
             }
         }
+        abort(404);
     }
 
     public function destroy($id)
@@ -181,5 +182,6 @@ class QuestionController extends Controller
                 return redirect()->back()->with('success', 'Savol o‘chirildi.');
             } else return redirect()->back()->with('error', 'Savolni o‘chirib bo‘lmaydi!');
         }
+        abort(404);
     }
 }

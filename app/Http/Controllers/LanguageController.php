@@ -13,6 +13,7 @@ class LanguageController extends Controller
             $languages = Language::all();
             return view('pages.web.languages.index', compact(['languages']));
         }
+        abort(404);
     }
 
     public function update(Request $request, $id)
@@ -27,5 +28,6 @@ class LanguageController extends Controller
 
             return response()->json(['message' => $text, 'status' => 'success']);
         }
+        abort(404);
     }
 }

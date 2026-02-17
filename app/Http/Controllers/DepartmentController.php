@@ -51,5 +51,6 @@ class DepartmentController extends Controller
             $department->update($request->all());
             return redirect()->back()->with('success', 'Ma’lumotlar yangilandi');
         }
+        abort(404);
     }
 }

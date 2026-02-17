@@ -32,7 +32,8 @@ class CurriculumController extends Controller
             }
             $eduYears = EduYear::all();
             return view('pages.web.curriculum.index', compact('curr', 'departments', 'specialties', 'eduYears'));
-        } else abort(404);
+        }
+        abort(404);
     }
 
     public function destroy($id)
@@ -45,6 +46,7 @@ class CurriculumController extends Controller
             $curriculum->delete();
             return redirect()->back()->with('success', 'O‘quv reja muvaffaqiyatli o‘chirildi!');
         }
+        abort(404);
     }
 
     public function getSpecialties(Request $request)
@@ -57,5 +59,6 @@ class CurriculumController extends Controller
             }
             return response()->json($specialties);
         }
+        abort(404);
     }
 }
