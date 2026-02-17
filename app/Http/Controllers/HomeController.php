@@ -28,6 +28,7 @@ class HomeController extends Controller
         }
         if (in_array($role, $rols)) {
             $user->current_role = $role;
+            $user->assignRole($role);
             $user->save();
             return redirect()->back()->with('success', 'Rol o‘zgartirildi');
         }
