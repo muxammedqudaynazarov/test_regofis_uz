@@ -24,6 +24,8 @@ class RoleSeeder extends Seeder
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $permissions = [
+            'enter.home',
+            'enter.student',
             'department.faculties.view',
             'department.faculties.access',
             'department.faculties.export',
@@ -41,6 +43,7 @@ class RoleSeeder extends Seeder
             'subjects.view',
             'subjects.resource.view',
             'subjects.resource.create',
+            'subjects.resource.delete',
             'exam.view',
             'exam.upload',
             'exam.export',
@@ -60,6 +63,7 @@ class RoleSeeder extends Seeder
         ];
         $roles = [
             'super_admin' => [
+                'enter.home',
                 'department.faculties.view',
                 'department.faculties.access',
                 'department.faculties.export',
@@ -77,6 +81,7 @@ class RoleSeeder extends Seeder
                 'subjects.view',
                 'subjects.resource.view',
                 'subjects.resource.create',
+                'subjects.resource.delete',
                 'exam.view',
                 'exam.upload',
                 'exam.export',
@@ -86,6 +91,7 @@ class RoleSeeder extends Seeder
                 'system.update',
             ],
             'registrator_office' => [
+                'enter.home',
                 'department.faculties.view',
                 'department.faculties.access',
                 'department.faculties.export',
@@ -103,6 +109,7 @@ class RoleSeeder extends Seeder
                 'subjects.view',
                 'subjects.resource.view',
                 'subjects.resource.create',
+                'subjects.resource.delete',
                 'exam.view',
                 'exam.upload',
                 'exam.export',
@@ -112,18 +119,22 @@ class RoleSeeder extends Seeder
                 'system.update',
             ],
             'department' => [
+                'enter.home',
                 'lessons.view',
                 'lessons.teachers',
                 'subjects.view',
                 'subjects.resource.view',
                 'subjects.resource.create',
+                'subjects.resource.delete',
                 'statistics.view',
                 'statistics.export',
             ],
             'teacher' => [
+                'enter.home',
                 'subjects.view',
                 'subjects.resource.view',
                 'subjects.resource.create',
+                'subjects.resource.delete',
             ],
         ];
         foreach ($roles as $name => $value) {

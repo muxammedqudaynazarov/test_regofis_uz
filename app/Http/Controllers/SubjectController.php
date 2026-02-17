@@ -11,9 +11,11 @@ class SubjectController extends Controller
 {
     public function index()
     {
-        $user_guard = Auth::guard('student')->check() ? 'student' : 'web';
-        $user = auth($user_guard)->user();
-        $subjects = GroupSubject::where('student_id', auth('student')->id())->get();
-        return view('pages.student.subjects.index', compact(['subjects', 'user', 'user_guard']));
+        /*if (auth()->user()->can('curriculum.view')) {
+            $user_guard = Auth::guard('student')->check() ? 'student' : 'web';
+            $user = auth($user_guard)->user();
+            $subjects = GroupSubject::where('student_id', auth('student')->id())->get();
+            return view('pages.student.subjects.index', compact(['subjects', 'user', 'user_guard']));
+        }*/
     }
 }

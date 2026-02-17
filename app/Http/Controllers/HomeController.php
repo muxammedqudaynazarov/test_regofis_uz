@@ -13,7 +13,9 @@ class HomeController extends Controller
         $user_guard = Auth::guard('student')->check() ? 'student' : 'web';
         $user = auth($user_guard)->user();
         if ($user_guard == 'student') return view('pages.student.home', compact(['user', 'user_guard']));
-        if ($user_guard == 'web') return view('pages.web.home', compact(['user', 'user_guard']));
+        if ($user_guard == 'web' && auth('web')->user()->can('enter.home')) {
+            return view('pages.web.home', compact(['user', 'user_guard']));
+        }
     }
 
     public function switch_role($role)
@@ -27,6 +29,7 @@ class HomeController extends Controller
             $rols = [];
         }
         if (in_array($role, $rols)) {
+            $user->removeRole($user->current_role);
             $user->current_role = $role;
             $user->assignRole($role);
             $user->save();

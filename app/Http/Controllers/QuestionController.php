@@ -111,71 +111,75 @@ class QuestionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'questions_file' => 'required|file|mimes:txt',
-            'language_id' => 'required',
-        ]);
+        if (\auth()->user()->can('subjects.resource.create')) {
+            $request->validate([
+                'questions_file' => 'required|file|mimes:txt',
+                'language_id' => 'required',
+            ]);
 
-        try {
-            $file = $request->file('questions_file');
-            $lines = file($file->getRealPath(), FILE_IGNORE_NEW_LINES);
-            $parseResult = $this->parseAikenWithErrors($lines);
-            $validQuestions = $parseResult['valid'];
-            $errors = $parseResult['errors'];
-            if (empty($validQuestions) && !empty($errors)) {
-                return redirect()->back()->with('error', 'Fayldagi barcha savollarda xatolik topildi.<br>' . implode('<br>', array_slice($errors, 0, 5)));
-            }
-            if (empty($validQuestions)) {
-                return redirect()->back()->with('error', 'Fayl bo\'sh yoki format noto\'g\'ri.');
-            }
-            // DB tranzaksiyasi
-            DB::beginTransaction();
-
-            foreach ($validQuestions as $data) {
-                $question = Question::create([
-                    'question_text' => $data['question'],
-                    'user_id' => auth('web')->id(),
-                    'subject_id' => $id,
-                    'language_id' => $request->language_id,
-                    'type' => $data['type'],
-                    'status' => '1'
-                ]);
-                // Variantlarni saqlash
-                foreach ($data['answers'] as $key => $text) {
-                    Answer::create([
-                        'question_id' => $question->id,
-                        'answer' => $text,
-                        'correct' => ($key === $data['correct']) ? '1' : '0',
-                        'type' => $data['type'],
-                        'status' => '1',
-                    ]);
+            try {
+                $file = $request->file('questions_file');
+                $lines = file($file->getRealPath(), FILE_IGNORE_NEW_LINES);
+                $parseResult = $this->parseAikenWithErrors($lines);
+                $validQuestions = $parseResult['valid'];
+                $errors = $parseResult['errors'];
+                if (empty($validQuestions) && !empty($errors)) {
+                    return redirect()->back()->with('error', 'Fayldagi barcha savollarda xatolik topildi.<br>' . implode('<br>', array_slice($errors, 0, 5)));
                 }
+                if (empty($validQuestions)) {
+                    return redirect()->back()->with('error', 'Fayl bo\'sh yoki format noto\'g\'ri.');
+                }
+                // DB tranzaksiyasi
+                DB::beginTransaction();
+
+                foreach ($validQuestions as $data) {
+                    $question = Question::create([
+                        'question_text' => $data['question'],
+                        'user_id' => auth('web')->id(),
+                        'subject_id' => $id,
+                        'language_id' => $request->language_id,
+                        'type' => $data['type'],
+                        'status' => '1'
+                    ]);
+                    // Variantlarni saqlash
+                    foreach ($data['answers'] as $key => $text) {
+                        Answer::create([
+                            'question_id' => $question->id,
+                            'answer' => $text,
+                            'correct' => ($key === $data['correct']) ? '1' : '0',
+                            'type' => $data['type'],
+                            'status' => '1',
+                        ]);
+                    }
+                }
+
+                DB::commit();
+
+                $successMsg = count($validQuestions) . ' ta savol muvaffaqiyatli yuklandi.';
+
+                if (count($errors) > 0) {
+                    $errorMsg = "<br><br><b>" . count($errors) . " ta savol xatolik tufayli yuklanmadi:</b><br>" . implode('<br>', array_slice($errors, 0, 10));
+                    return redirect()->back()->with('warning', $successMsg . $errorMsg);
+                }
+
+                return redirect()->back()->with('success', $successMsg);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error("Savol yuklashda xatolik: " . $e->getMessage());
+                return redirect()->back()->with('error', 'Tizim xatoligi: ' . $e->getMessage());
             }
-
-            DB::commit();
-
-            $successMsg = count($validQuestions) . ' ta savol muvaffaqiyatli yuklandi.';
-
-            if (count($errors) > 0) {
-                $errorMsg = "<br><br><b>" . count($errors) . " ta savol xatolik tufayli yuklanmadi:</b><br>" . implode('<br>', array_slice($errors, 0, 10));
-                return redirect()->back()->with('warning', $successMsg . $errorMsg);
-            }
-
-            return redirect()->back()->with('success', $successMsg);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("Savol yuklashda xatolik: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Tizim xatoligi: ' . $e->getMessage());
         }
     }
 
     public function destroy($id)
     {
-        $question = Question::findOrFail($id);
-        if ($question->user_id == auth('web')->id()) {
-            $question->delete();
-            return redirect()->back()->with('success', 'Savol o‘chirildi.');
-        } else return redirect()->back()->with('error', 'Savolni o‘chirib bo‘lmaydi!');
+        if (\auth()->user()->can('subjects.resource.delete')) {
+            $question = Question::findOrFail($id);
+            if ($question->user_id == auth('web')->id()) {
+                $question->delete();
+                return redirect()->back()->with('success', 'Savol o‘chirildi.');
+            } else return redirect()->back()->with('error', 'Savolni o‘chirib bo‘lmaydi!');
+        }
     }
 }

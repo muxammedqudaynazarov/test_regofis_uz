@@ -102,20 +102,24 @@
 
                                                 </div>
                                             </div>
-                                            <div class="btn-group">
-                                                <form action="{{ route('questions.destroy', $file->id) }}"
-                                                      method="POST"
-                                                      onsubmit="return confirm('Haqiqatan ham ushbu savolni o‘chirmoqchimisiz?');"
-                                                      style="display: inline-block;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-outline-danger shadow-none ml-1"
-                                                            title="O'chirish">
-                                                        <i class="far fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
+                                            @can('subjects.resource.delete')
+                                                @if($file->user_id == auth()->id())
+                                                    <div class="btn-group">
+                                                        <form action="{{ route('questions.destroy', $file->id) }}"
+                                                              method="POST"
+                                                              onsubmit="return confirm('Haqiqatan ham ushbu savolni o‘chirmoqchimisiz?');"
+                                                              style="display: inline-block;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                    class="btn btn-sm btn-outline-danger shadow-none ml-1"
+                                                                    title="O'chirish">
+                                                                <i class="far fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @endif
+                                            @endcan
                                         </div>
                                     @empty
                                         <div class="text-center py-5">
@@ -145,54 +149,55 @@
                         </div>
                     </div>
 
-
-                    <div class="col-md-4">
-                        <div class="card card-primary card-outline shadow-sm">
-                            <div class="card-header">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="card-title font-weight-bold text-sm">Test yuklash</div>
-                                    </div>
-                                    <div class="col-md-6 text-right">
-                                        <a href="{{ url('for_example.txt') }}" class="btn btn-xs btn-outline-info"
-                                           download><i class="fas fa-download mr-1"></i> Namuna
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <form action="{{ route('questions.update', $subject->id) }}" method="POST"
-                                  enctype="multipart/form-data">
-                                @method('PUT')
-                                @csrf
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        <label class="text-xs">Savollar tilni tanlang</label>
-                                        <select name="language_id" class="form-control form-control-sm" required>
-                                            <option value="" disabled selected></option>
-                                            @foreach($languages as $language)
-                                                <option value="{{ $language->id }}">{{ $language->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group mb-0">
-                                        <label class="text-xs">Faylni tanlang (.txt)</label>
-                                        <div class="custom-file custom-file-sm">
-                                            <input type="file" name="questions_file" class="custom-file-input"
-                                                   id="qFile" accept=".txt" required>
-                                            <label class="custom-file-label text-xs m-0" for="qFile">
-                                                Aiken format savollar...
-                                            </label>
+                    @can('subjects.resource.create')
+                        <div class="col-md-4">
+                            <div class="card card-primary card-outline shadow-sm">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card-title font-weight-bold text-sm">Test yuklash</div>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <a href="{{ url('for_example.txt') }}" class="btn btn-xs btn-outline-info"
+                                               download><i class="fas fa-download mr-1"></i> Namuna
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-footer bg-white border-0">
-                                    <button type="submit" class="btn btn-primary btn-sm btn-block shadow-sm">
-                                        <i class="fas fa-upload mr-1"></i> Bazaga qo'shish
-                                    </button>
-                                </div>
-                            </form>
+                                <form action="{{ route('questions.update', $subject->id) }}" method="POST"
+                                      enctype="multipart/form-data">
+                                    @method('PUT')
+                                    @csrf
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label class="text-xs">Savollar tilni tanlang</label>
+                                            <select name="language_id" class="form-control form-control-sm" required>
+                                                <option value="" disabled selected></option>
+                                                @foreach($languages as $language)
+                                                    <option value="{{ $language->id }}">{{ $language->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-0">
+                                            <label class="text-xs">Faylni tanlang (.txt)</label>
+                                            <div class="custom-file custom-file-sm">
+                                                <input type="file" name="questions_file" class="custom-file-input"
+                                                       id="qFile" accept=".txt" required>
+                                                <label class="custom-file-label text-xs m-0" for="qFile">
+                                                    Aiken format savollar...
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-white border-0">
+                                        <button type="submit" class="btn btn-primary btn-sm btn-block shadow-sm">
+                                            <i class="fas fa-upload mr-1"></i> Bazaga qo'shish
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
                 </div>
             </div>
         </section>
