@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Http;
 
 class ApplicationController extends Controller
 {
+    public function index()
+    {
+        
+    }
     public function store(Request $request)
     {
         $response = Http::withToken(env('REGOFIS_TOKEN'))

@@ -14,7 +14,7 @@ use App\Models\StudentCourse;
 use App\Models\Subject;
 use App\Models\SubjectList;
 use App\Models\User;
-use App\Models\UserDepartment;
+use App\Models\Workplace;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -29,64 +29,43 @@ class HemisController extends Controller
 {
     public function data()
     {
-        $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/curriculum-list', [
-            '_department' => 11, 'limit' => 200
-        ]);
-        $currs = $response->json();
-        foreach ($currs['data']['items'] as $curr) {
-            dd($curr);
-            Curriculum::firstOrCreate([
-                'id' => $curr['id'],
-                'department_id' => $curr['department']['id'],
-                'specialty_id' => $curr['specialty']['id'],
-            ], [
-                'name' => $curr['name'],
-            ]);
-        }
-
-
         $departments = Department::where('structure', '12')->get()->pluck('id')->toArray();
-        foreach ($departments as $faculty) {
+        foreach ($departments as $department) {
             $page = 1;
             do {
-                $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/curriculum-subject-list', [
-                    '_department' => $faculty, 'limit' => 200, 'page' => $page
+                $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/employee-list', [
+                    'type' => 'all', '_department' => $department, 'limit' => 200, 'page' => $page
                 ]);
+                if ($response->failed()) break;
                 $resData = $response->json();
-                if (isset($resData['data']['items'])) {
-                    $i = 1;
-                    foreach ($resData['data']['items'] as $curr) {
-                        Subject::firstOrCreate([
-                            'id' => $curr['subject']['id'],
-                        ], [
-                            'name' => $curr['subject']['name'],
-                            'code' => $curr['subject']['code'],
-                        ]);
-                        SubjectList::firstOrCreate([
-                            'id' => $curr['id'],
-                        ], [
-                            'department_id' => $curr['department']['id'],
-                            'curriculum_id' => $curr['_curriculum'],
-                            'semester_id' => $curr['semester']['code'],
-                        ]);
-                    }
+                $items = $resData['data']['items'] ?? [];
+                foreach ($items as $item) {
+                    User::firstOrCreate([
+                        'id' => $item['id'],
+                        'name' => json_encode([
+                            'full_name' => $item['full_name'],
+                            'second_name' => $item['second_name'],
+                            'third_name' => $item['third_name'],
+                            'short_name' => $item['short_name'],
+                        ]),
+                        'hemis_id' => $item['employee_id_number'],
+                        'current_role' => 'teacher',
+                        'hemis_roles' => json_encode(['teacher']),
+                        'picture' => $item['image_full'],
+                    ]);
+                    Workplace::firstOrCreate([
+                        'user_id' => $item['id'],
+                        'department_id' => $item['department']['id'],
+                        'head_type' => $department['staffPosition']['code'] == '16' ? 'department' : 'user',
+                        'is_main' => $department['employmentForm']['code'] == '11' ? '1' : '0',
+                    ]);
                 }
                 $pageCount = $resData['data']['pagination']['pageCount'] ?? 1;
                 $page++;
             } while ($page <= $pageCount);
         }
-
-
     }
 
-    /**
-     * Handle OAuth authorization process
-     *
-     * @param Request $request
-     * @param GenericProvider $provider
-     * @param string $redirectPath
-     * @return RedirectResponse|Response|null
-     */
     private function handleOAuthAuthorization(Request $request, GenericProvider $provider, string $redirectPath)
     {
         if (!$request->has('code')) {
@@ -137,7 +116,7 @@ class HemisController extends Controller
             $user_array = $resourceOwner->toArray();
             $roles = [];
             foreach ($user_array['roles'] as $role) $roles[] = $role['code'];
-            $user = User::firstOrCreate(
+            $user = User::updateOrCreate(
                 ['id' => $user_array['employee_id']],
                 [
                     'name' => json_encode([
@@ -154,11 +133,14 @@ class HemisController extends Controller
                 ]
             );
             foreach ($user_array['departments'] as $department) {
-                UserDepartment::firstOrCreate([
+                Workplace::updateOrCreate([
                     'user_id' => $user_array['employee_id'],
                     'department_id' => $department['department']['id'],
+                    'head_type' => $department['staffPosition']['code'] == '16' ? 'department' : 'user',
+                    'is_main' => $department['employmentForm']['code'] == '11' ? '1' : '0',
                 ]);
             }
+            $user->assignRole(end($roles));
             Auth::login($user);
             return redirect('/home');
         } catch (IdentityProviderException $e) {
@@ -172,8 +154,11 @@ class HemisController extends Controller
      * @param Request $request
      * @return RedirectResponse|Response
      */
-    public function student(Request $request)
+    public
+    function student(Request $request)
     {
+        return redirect()->back();
+
         $employeeProvider = new GenericProvider([
             'clientId' => env('HEMIS_CLIENT_ID'),
             'clientSecret' => env('HEMIS_CLIENT_SECRET'),

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SubjectList extends Model
@@ -40,5 +41,15 @@ class SubjectList extends Model
     public function teachers()
     {
         return $this->belongsToMany(User::class, 'subject_teachers', 'subject_id', 'user_id');
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class, 'subject_id', 'id');
+    }
+
+    public function langauges(): HasMany
+    {
+        return $this->hasMany(Language::class, 'subject_id', 'id');
     }
 }

@@ -83,7 +83,7 @@
             <div class="mt-4">
                 <a href="{{ route('login.user') }}" class="btn-portal btn-teacher shadow-sm">
                     <i class="fas fa-chalkboard-teacher portal-icon"></i>
-                    O‘qituvchi sahifasi
+                    Boshqaruv paneli
                 </a>
 
                 <a href="{{ route('login.student') }}" class="btn-portal btn-student shadow-sm">

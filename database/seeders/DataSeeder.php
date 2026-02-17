@@ -6,6 +6,7 @@ use App\Models\Curriculum;
 use App\Models\Department;
 use App\Models\EduYear;
 use App\Models\Language;
+use App\Models\Option;
 use App\Models\Semester;
 use App\Models\Specialty;
 use Illuminate\Database\Seeder;
@@ -15,7 +16,7 @@ class DataSeeder extends Seeder
 {
     public function run(): void
     {
-        for ($i = 11; $i <= 12; $i++) {
+        for ($i = 10; $i <= 18; $i++) {
             $page = 1;
             do {
                 $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/department-list', [
@@ -26,7 +27,7 @@ class DataSeeder extends Seeder
                 $items = $resData['data']['items'] ?? [];
 
                 foreach ($items as $department) {
-                    $parentId = ($i == 12 && isset($department['parent'])) ? ($department['parent']['id'] ?? $department['parent']) : null;
+                    $parentId = $department['parent'] ?? null;
                     Department::updateOrCreate(
                         ['id' => $department['id']],
                         [
@@ -136,6 +137,35 @@ class DataSeeder extends Seeder
                 $page++;
             } while ($page <= $pageCount);
         }
-
+        Option::create([
+            'name' => 'Test savollari soni',
+            'key' => 'questions',
+            'value' => '50'
+        ]);
+        Option::create([
+            'name' => 'Test topshirish davomiyligi (daqiqa)',
+            'key' => 'durations',
+            'value' => '50'
+        ]);
+        Option::create([
+            'name' => 'Minimal o‘tish bali chegarasi',
+            'key' => 'min_points',
+            'value' => '60'
+        ]);
+        Option::create([
+            'name' => 'Maksimal to‘planishi mumkin bo‘lgan ball',
+            'key' => 'max_points',
+            'value' => '100'
+        ]);
+        Option::create([
+            'name' => 'Urinishlar soni',
+            'key' => 'attempts',
+            'value' => '1'
+        ]);
+        Option::create([
+            'name' => 'Agar Testdan o‘ta olmasa qo‘shimcha imkon berish',
+            'key' => 'retest',
+            'value' => '1'
+        ]);
     }
 }

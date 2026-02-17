@@ -1,19 +1,7 @@
 @extends('layouts.web')
 
 @section('style')
-    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
-    <style>
-        .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice {
-            background-color: #6f42c1 !important;
-            border-color: #643ab0 !important;
-            color: #fff !important;
-        }
-
-        .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
-            color: #fff !important;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css">
 @endsection
 
 @section('content')
@@ -54,27 +42,29 @@
                             @forelse($faculties as $faculty)
                                 <tr>
                                     <td style="vertical-align: middle">#{{ $faculty->id }}</td>
-                                    <td style="text-align: left; vertical-align: middle"
-                                        class="font-weight-bold">
+                                    <td style="text-align: left; vertical-align: middle" class="font-weight-bold">
                                         {{ $faculty->name }}
                                     </td>
-
                                     <td style="vertical-align: middle">
                                         @foreach($faculty->children as $child)
-                                            <div class="badge badge-info">
-                                                {{ $child->name }}
-                                            </div>
+                                            <div class="badge badge-info">{{ $child->name }}</div>
                                         @endforeach
                                     </td>
+                                    <td style="vertical-align: middle">{{ $faculty->curricula->count() }}</td>
+                                    <td style="vertical-align: middle">0</td>
                                     <td style="vertical-align: middle">
-                                        {{ $faculty->curricula->count() }}
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox"
+                                                   class="custom-control-input access-toggle"
+                                                   id="accessSwitch{{ $faculty->id }}"
+                                                   data-id="{{ $faculty->id }}"
+                                                   data-url="{{ route('departments.update', $faculty->id) }}"
+                                                {{ $faculty->access == 1 ? 'checked' : '' }}>
+                                            <label class="custom-control-label"
+                                                   for="accessSwitch{{ $faculty->id }}"></label>
+                                        </div>
                                     </td>
-                                    <td style="vertical-align: middle">
-                                        0
-                                    </td>
-                                    <td style="vertical-align: middle">
-                                        <input type="checkbox">
-                                    </td>
+
                                     <td style="vertical-align: middle">
                                         <a href="#" class="btn btn-outline-success btn-sm">
                                             <i class="fa fa-cloud-download-alt"></i>
@@ -83,7 +73,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">Fakultetlar topilmadi.</td>
+                                    <td colspan="7" class="text-center py-4 text-muted">Fakultetlar topilmadi.</td>
                                 </tr>
                             @endforelse
                             </tbody>
@@ -92,17 +82,55 @@
                             <div class="float-right">
                                 {{ $faculties->links() }}
                             </div>
-                            @if($faculties->total())
-                                <div class="text-muted small mt-2">
-                                    Jami: <b>{{ $faculties->total() }}</b> ta savoldan
-                                    <b>{{ $faculties->firstItem() }}</b>-<b>{{ $faculties->lastItem() }}</b>
-                                    ko'rsatilmoqda
-                                </div>
-                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     </div>
+@endsection
+
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $(document).on('change', '.access-toggle', function () {
+                var checkbox = $(this);
+                var url = checkbox.data('url');
+                var access = checkbox.is(':checked') ? 1 : 0;
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        access: access,
+                        _method: 'PUT'
+                    },
+                    success: function (response) {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: response.message
+                        });
+
+                    },
+                    error: function (xhr) {
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

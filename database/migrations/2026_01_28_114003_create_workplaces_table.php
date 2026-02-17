@@ -11,10 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('department_id')->constrained('departments')->cascadeOnDelete();
-            $table->foreignId('emp_type_id')->constrained('employee_types')->cascadeOnDelete();
-            $table->foreignId('emp_staff_id')->constrained('employee_staff')->cascadeOnDelete();
-            $table->foreignId('emp_form_id')->constrained('employee_forms')->cascadeOnDelete();
-            $table->foreignId('emp_pos_id')->constrained('employee_positions')->cascadeOnDelete();
+            $table->string('head_type')->nullable();
+            $table->enum('is_main', ['0', '1'])->default('0');
             $table->timestamps();
         });
     }

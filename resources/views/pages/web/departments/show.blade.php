@@ -65,7 +65,7 @@
                                                 </div>
                                             </td>
                                             <td style="vertical-align: middle">
-                                                0
+                                                {{ $child->teachers_count }}
                                             </td>
                                             <td style="vertical-align: middle">
                                                 {{ $child->subjects->count() }}

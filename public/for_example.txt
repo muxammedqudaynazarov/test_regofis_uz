@@ -1,0 +1,13 @@
+Funksiyaning hosilasini toping: \( f(x) = \frac{1}{x} + \sqrt{x} \)
+A. \( -\frac{1}{x^2} + \frac{1}{2\sqrt{x}} \)
+B. \( \ln(x) + \frac{1}{2}x \)
+C. \( \frac{1}{x^2} + \sqrt{x} \)
+D. \( -x^{-1} + x^{1/2} \)
+ANSWER: A
+
+Что делает команда `cd` в Windows CMD?
+A. Меняет текущую директорию
+B. Создаёт новый файл
+C. Очищает содержимое файла
+D. Выключает компьютер
+ANSWER: A

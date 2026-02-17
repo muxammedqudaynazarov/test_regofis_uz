@@ -29,7 +29,8 @@
                                     <tr>
                                         <th style="width: 50px" class="text-center">#</th>
                                         <th>Fan nomi</th>
-                                        <th>Guruh / Semestr</th>
+                                        <th>O‘quv reja</th>
+                                        <th>Semestr</th>
                                         <th>Ma’sul o‘qituvchilar</th>
                                         <th>Savollar</th>
                                         <th></th>
@@ -42,26 +43,27 @@
                                                 #{{ $subject->subject_id }}
                                             </td>
                                             <td class="font-weight-bold text-dark">
-                                                {{ $subject->name }}
+                                                {{ $subject->subject->name }}
                                             </td>
                                             <td>
-                                                @forelse($subject->groups as $group)
-                                                    <span class="badge badge-success">
-                                                        {{ $group->group->name ?? 'N/A' }} / {{ $group->semester->name ?? 'N/A' }}
-                                                    </span>
-                                                @empty
-                                                    <span class="text-muted small">Guruh biriktirilmagan</span>
-                                                @endforelse
+                                                <div class="badge badge-success">
+                                                    {{ $subject->curriculum->name }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="badge badge-info">
+                                                    {{ $subject->semester->name }}
+                                                </div>
                                             </td>
                                             <td>
                                                 @foreach($subject->teachers as $teacher)
-                                                    <span class="badge badge-primary" style="font-weight: normal;">
+                                                    <span class="badge badge-primary">
                                                         {{ json_decode($teacher->name)->short_name ?? $teacher->short_name }}
                                                     </span>
                                                 @endforeach
                                             </td>
                                             <td>
-                                                {{ $subject->test?->questions_list->count() ?? 0 }}
+                                                {{ $subject->questions->count() ?? 0 }}
                                             </td>
                                             <td class="text-right">
                                                 <a href="{{ route('lessons.show', $subject->id) }}"
@@ -72,7 +74,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center py-5 text-muted">
+                                            <td colspan="7" class="text-center py-5 text-muted">
                                                 <i class="fas fa-info-circle mb-2"></i><br>
                                                 Sizga hali fanlar biriktirilmagan.
                                             </td>

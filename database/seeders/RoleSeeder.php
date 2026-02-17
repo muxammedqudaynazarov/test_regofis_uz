@@ -1,0 +1,180 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
+class RoleSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $permissions = [
+            'department.faculties.view',
+            'department.faculties.access',
+            'department.faculties.export',
+            'department.view',
+            'department.export',
+            'curriculum.view',
+            'curriculum.delete',
+            'languages.view',
+            'languages.status',
+            'applications.view',
+            'applications.reload',
+            'lessons.view',
+            'lessons.teachers',
+            'lessons.delete',
+            'subjects.view',
+            'subjects.resource.view',
+            'subjects.resource.create',
+            'exam.view',
+            'exam.upload',
+            'exam.export',
+            'statistics.view',
+            'statistics.export',
+            'system.view',
+            'system.update',
+        ];
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+        $pos = [
+            'super_admin' => 'Super admin',
+            'direction' => 'Rahbariyat',
+            'academic_vice_rector' => 'Prorektor',
+            'registrator_office' => 'Registrator ofisi',
+            'dean' => 'Dekan',
+            'department' => 'Kafedra mudiri',
+            'teacher' => 'O‘qituvchi',
+        ];
+        $roles = [
+            'super_admin' => [
+                'department.faculties.view',
+                'department.faculties.access',
+                'department.faculties.export',
+                'department.view',
+                'department.export',
+                'curriculum.view',
+                'curriculum.delete',
+                'languages.view',
+                'languages.status',
+                'applications.view',
+                'applications.reload',
+                'lessons.view',
+                'lessons.teachers',
+                'lessons.delete',
+                'subjects.view',
+                'subjects.resource.view',
+                'subjects.resource.create',
+                'exam.view',
+                'exam.upload',
+                'exam.export',
+                'statistics.view',
+                'statistics.export',
+                'system.view',
+                'system.update',
+            ],
+            'direction' => [
+                'department.faculties.view',
+                'department.faculties.access',
+                'department.faculties.export',
+                'department.view',
+                'department.export',
+                'curriculum.view',
+                'curriculum.delete',
+                'languages.view',
+                'languages.status',
+                'applications.view',
+                'applications.reload',
+                'lessons.view',
+                'lessons.teachers',
+                'lessons.delete',
+                'subjects.view',
+                'subjects.resource.view',
+                'subjects.resource.create',
+                'exam.view',
+                'exam.upload',
+                'exam.export',
+                'statistics.view',
+                'statistics.export',
+                'system.view',
+                'system.update',
+            ],
+            'academic_vice_rector' => [
+                'department.faculties.view',
+                'department.faculties.access',
+                'department.faculties.export',
+                'department.view',
+                'department.export',
+                'curriculum.view',
+                'curriculum.delete',
+                'languages.view',
+                'languages.status',
+                'applications.view',
+                'applications.reload',
+                'lessons.view',
+                'lessons.teachers',
+                'lessons.delete',
+                'subjects.view',
+                'subjects.resource.view',
+                'subjects.resource.create',
+                'exam.view',
+                'exam.upload',
+                'exam.export',
+                'statistics.view',
+                'statistics.export',
+                'system.view',
+                'system.update',
+            ],
+            'registrator_office' => [
+                'department.faculties.view',
+                'department.faculties.access',
+                'department.faculties.export',
+                'department.view',
+                'department.export',
+                'curriculum.view',
+                'curriculum.delete',
+                'languages.view',
+                'languages.status',
+                'applications.view',
+                'applications.reload',
+                'lessons.view',
+                'lessons.teachers',
+                'lessons.delete',
+                'subjects.view',
+                'subjects.resource.view',
+                'subjects.resource.create',
+                'exam.view',
+                'exam.upload',
+                'exam.export',
+                'statistics.view',
+                'statistics.export',
+                'system.view',
+                'system.update',
+            ],
+            'department' => [
+                'lessons.view',
+                'lessons.teachers',
+                'subjects.view',
+                'subjects.resource.view',
+                'subjects.resource.create',
+                'statistics.view',
+                'statistics.export',
+            ],
+            'teacher' => [
+                'subjects.view',
+                'subjects.resource.view',
+                'subjects.resource.create',
+            ],
+        ];
+        foreach ($roles as $name => $value) {
+            $role = Role::create([
+                'name' => $name,
+                'desc' => $pos[$name],
+            ]);
+            $role->syncPermissions($value);
+        }
+    }
+}

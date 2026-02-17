@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ env('APP_NAME', 'RegOFIS') }}</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -33,7 +34,6 @@
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
-
     <nav class="main-header navbar navbar-expand navbar-white navbar-light border-bottom-0">
         <ul class="navbar-nav">
             <li class="nav-item">
@@ -42,10 +42,32 @@
         </ul>
 
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a href="{{ url('/logout') }}" class="nav-link text-muted">
-                    <i class="fas fa-sign-out-alt"></i> Chiqish
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    {{ json_decode(Auth::user()->name)->short_name ?? Auth::user()->name ?? 'Foydalanuvchi' }}
+                    <i class="fas fa-angle-down ml-1 text-xs"></i>
                 </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    @php
+                        $userRoleNames = json_decode(Auth::user()->hemis_roles, true) ?? [];
+                        $roles = \Spatie\Permission\Models\Role::whereIn('name', $userRoleNames)->get();
+                    @endphp
+                    @if($roles->count() > 1)
+                        <span class="dropdown-header small font-weight-bold">Foydalanuvchi roli</span>
+                        <div class="dropdown-divider"></div>
+                        @foreach($roles as $role)
+                            <a href="{{ route('switch.role', $role->name) }}"
+                               class="dropdown-item small {{ (Auth::user()->current_role ?? '') == $role->name ? 'active' : '' }}">
+                                {{ $role->desc ?? $role->name }}
+                            </a>
+                        @endforeach
+                        <div class="dropdown-divider"></div>
+                    @endif
+
+                    <a href="{{ url('/logout') }}" class="dropdown-item dropdown-footer text-danger">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Tizimdan chiqish
+                    </a>
+                </div>
             </li>
         </ul>
     </nav>
@@ -64,72 +86,125 @@
 
                     <li class="nav-item">
                         <a href="{{ route('home') }}" class="nav-link {{ Request::is('home') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-home"></i>
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>Asosiy sahifa</p>
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{{ route('departments.show', 'faculties') }}"
-                           class="nav-link {{ Request::is('home/departments/faculties*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-clipboard-list"></i>
-                            <p>
-                                Fakultetlar ro‘yxati
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ route('departments.show', 'show') }}"
-                           class="nav-link {{ Request::is('home/departments/show*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-clipboard-list"></i>
-                            <p>
-                                Kafedralar ro‘yxati
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ route('curriculum.index') }}"
-                           class="nav-link {{ Request::is('home/curriculum*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-clipboard-list"></i>
-                            <p>
-                                O‘quv rejalar
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href=""
-                           class="nav-link {{ Request::is('home/applications*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-clipboard-list"></i>
-                            <p>
-                                Arizalar ro‘yxati
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ route('subjects-register.index') }}"
-                           class="nav-link {{ Request::is('home/subjects-register*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-map-pin"></i>
-                            <p>
-                                Fanlar ro‘yxati
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ route('lessons.index') }}"
-                           class="nav-link {{ Request::is('home/lessons*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-exclamation-circle"></i>
-                            <p>
-                                Biriktirilgan fanlar
-                                <span class="right badge badge-danger">0</span>
-                            </p>
-                        </a>
-                    </li>
-
+                    @can('department.faculties.view')
+                        <li class="nav-item">
+                            <a href="{{ route('departments.show', 'faculties') }}"
+                               class="nav-link {{ Request::is('home/departments/faculties*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-university"></i>
+                                <p>
+                                    Fakultetlar ro‘yxati
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('department.view')
+                        <li class="nav-item">
+                            <a href="{{ route('departments.show', 'show') }}"
+                               class="nav-link {{ Request::is('home/departments/show*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>
+                                    Kafedralar ro‘yxati
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('curriculum.view')
+                        <li class="nav-item">
+                            <a href="{{ route('curriculum.index') }}"
+                               class="nav-link {{ Request::is('home/curriculum*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-graduation-cap"></i>
+                                <p>
+                                    O‘quv rejalar
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('languages.view')
+                        <li class="nav-item">
+                            <a href="{{ route('languages.index') }}"
+                               class="nav-link {{ Request::is('home/languages*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-language"></i>
+                                <p>
+                                    Tizim tillari
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('applications.view')
+                        <li class="nav-item">
+                            <a href="#"
+                               class="nav-link {{ Request::is('home/applications*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-file-signature"></i>
+                                <p>
+                                    Arizalar ro‘yxati
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('lessons.view')
+                        <li class="nav-item">
+                            <a href="{{ route('subjects-register.index') }}"
+                               class="nav-link {{ Request::is('home/subjects-register*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>
+                                    Fanlar ro‘yxati
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('subjects.view')
+                        @php
+                            $subjects = \App\Models\SubjectTeacher::where('user_id', auth('web')->id())->count() ?? 0;
+                        @endphp
+                        <li class="nav-item">
+                            <a href="{{ route('lessons.index') }}"
+                               class="nav-link {{ Request::is('home/lessons*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                                <p>
+                                    Biriktirilgan fanlar
+                                    <span class="right badge badge-danger">{{ $subjects }}</span>
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('exam.view')
+                        <li class="nav-item">
+                            <a href="#"
+                               class="nav-link">
+                                <i class="nav-icon fas fa-clipboard-check"></i>
+                                <p>
+                                    Yakuniy nazoratlar
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('statistics.view')
+                        <li class="nav-item">
+                            <a href="#"
+                               class="nav-link">
+                                <i class="nav-icon fas fa-chart-pie"></i>
+                                <p>
+                                    Statistika
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('system.view')
+                        <li class="nav-item">
+                            <a href="{{ route('options.index') }}"
+                               class="nav-link {{ Request::is('home/options*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>
+                                    Tizim sozlamalari
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </nav>
         </div>
@@ -154,9 +229,10 @@
     $(function () {
         var Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'bottom-end',
             showConfirmButton: false,
-            timer: 3000
+            timer: 5000,
+            timerProgressBar: true,
         });
 
         // Muvaffaqiyatli xabar (Success)
@@ -186,6 +262,6 @@
         @endif
     });
 </script>
-@stack('scripts')
+@yield('scripts')
 </body>
 </html>

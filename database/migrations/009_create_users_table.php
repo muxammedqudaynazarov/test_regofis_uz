@@ -11,8 +11,9 @@ return new class extends Migration {
             $table->unsignedBigInteger('id')->primary()->index();
             $table->json('name');
             $table->unsignedBigInteger('hemis_id');
+            $table->string('current_role')->default('teacher');
             $table->json('hemis_roles')->nullable();
-            $table->string('uuid')->unique();
+            $table->string('uuid')->unique()->nullable();
             $table->text('picture')->nullable();
             $table->timestamps();
         });

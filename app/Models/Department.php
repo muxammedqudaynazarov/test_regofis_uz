@@ -28,4 +28,9 @@ class Department extends Model
     {
         return $this->hasMany(SubjectList::class, 'department_id', 'id');
     }
+
+    public function workplaces()
+    {
+        return $this->hasMany(Workplace::class, 'department_id', 'id');
+    }
 }

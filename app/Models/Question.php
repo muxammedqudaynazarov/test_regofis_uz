@@ -11,8 +11,9 @@ class Question extends Model
     use HasFactory;
 
     protected $fillable = [
-        'question',
-        'test_id',
+        'question_text',
+        'subject_id',
+        'language_id',
         'type',
         'status',
     ];

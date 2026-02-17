@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Language;
 use App\Models\Question;
 use App\Models\Subject;
 use App\Models\SubjectList;
@@ -24,14 +25,12 @@ class LessonController extends Controller
 
     public function show($id)
     {
-        $subject = Subject::with(['teachers'])->findOrFail($id);
-        $test = $subject->test ?? null;
-        $questions = null;
-        if ($test)
-            $questions = Question::where('test_id', $test->id)->paginate(20);
+        $subject = SubjectList::with(['teachers'])->findOrFail($id);
         if (!$subject->teachers->contains(Auth::id())) {
             abort(403, 'Bu fanga kirish huquqingiz yo‘q.');
         }
-        return view('pages.web.lessons.show', compact(['subject', 'test', 'questions']));
+        $languages = Language::where('status', '1')->get();
+        $questions = Question::where('subject_id', $id)->paginate(20);
+        return view('pages.web.lessons.show', compact(['subject', 'questions', 'languages']));
     }
 }
