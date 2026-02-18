@@ -156,7 +156,7 @@
                                                 <a class="btn btn-danger btn-sm"
                                                    href="{{ route('subjects-register.edit', $lesson->id) }}"
                                                    onclick="return confirm('Ushbu harakatni tasdiqlash orqali Siz tomoningizdan tizim administratorlariga fanni o‘chirish bo‘yicha ma’lumot kiritgan deb hisoblanadi. Muhum: agar fanda resurslar bo‘lsa uni o‘chirib tashlash mumkin emas. Harakatn tasdiqlaysizmi?')">
-                                                    <i class="fas fa-trash-alt mr-1"></i> So‘rov yuborish
+                                                    <i class="fas fa-trash-alt mr-1"></i> O‘chirish so‘rovi
                                                 </a>
                                             @endif
                                         @endif
