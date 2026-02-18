@@ -11,6 +11,8 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\Statistics\DepartmentRoleInfoController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SubjectTeacherController;
@@ -52,6 +54,11 @@ Route::prefix('home')->middleware('auth:web,student')->group(function () {
     Route::resource('lessons', LessonController::class)->only(['index', 'show']);
     Route::resource('languages', LanguageController::class)->only(['index', 'update']);
     Route::resource('questions', QuestionController::class)->only(['update', 'destroy']);
+    Route::resource('statistics', StatisticsController::class)->only(['index']);
+
+    Route::prefix('statistics')->group(function () {
+        Route::get('/department/resources', [DepartmentRoleInfoController::class, 'role_department'])->name('statistics.department.resources');
+    });
     //Route::resource('tests', TestController::class);
     //Route::resource('exams', ExamController::class)->only(['show', 'update']);
     //Route::post('exams/answer/upload', [ExamController::class, 'upload_answer']);

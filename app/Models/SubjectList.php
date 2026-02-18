@@ -48,6 +48,11 @@ class SubjectList extends Model
         return $this->hasMany(Question::class, 'subject_id', 'id');
     }
 
+    public function getQuestionCountByTeacherAndLang($teacherId, $languageId)
+    {
+        return $this->questions()->where('user_id', $teacherId)->where('language_id', $languageId)->count();
+    }
+
     public function langauges(): HasMany
     {
         return $this->hasMany(Language::class, 'subject_id', 'id');

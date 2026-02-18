@@ -190,8 +190,8 @@
                     @endcan
                     @can('statistics.view')
                         <li class="nav-item">
-                            <a href="#"
-                               class="nav-link">
+                            <a href="{{ route('statistics.index') }}"
+                               class="nav-link {{ Request::is('home/statistics*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-chart-pie"></i>
                                 <p>
                                     Statistika
