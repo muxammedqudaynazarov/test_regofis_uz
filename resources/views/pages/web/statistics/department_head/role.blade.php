@@ -132,8 +132,17 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="card-footer bg-white">
-                        {{ $subjects->links() }}
+                    <div class="card-footer bg-white clearfix">
+                        <div class="float-right">
+                            {{ $subjects->links() }}
+                        </div>
+                        @if($subjects->total())
+                            <div class="text-muted small mt-2">
+                                Jami: <b>{{ $subjects->total() }}</b> ta savoldan
+                                <b>{{ $subjects->firstItem() }}</b>-<b>{{ $subjects->lastItem() }}</b>
+                                ko'rsatilmoqda
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
