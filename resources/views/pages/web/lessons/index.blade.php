@@ -63,7 +63,7 @@
                                             <td>
                                                 {{ $subject->questions->count() ?? 0 }}
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-right text-nowrap">
                                                 <a href="{{ route('lessons.show', $subject->id) }}"
                                                    class="btn btn-primary btn-xs px-3 shadow-sm">
                                                     <i class="fas fa-folder-open mr-1"></i> Resurslar
