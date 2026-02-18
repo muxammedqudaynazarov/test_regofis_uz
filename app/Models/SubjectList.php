@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,6 +16,7 @@ class SubjectList extends Model
         'id',
         'department_id',
         'curriculum_id',
+        'request_delete',
         'semester_id'
     ];
 
@@ -56,5 +58,12 @@ class SubjectList extends Model
     public function langauges(): HasMany
     {
         return $this->hasMany(Language::class, 'subject_id', 'id');
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('request_delete', '!=', '5')->orWhereNull('request_delete');
+        });
     }
 }

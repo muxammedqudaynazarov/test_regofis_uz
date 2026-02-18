@@ -50,7 +50,7 @@ Route::prefix('home')->middleware('auth:web,student')->group(function () {
     Route::resource('options', OptionController::class)->only(['index', 'update']);
     Route::resource('curriculum', CurriculumController::class)->only(['index', 'destroy']);
     //Route::resource('subjects', SubjectController::class)->only(['index']);
-    Route::resource('subjects-register', SubjectTeacherController::class)->only(['index', 'store']);
+    Route::resource('subjects-register', SubjectTeacherController::class)->only(['index', 'store', 'edit', 'create', 'destroy']);
     Route::resource('lessons', LessonController::class)->only(['index', 'show']);
     Route::resource('languages', LanguageController::class)->only(['index', 'update']);
     Route::delete('/questions/destroy-many', [QuestionController::class, 'destroyMany'])->name('questions.destroyMany');

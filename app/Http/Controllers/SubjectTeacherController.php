@@ -61,6 +61,28 @@ class SubjectTeacherController extends Controller
         abort(404);
     }
 
+    public function edit($id, Request $request)
+    {
+        if (\auth()->user()->current_role == 'department') {
+            $lesson = SubjectList::findOrFail($id);
+            if ($lesson) {
+                $lesson->request_delete = '1';
+                $lesson->save();
+                return redirect()->back()->with('success', 'O‘chirish so‘rovi kiritildi.');
+            }
+        }
+        abort(404);
+    }
+
+    public function create()
+    {
+        if (auth()->user()->can('lessons.request.show')) {
+            $subjects = SubjectList::where('request_delete', '1')->paginate(20);
+            return view('pages.web.subject_register.request', compact(['subjects']));
+        }
+        abort(404);
+    }
+
     public function store(Request $request)
     {
         if (\auth()->user()->can('lessons.teachers')) {
@@ -71,6 +93,19 @@ class SubjectTeacherController extends Controller
             $subject = SubjectList::findOrFail($request->subject_id);
             $subject->teachers()->sync($request->input('user_ids', []));
             return redirect()->back()->with('success', 'Ma’lumotlar yangilandi!');
+        }
+        abort(404);
+    }
+
+    public function destroy($id)
+    {
+        if (\auth()->user()->can('lessons.delete')) {
+            $lesson = SubjectList::findOrFail($id);
+            if ($lesson) {
+                $lesson->request_delete = '5';
+                $lesson->save();
+                return redirect()->back()->with('success', 'Talabnoma muvaffaqiyatli qanoatlantirildi. Fan o‘chirildi.');
+            }
         }
         abort(404);
     }

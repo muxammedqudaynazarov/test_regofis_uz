@@ -152,15 +152,45 @@
                         </li>
                     @endcan
                     @can('lessons.view')
-                        <li class="nav-item">
-                            <a href="{{ route('subjects-register.index') }}"
-                               class="nav-link {{ Request::is('home/subjects-register*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>
-                                    Fanlar ro‘yxati
-                                </p>
-                            </a>
-                        </li>
+                        @if(auth()->user()->current_role == 'super_admin' || auth()->user()->current_role == 'registrator_office')
+                            <li class="nav-item {{ Request::is('home/subjects-register*') ? 'menu-is-opening menu-open' : '' }}">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-book"></i>
+                                    <p>
+                                        Fanlarni boshqarish
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('subjects-register.index') }}"
+                                           class="nav-link {{ Request::is('home/subjects-register') ? 'active' : '' }}">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Fanlar ro‘yxati</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('subjects-register.create') }}"
+                                           class="nav-link {{ Request::is('home/subjects-register/create') ? 'active' : '' }}">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                O‘chirish so‘rovlari
+                                            </p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a href="{{ route('subjects-register.index') }}"
+                                   class="nav-link {{ Request::is('home/subjects-register*') ? 'active' : '' }}">
+                                    <i class="nav-icon fas fa-book"></i>
+                                    <p>
+                                        Fanlar ro‘yxati
+                                    </p>
+                                </a>
+                            </li>
+                        @endif
                     @endcan
                     @can('subjects.view')
                         @php

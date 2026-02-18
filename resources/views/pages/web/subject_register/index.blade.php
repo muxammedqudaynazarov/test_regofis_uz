@@ -144,6 +144,22 @@
                                                 data-target="#assignModal{{ $lesson->id }}">
                                             <i class="fas fa-user-plus mr-1"></i> O‘qituvchi qo‘shish
                                         </button>
+                                        @if(auth()->user()->current_role == 'department')
+                                            @if ($lesson->request_delete == '1')
+                                                <button type="button" class="btn btn-info btn-sm disabled">
+                                                    <i class="fas fa-clock mr-1"></i> Sorov yuborildi
+                                                </button>
+
+                                            @elseif ($lesson->request_delete == '2')
+                                                Bekor qilingan
+                                            @elseif ($lesson->request_delete == '0')
+                                                <a class="btn btn-danger btn-sm"
+                                                   href="{{ route('subjects-register.edit', $lesson->id) }}"
+                                                   onclick="return confirm('Ushbu harakatni tasdiqlash orqali Siz tomoningizdan tizim administratorlariga fanni o‘chirish bo‘yicha ma’lumot kiritgan deb hisoblanadi. Muhum: agar fanda resurslar bo‘lsa uni o‘chirib tashlash mumkin emas. Harakatn tasdiqlaysizmi?')">
+                                                    <i class="fas fa-trash-alt mr-1"></i> So‘rov yuborish
+                                                </a>
+                                            @endif
+                                        @endif
                                         @can('lessons.delete')
                                             <a href="#" class="btn btn-outline-danger btn-sm"><i
                                                     class="fas fa-trash"></i></a>
