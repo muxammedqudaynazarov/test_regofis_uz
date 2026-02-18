@@ -184,4 +184,20 @@ class QuestionController extends Controller
         }
         abort(404);
     }
+
+    public function destroyMany(Request $request)
+    {
+        if (\auth()->user()->can('subjects.resource.delete')) {
+            $request->validate([
+                'ids' => 'required|array',
+                'ids.*' => 'exists:questions,id'
+            ]);
+            $deletedCount = Question::whereIn('id', $request->ids)->where('user_id', auth()->id())->delete();
+            if ($deletedCount > 0) {
+                return redirect()->back()->with('success', $deletedCount . ' ta savol o‘chirildi.');
+            }
+            return redirect()->back()->with('error', 'Hech qanday savol o‘chirilmadi yoki sizda huquq yo‘q.');
+        }
+        abort(404);
+    }
 }
