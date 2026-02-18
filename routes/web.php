@@ -59,6 +59,7 @@ Route::prefix('home')->middleware('auth:web,student')->group(function () {
 
     Route::prefix('statistics')->group(function () {
         Route::get('/department/resources', [DepartmentRoleInfoController::class, 'role_department'])->name('statistics.department.resources');
+        Route::get('/department/resources/export', [DepartmentRoleInfoController::class, 'export_role_department'])->name('statistics.department.resources.export');
     });
     //Route::resource('tests', TestController::class);
     //Route::resource('exams', ExamController::class)->only(['show', 'update']);

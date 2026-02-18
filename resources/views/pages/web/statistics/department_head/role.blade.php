@@ -34,8 +34,22 @@
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="font-weight-bold">Kafedra statistikasi (Savollar bazasi)</h1>
+                    <div class="col-sm-12">
+                        <div class="d-flex">
+                            <div class="flex-grow-1">
+                                <h1 class="font-weight-bold">
+                                    Kafedra statistikasi (Savollar bazasi)
+                                </h1>
+                            </div>
+                            <div>
+                                <a href="{{ route('statistics.department.resources.export') }}"
+                                   class="btn btn-outline-danger btn-sm">
+                                    Statistikani yuklash
+                                </a>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
             </div>
