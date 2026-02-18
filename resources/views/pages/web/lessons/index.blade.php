@@ -46,9 +46,7 @@
                                                 {{ $subject->subject->name }}
                                             </td>
                                             <td>
-                                                <div class="badge badge-success">
-                                                    {{ $subject->curriculum->name }}
-                                                </div>
+                                                {{ $subject->curriculum->name }}
                                             </td>
                                             <td>
                                                 <div class="badge badge-info">
