@@ -40,7 +40,7 @@ class SubjectList extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany(User::class, 'subject_teachers', 'subject_id', 'user_id');
+        return $this->belongsToMany(User::class, 'subject_teachers', 'subject_id', 'user_id')->withTimestamps();;
     }
 
     public function questions(): HasMany

@@ -70,7 +70,6 @@ class SubjectTeacherController extends Controller
             ]);
             $subject = SubjectList::findOrFail($request->subject_id);
             $subject->teachers()->sync($request->input('user_ids', []));
-
             return redirect()->back()->with('success', 'Ma’lumotlar yangilandi!');
         }
         abort(404);
