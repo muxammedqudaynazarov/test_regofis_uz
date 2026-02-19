@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Student extends Authenticatable
@@ -15,16 +17,16 @@ class Student extends Authenticatable
     public $incrementing = false;
 
     protected $fillable = [
-        'id', 'name', 'student_id', 'uuid', 'picture'
+        'id', 'name', 'picture', 'curriculum_id', 'specialty_id', 'language_id'
     ];
 
-    public function course(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    public function specialty(): HasOne
     {
-        return $this->hasOneThrough(Course::class, StudentCourse::class, 'student_id', 'id', 'id', 'course_id');
+        return $this->hasOne(Specialty::class, 'id', 'specialty_id');
     }
 
-    public function level(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    public function exams(): HasMany
     {
-        return $this->hasOneThrough(Level::class, StudentCourse::class, 'student_id', 'id', 'id', 'level_id');
+        return $this->hasMany(Exam::class, 'student_id', 'id');
     }
 }

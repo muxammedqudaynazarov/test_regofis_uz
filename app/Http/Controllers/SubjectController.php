@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GroupSubject;
-use App\Models\Subject;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Exam;
 
 class SubjectController extends Controller
 {
     public function index()
     {
-        /*if (auth()->user()->can('curriculum.view')) {
-            $user_guard = Auth::guard('student')->check() ? 'student' : 'web';
-            $user = auth($user_guard)->user();
-            $subjects = GroupSubject::where('student_id', auth('student')->id())->get();
-            return view('pages.student.subjects.index', compact(['subjects', 'user', 'user_guard']));
-        }*/
+        $user = auth('student')->user();
+        if ($user) {
+            $subjects = Exam::where('student_id', auth('student')->id())->paginate(20);
+            return view('pages.student.subjects.index', compact(['subjects', 'user']));
+        }
+        abort(404);
     }
 }

@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Application extends Model
+class Position extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'id', 'application_number', 'student_id', 'education_year', 'status', 'created_at'
+        'attempt_id',
+        'answer_id',
+        'pos',
     ];
 }

@@ -10,20 +10,5 @@ class GroupSubject extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_id', 'group_id', 'subject_id', 'semester_id', 'credit'];
-
-    public function group(): hasOne
-    {
-        return $this->hasOne(Group::class, 'id', 'group_id');
-    }
-
-    public function subject(): hasOne
-    {
-        return $this->hasOne(Subject::class, 'id', 'subject_id');
-    }
-
-    public function semester(): hasOne
-    {
-        return $this->hasOne(Semester::class, 'id', 'semester_id');
-    }
+    protected $fillable = ['id', 'failed_subject_id', 'subject_id', 'group_id', 'application_id', 'subject_name', 'semester_code', 'credit'];
 }

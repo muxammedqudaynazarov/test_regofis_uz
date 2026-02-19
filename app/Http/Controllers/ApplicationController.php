@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Application;
 use App\Models\EduYear;
+use App\Models\Exam;
 use App\Models\Group;
 use App\Models\GroupSubject;
+use App\Models\Student;
 use App\Models\Subject;
+use App\Models\SubjectList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -14,8 +17,9 @@ class ApplicationController extends Controller
 {
     public function index()
     {
-        
+
     }
+
     public function store(Request $request)
     {
         $response = Http::withToken(env('REGOFIS_TOKEN'))
@@ -30,11 +34,11 @@ class ApplicationController extends Controller
             foreach ($apps as $app) {
                 if ($app['status'] == 'approved') {
                     $application = Application::firstOrCreate([
-                        'uuid' => $app['application_number'],
-                        'o_app_id' => $app['id'],
+                        'id' => $app['id'],
+                        'application_number' => $app['application_number'],
                     ], [
                         'student_id' => $app['student_id'],
-                        'year_id' => $app['education_year'],
+                        'education_year' => $app['education_year'],
                         'status' => $app['status'],
                         'created_at' => $app['created_at'],
                     ]);
@@ -46,25 +50,35 @@ class ApplicationController extends Controller
                                 'name' => $detail['student_group']['name'],
                             ]);
 
-                            $subject = Subject::firstOrCreate([
+                            $group_subject = GroupSubject::firstOrCreate([
+                                'id' => $detail['id'],
                                 'failed_subject_id' => $detail['failed_subject_id'],
                                 'subject_id' => $detail['subject_id'],
                             ], [
-                                'name' => $detail['subject_name'],
-                            ]);
-
-                            GroupSubject::firstOrCreate([
-                                'student_id' => $app['student_id'],
+                                'application_id' => $application->id,
                                 'group_id' => $group->id,
-                                'subject_id' => $subject->id,
-                                'semester_id' => $detail['semester_code'],
+                                'subject_name' => $detail['subject_name'],
+                                'semester_code' => $detail['semester_code'],
                                 'credit' => $detail['credit'],
+                            ]);
+                            $subject = Subject::where('name', $group_subject->subject_name)->first();
+                            $subject_list = SubjectList::where('subject_id', $subject->id)
+                                ->where('curriculum_id', auth('student')->user()->curriculum_id)
+                                ->where('semester_id', $detail['semester_code'])->first();
+                            Exam::firstOrCreate([
+                                'application_id' => $application->id,
+                                'student_id' => $app['student_id'],
+                                'subject_id' => $subject_list->id,
+                                'failed_subject_id' => $detail['failed_subject_id'],
+                                'group_id' => $group->id,
+                                'semester_id' => $detail['semester_code'],
+                                'status' => '0',
                             ]);
                         }
                     }
                 }
             }
         }
-        return redirect(route('subjects.index'));
+        return redirect(route('subjects.index'))->with('success', 'Fan ma’lumotlari yangilandi.');
     }
 }

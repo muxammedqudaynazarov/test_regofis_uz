@@ -7,12 +7,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Schema::dropIfExists('group_subjects');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         Schema::create('group_subjects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
+            $table->unsignedBigInteger('failed_subject_id')->index();
+            $table->unsignedBigInteger('subject_id')->index();
             $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
-            $table->foreignId('subject_id')->constrained('subjects')->cascadeOnDelete();
-            $table->foreignId('semester_id')->constrained('semesters')->cascadeOnDelete();
+            $table->foreignId('application_id')->constrained('applications')->cascadeOnDelete();
+            $table->text('subject_name');
+            $table->foreignId('semester_code')->constrained('semesters')->cascadeOnDelete();
             $table->double('credit')->default(2);
             $table->timestamps();
         });

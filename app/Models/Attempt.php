@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Attempt extends Model
 {
@@ -13,6 +15,12 @@ class Attempt extends Model
         'student_id',
         'exam_id',
         'question_id',
-        'answer_id',
+        'pos',
     ];
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class, 'id', 'question_id');
+    }
+
 }

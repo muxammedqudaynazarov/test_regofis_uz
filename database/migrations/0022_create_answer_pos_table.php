@@ -7,10 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('answer_pos', function (Blueprint $table) {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Schema::dropIfExists('answer_pos');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        Schema::create('positions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
-            $table->foreignId('question_id')->constrained('questions')->cascadeOnDelete();
+            $table->foreignId('attempt_id')->constrained('attempts')->cascadeOnDelete();
             $table->foreignId('answer_id')->constrained('answers')->cascadeOnDelete();
             $table->integer('pos');
             $table->timestamps();
@@ -19,6 +22,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('answer_pos');
+        Schema::dropIfExists('positions');
     }
 };

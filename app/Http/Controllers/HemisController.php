@@ -157,8 +157,6 @@ class HemisController extends Controller
     public
     function student(Request $request)
     {
-        return redirect()->back();
-
         $employeeProvider = new GenericProvider([
             'clientId' => env('HEMIS_CLIENT_ID'),
             'clientSecret' => env('HEMIS_CLIENT_SECRET'),
@@ -167,32 +165,17 @@ class HemisController extends Controller
             'urlAccessToken' => env('HEMIS_STUD_URL') . '/oauth/access-token',
             'urlResourceOwnerDetails' => env('HEMIS_STUD_URL') . '/oauth/api/user?fields=id,uuid,employee_id_number,type,roles,name,login,email,picture,firstname,surname,patronymic,birth_date,university_id,phone'
         ]);
-
-        // Handle OAuth authorization
         $authResponse = $this->handleOAuthAuthorization($request, $employeeProvider, '/login/student/');
         if ($authResponse) {
             return $authResponse;
         }
-
         try {
             $accessToken = $employeeProvider->getAccessToken('authorization_code', [
                 'code' => $request->code
             ]);
             $resourceOwner = $employeeProvider->getResourceOwner($accessToken);
             $student_array = $resourceOwner->toArray();
-            $uuid = $student_array['uuid'];
-            $student_id = $student_array['id'];
             $student_array = $student_array['data'];
-
-            // Create or update related entities
-            Department::firstOrCreate(
-                ['id' => $student_array['faculty']['id']],
-                [
-                    'name' => $student_array['faculty']['name'],
-                    'structure' => $student_array['faculty']['structureType']['code'],
-                ]
-            );
-
             $specialty = Specialty::firstOrCreate(
                 [
                     'uuid' => $student_array['specialty']['id'],
@@ -204,26 +187,16 @@ class HemisController extends Controller
                 ]
             );
 
-            Level::firstOrCreate(
-                ['id' => $student_array['level']['code']],
-                ['name' => $student_array['level']['name']]
-            );
-
-            Language::firstOrCreate(
+            $language = Language::firstOrCreate(
                 ['id' => $student_array['group']['educationLang']['code']],
                 ['name' => $student_array['group']['educationLang']['name']]
             );
 
-            Course::firstOrCreate(
-                ['id' => $student_array['group']['id']],
-                [
-                    'name' => $student_array['group']['name'],
-                    'specialty_id' => $specialty->id,
-                    'language_id' => $student_array['group']['educationLang']['code'],
-                ]
-            );
-
-            // Create or update student
+            $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/student-list', [
+                'search' => $student_array['student_id_number']
+            ]);
+            $student_api = $response->json();
+            $student_api = $student_api['data']['items'][0];
             $student = Student::firstOrCreate(
                 ['id' => $student_array['student_id_number']],
                 [
@@ -234,23 +207,15 @@ class HemisController extends Controller
                         'full_name' => $student_array['full_name'],
                         'short_name' => $student_array['short_name'],
                     ]),
-                    'uuid' => $uuid,
-                    'student_id' => $student_id,
                     'picture' => $student_array['image'],
+                    'curriculum_id' => $student_api['_curriculum'],
+                    'specialty_id' => $specialty->id,
+                    'language_id' => $language->id,
                 ]
             );
 
-            // Create or update student course relationship
-            StudentCourse::firstOrCreate(
-                [
-                    'student_id' => $student_array['student_id_number'],
-                    'level_id' => $student_array['level']['code'],
-                ],
-                ['course_id' => $student_array['group']['id']]
-            );
-
             Auth::guard('student')->login($student);
-            return redirect('/home');
+            return redirect('/student');
         } catch (IdentityProviderException $e) {
             return response($e->getMessage(), 500);
         }

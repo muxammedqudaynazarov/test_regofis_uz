@@ -41,29 +41,31 @@ Route::get('/logout', function () {
 Route::get('/login', function () {
     return redirect('/');
 });
+Route::prefix('student')->middleware('auth:student')->group(function () {
+    Route::get('/', [StudentController::class, 'index'])->name('student.home');
+    Route::resource('subjects', SubjectController::class)->only(['index']);
+    Route::resource('applications', ApplicationController::class)->only(['index', 'store']);
+    Route::resource('tests', TestController::class)->only(['index', 'update']);
+    //Route::resource('exams', ExamController::class)->only(['show', 'update']);
+    //Route::post('exams/answer/upload', [ExamController::class, 'upload_answer']);
+    //Route::resource('results', ResultController::class)->only(['store']);
+});
 
 
-Route::prefix('home')->middleware('auth:web,student')->group(function () {
+Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/user/{role}', [HomeController::class, 'switch_role'])->name('switch.role');
     Route::resource('departments', DepartmentController::class)->only(['show', 'update']);
     Route::resource('options', OptionController::class)->only(['index', 'update']);
     Route::resource('curriculum', CurriculumController::class)->only(['index', 'destroy']);
-    //Route::resource('subjects', SubjectController::class)->only(['index']);
     Route::resource('subjects-register', SubjectTeacherController::class)->only(['index', 'store', 'edit', 'create', 'destroy']);
     Route::resource('lessons', LessonController::class)->only(['index', 'show']);
     Route::resource('languages', LanguageController::class)->only(['index', 'update']);
     Route::delete('/questions/destroy-many', [QuestionController::class, 'destroyMany'])->name('questions.destroyMany');
     Route::resource('questions', QuestionController::class)->only(['update', 'destroy']);
     Route::resource('statistics', StatisticsController::class)->only(['index']);
-
     Route::prefix('statistics')->group(function () {
         Route::get('/department/resources', [DepartmentRoleInfoController::class, 'role_department'])->name('statistics.department.resources');
         Route::get('/department/resources/export', [DepartmentRoleInfoController::class, 'export_role_department'])->name('statistics.department.resources.export');
     });
-    //Route::resource('tests', TestController::class);
-    //Route::resource('exams', ExamController::class)->only(['show', 'update']);
-    //Route::post('exams/answer/upload', [ExamController::class, 'upload_answer']);
-    //Route::resource('results', ResultController::class)->only(['store']);
-    //Route::resource('applications', ApplicationController::class)->only(['index', 'store']);
 });

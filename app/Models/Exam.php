@@ -11,20 +11,37 @@ class Exam extends Model
     use HasFactory;
 
     protected $fillable = [
+        'application_id',
         'student_id',
-        'test_id',
+        'subject_id',
+        'failed_subject_id',
+        'group_id',
+        'semester_id',
         'status',
-        'finished_at',
-        'last_activity_at',
     ];
 
-    public function test(): hasOne
+    public function application(): HasOne
     {
-        return $this->hasOne(Test::class, 'id', 'test_id');
+        return $this->hasOne(Application::class, 'id', 'application_id');
     }
 
-    public function result(): hasOne
+    public function failed_subject(): HasOne
     {
-        return $this->hasOne(Result::class, 'exam_id', 'id');
+        return $this->hasOne(GroupSubject::class, 'failed_subject_id', 'failed_subject_id');
+    }
+
+    public function group(): HasOne
+    {
+        return $this->hasOne(Group::class, 'id', 'group_id');
+    }
+
+    public function semester(): HasOne
+    {
+        return $this->hasOne(Semester::class, 'id', 'semester_id');
+    }
+
+    public function resource(): HasOne
+    {
+        return $this->hasOne(SubjectList::class, 'id', 'subject_id');
     }
 }
