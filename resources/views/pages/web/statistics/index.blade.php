@@ -24,15 +24,16 @@
                         <table class="table table-hover text-center">
                             <thead>
                             <tr>
-                                <th style="width: 7%">#</th>
+                                <th style="width: 5%">#</th>
                                 <th style="text-align: left">Nomi</th>
                                 <th class="text-right" style="width: 7%"></th>
                             </tr>
                             </thead>
                             <tbody>
+                            @php($ci = 1)
                             @foreach($stats as $stat)
                                 <tr>
-                                    <td style="vertical-align: middle">#</td>
+                                    <td style="vertical-align: middle">#{{ $ci++ }}</td>
                                     <td style="vertical-align: middle; text-align: left" class="font-weight-bold">
                                         {{ $stat['name'] }}
                                     </td>
