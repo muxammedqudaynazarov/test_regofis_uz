@@ -81,12 +81,24 @@
                                     <td style="vertical-align: middle" class="text-right text-nowrap">
                                         @can('lessons.delete')
                                             <form action="{{ route('subjects-register.destroy', $lesson->id) }}"
-                                                  method="POST">
+                                                  method="POST" class="d-inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+
+                                                <div class="input-group input-group-sm" style="width: 160px;">
+                                                    <select name="type"
+                                                            class="custom-select custom-select-sm border-danger"
+                                                            required>
+                                                        <option value="5" class="text-danger">O‘chirish</option>
+                                                        <option value="0" class="text-success">Qaytarish</option>
+                                                    </select>
+                                                    <div class="input-group-append">
+                                                        <button type="submit" class="btn btn-danger btn-sm shadow-sm"
+                                                                title="Tasdiqlash">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </form>
                                         @endcan
                                     </td>

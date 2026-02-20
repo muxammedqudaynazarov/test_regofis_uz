@@ -97,12 +97,15 @@ class SubjectTeacherController extends Controller
         abort(404);
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         if (\auth()->user()->can('lessons.delete')) {
+            $request->validate([
+                'type' => 'required|in:0,5',
+            ]);
             $lesson = SubjectList::findOrFail($id);
             if ($lesson) {
-                $lesson->request_delete = '5';
+                $lesson->request_delete = $request->type;
                 $lesson->save();
                 return redirect()->back()->with('success', 'Talabnoma muvaffaqiyatli qanoatlantirildi. Fan o‘chirildi.');
             }
