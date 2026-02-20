@@ -10,6 +10,8 @@ class StatisticsController extends Controller
     {
         if (auth()->user()->current_role == 'department') {
             return redirect(route('statistics.department.resources'));
+        } elseif (auth()->user()->current_role != 'teacher') {
+            return view('pages.web.statistics.index');
         }
     }
 }

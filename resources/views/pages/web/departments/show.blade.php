@@ -50,7 +50,7 @@
                                 <th style="width: 20%">Fakultet</th>
                                 <th style="width: 7%">O‘qituvchilar</th>
                                 <th style="width: 7%">Fanlar</th>
-                                <th>
+                                <th style="width: 3%;">
                                     <a href="{{ route('departments.download') }}"
                                        class="btn btn-outline-success btn-sm">
                                         <i class="fa fa-cloud-download-alt"></i>
