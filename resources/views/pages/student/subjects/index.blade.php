@@ -1,3 +1,4 @@
+@php use App\Models\Option; @endphp
 @extends('layouts.app')
 
 @section('style')
@@ -89,56 +90,47 @@
                                             <td>
                                                 {{ $subject->status }}
                                             </td>
-                                            <td>
+                                            <td class="text-nowrap">
                                                 @if(auth()->user()->specialty->department->access == '1')
                                                     @if($subject->resource->questions->count())
-                                                        @php
-                                                            $lastResult = $subject->results->last();
-                                                        @endphp
-
-                                                        @if(!$lastResult)
-                                                            <a href="javascript:void(0)"
-                                                               data-url="{{ route('tests.show', $subject->id) }}"
-                                                               class="btn btn-primary btn-sm start-test-btn">
-                                                                Testni boshlash
-                                                            </a>
+                                                        @if($subject->finished == '0')
+                                                            @if($subject->status == '0')
+                                                                <a href="javascript:void(0)"
+                                                                   data-url="{{ route('tests.show', $subject->id) }}"
+                                                                   class="btn btn-primary btn-sm start-test-btn">
+                                                                    <i class="fas fa-play mr-1"
+                                                                       style="font-size: 10px"></i> Testni boshlash
+                                                                </a>
+                                                            @elseif($subject->status == '1')
+                                                                <a href="{{ route('tests.show', $subject->id) }}"
+                                                                   class="btn btn-warning btn-sm text-white font-weight-bold shadow-sm">
+                                                                    <i class="fas fa-spinner fa-spin mr-1"></i>
+                                                                    Davom ettirish
+                                                                </a>
+                                                            @endif
                                                         @else
-                                                            @switch($lastResult->status)
-                                                                @case(0)
-                                                                @case(2)
-                                                                @case(4)
-                                                                    <a href="{{ route('tests.show', $subject->id) }}"
-                                                                       class="btn btn-warning btn-sm text-white">
-                                                                        Davom ettirish
-                                                                    </a>
-                                                                    @break
-
-                                                                @case(1)
-                                                                    <a href="javascript:void(0)"
-                                                                       data-url="{{ route('tests.show', $subject->id) }}"
-                                                                       class="btn btn-info btn-sm start-test-btn">
-                                                                        Qayta topshirish
-                                                                    </a>
-                                                                    @break
-
-                                                                @case(3)
-                                                                @case(5)
-                                                                    <span
-                                                                        class="badge badge-secondary p-2">Yakunlangan</span>
-                                                                    @break
-                                                                @default
-                                                                    <span class="text-muted">Yopiq</span>
-                                                            @endswitch
+                                                            @php
+                                                                $point = $subject->results->first()->point;
+                                                                $min_points = Option::where('key', 'min_points')->value('value') ?? 60;
+                                                                $retest = Option::where('key', 'retest')->value('value') ?? 60;
+                                                            @endphp
+                                                            @if($point < $min_points && $retest == '1')
+                                                                <a href="javascript:void(0)"
+                                                                   data-url="{{ route('tests.show', ['test' => $subject->id, 'attempt' => $subject->id]) }}"
+                                                                   class="btn btn-info btn-sm start-test-btn">
+                                                                    Qayta topshirish
+                                                                </a>
+                                                            @endif
                                                         @endif
                                                     @else
-                                                        <a class="btn btn-danger btn-sm disabled">
-                                                            Resurs kiritilmagan
+                                                        <a class="btn btn-danger btn-sm disabled shadow-sm">
+                                                            <i class="fas fa-times-circle mr-1"></i> Resurs yo'q
                                                         </a>
                                                     @endif
                                                 @else
-                                                    <a class="btn btn-info btn-sm disabled">
-                                                        Ruxsat cheklangan
-                                                    </a>
+                                                    <div class="badge badge-light text-info border">
+                                                        <i class="fas fa-lock mr-1"></i> Taqiqlangan
+                                                    </div>
                                                 @endif
                                             </td>
                                         </tr>

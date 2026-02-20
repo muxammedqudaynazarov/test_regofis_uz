@@ -26,23 +26,28 @@ class ResultController extends Controller
         $correctCount = 0;
         DB::transaction(function () use ($min_points, $per_point, $attemptsData, $examId, &$correctCount) {
             $exam = Exam::findOrFail($examId);
-            foreach ($attemptsData as $attemptId => $answerId) {
-                $attempt = Attempt::where('question_id', $attemptId)->where('exam_id', $exam->id)->where('student_id', auth('student')->id())->first();
-                if ($attempt) {
-                    $isCorrect = Answer::where('id', $attempt->answer_id)->where('correct', '1')->exists();
-                    if ($isCorrect) $correctCount++;
+            if ($exam->status == '1' || $exam->status == '4' || $exam->status == '7') {
+                foreach ($attemptsData as $attemptId => $answerId) {
+                    $attempt = Attempt::where('question_id', $attemptId)->where('exam_id', $exam->id)->where('student_id', auth('student')->id())->first();
+                    if ($attempt) {
+                        $isCorrect = Answer::where('id', $attempt->answer_id)->where('correct', '1')->exists();
+                        if ($isCorrect) $correctCount++;
+                    }
                 }
-            }
-            $point = $correctCount * $per_point;
-            $stat = ($point < $min_points) ? '0' : '1';
-            $exam->status = ($exam->status == '2') ? '3' : '1';
-            Result::firstOrCreate([
-                'student_id' => auth('student')->id(),
-                'exam_id' => $exam->id,
-                'point' => $point,
-                'status' => ($point < $min_points) ? '0' : '1',
-            ]);
-            $exam->save();
+                $point = $correctCount * $per_point;
+                $examStatus = '2';
+                if ($exam->status == '4') $examStatus = '5';
+                if ($exam->status == '7') $examStatus = '8';
+                $exam->status = $examStatus;
+                $exam->finished = '1';
+                Result::firstOrCreate([
+                    'student_id' => auth('student')->id(),
+                    'exam_id' => $exam->id,
+                    'point' => $point,
+                    'status' => ($point < $min_points) ? '0' : '1',
+                ]);
+                $exam->save();
+            } else return redirect()->back()->with('error', 'Imtihon yakunlangan, uni yana yuborib bo‘lmaydi');
         });
         return redirect(route('subjects.index'))->with('success', 'Imtihon yakunlandi. Natijalar serverga qayta ishlash uchun yuborildi.');
     }
