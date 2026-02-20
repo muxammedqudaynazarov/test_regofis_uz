@@ -38,10 +38,34 @@ class LessonController extends Controller
         abort(404);
     }
 
-    public function edit($id)
+    public function update(Request $request, $id)
     {
-        if (\auth()->user()->can('subjects.resource.view')) {
-
+        if (!\auth()->user()->can('subjects.resource.view')) {
+            return redirect()->back()->with('error', 'Ruxsat yo‘q!');
         }
+        $subjectId = $id;
+        $languageId = $request->input('language_load');
+        $questions = Question::where('subject_id', $subjectId)->where('language_id', $languageId)->with('answers')->get();
+
+        if ($questions->isEmpty()) return redirect()->back()->with('error', 'Tanlangan tilda savollar topilmadi.');
+        $fileName = "questions_subject_" . $subjectId . "_lang_" . $languageId . ".txt";
+
+        return response()->streamDownload(function () use ($questions) {
+            $output = "";
+            foreach ($questions as $question) {
+                $output .= $question->question_text . "\n";
+                $correctAnswer = "";
+                $i = 0;
+                foreach ($question->answers as $index => $answer) {
+                    $output .= chr(65 + $i) . '. ' . $answer->answer . "\n";
+                    if ($answer->correct == '1') $correctAnswer = chr(65 + $i);
+                    $i++;
+                }
+                $output .= "ANSWER: " . $correctAnswer . "\n\n";
+            }
+            echo $output;
+        }, $fileName, [
+            'Content-Type' => 'text/plain',
+        ]);
     }
 }

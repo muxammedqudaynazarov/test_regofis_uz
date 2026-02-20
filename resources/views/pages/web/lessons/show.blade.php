@@ -104,9 +104,21 @@
                                                 style="display: none;" onclick="submitBulkDelete()">
                                             <i class="fas fa-trash-alt mr-1"></i> Tanlanganlarni o‘chirish
                                         </button>
-                                        <a href="#" class="btn btn-info btn-sm shadow-sm p-0 px-1 m-0">
-                                            <i class="fas fa-download mr-1"></i> Yuklash
-                                        </a>
+                                        <form action="{{ route('lessons.update', $subject->id) }}" method="POST">
+                                            @method('PUT')
+                                            @csrf
+                                            <div class="d-flex align-items-center">
+                                                <select name="language_load" class="form-control form-control-sm mr-2" style="width: auto;" required>
+                                                    <option value="" disabled selected>Tilni tanlang</option>
+                                                    @foreach($languages as $language)
+                                                        <option value="{{ $language->id }}">{{ $language->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <button type="submit" class="btn btn-info btn-sm shadow-sm">
+                                                    <i class="fas fa-download mr-1"></i> Yuklash (.txt)
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                     <div>
                                         <small class="text-muted mr-2">
