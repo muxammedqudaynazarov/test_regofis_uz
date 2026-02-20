@@ -19,7 +19,7 @@ class LessonController extends Controller
             $subjects = SubjectList::whereHas('teachers', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })->with('teachers')->paginate(20);
-            return view('pages.web.lessons.index', compact('subjects'));
+            return view('pages.web.lessons.index', compact(['subjects']));
         }
         abort(404);
     }
@@ -36,5 +36,11 @@ class LessonController extends Controller
             return view('pages.web.lessons.show', compact(['subject', 'questions', 'languages']));
         }
         abort(404);
+    }
+
+    public function edit($id)
+    {
+        if (\auth()->user()->can('subjects.resource.view')) {
+        }
     }
 }

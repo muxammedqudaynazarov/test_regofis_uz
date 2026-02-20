@@ -104,6 +104,9 @@
                                                 style="display: none;" onclick="submitBulkDelete()">
                                             <i class="fas fa-trash-alt mr-1"></i> Tanlanganlarni o‘chirish
                                         </button>
+                                        <a href="#" class="btn btn-info btn-sm shadow-sm p-0 px-1 m-0">
+                                            <i class="fas fa-download mr-1"></i> Yuklash
+                                        </a>
                                     </div>
                                     <div>
                                         <small class="text-muted mr-2">
@@ -115,6 +118,7 @@
                             <div class="card-body p-0">
                                 <div class="list-group list-group-flush">
                                     @forelse($questions as $file)
+                                        @continue($file->user_id != auth()->id())
                                         <div
                                             class="list-group-item d-flex align-items-start py-3 px-4 lesson-item">
                                             <div class="mr-3 pt-1">
