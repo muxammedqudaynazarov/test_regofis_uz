@@ -56,4 +56,9 @@ class Exam extends Model
     {
         return $this->hasOne(SubjectList::class, 'id', 'subject_id');
     }
+
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class, 'id', 'student_id');
+    }
 }

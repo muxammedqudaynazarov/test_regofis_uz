@@ -29,4 +29,9 @@ class Student extends Authenticatable
     {
         return $this->hasMany(Exam::class, 'student_id', 'id');
     }
+
+    public function language(): HasOne
+    {
+        return $this->hasOne(Language::class, 'id', 'language_id');
+    }
 }

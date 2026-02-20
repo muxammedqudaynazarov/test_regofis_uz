@@ -30,42 +30,21 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td style="vertical-align: middle">#1</td>
-                                <td style="vertical-align: middle; text-align: left" class="font-weight-bold">
-                                    Kafedra resurslari hisoboti (.XLSX)
-                                </td>
-                                <td style="vertical-align: middle">
-                                    <a href="{{ route('departments.download') }}"
-                                       class="btn btn-outline-success btn-sm">
-                                        <i class="fa fa-cloud-download-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="vertical-align: middle">#2</td>
-                                <td style="vertical-align: middle; text-align: left" class="font-weight-bold">
-                                    Bo‘sh (o‘qituvchi biriktirilmagan) fanlar hisoboti (.XLSX)
-                                </td>
-                                <td style="vertical-align: middle">
-                                    <a href="#"
-                                       class="btn btn-outline-success btn-sm disabled">
-                                        <i class="fa fa-cloud-download-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="vertical-align: middle">#3</td>
-                                <td style="vertical-align: middle; text-align: left" class="font-weight-bold">
-                                    O‘qituvchi faolligi (.XLSX)
-                                </td>
-                                <td style="vertical-align: middle">
-                                    <a href="#"
-                                       class="btn btn-outline-success btn-sm disabled">
-                                        <i class="fa fa-cloud-download-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
+                            @foreach($stats as $stat)
+                                <tr>
+                                    <td style="vertical-align: middle">#</td>
+                                    <td style="vertical-align: middle; text-align: left" class="font-weight-bold">
+                                        {{ $stat['name'] }}
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        <a href="{{ route($stat['route']) }}"
+                                           class="btn btn-outline-success btn-sm @if($stat['disabled']) disabled @endif">
+                                            <i class="fa fa-cloud-download-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+
                             </tbody>
                         </table>
                     </div>

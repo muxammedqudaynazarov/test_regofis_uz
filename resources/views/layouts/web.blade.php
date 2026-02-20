@@ -209,8 +209,8 @@
                     @endcan
                     @can('exam.view')
                         <li class="nav-item">
-                            <a href="#"
-                               class="nav-link">
+                            <a href="{{ route('final-results.index') }}"
+                               class="nav-link {{ Request::is('home/final-results*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-clipboard-check"></i>
                                 <p>
                                     Yakuniy nazoratlar

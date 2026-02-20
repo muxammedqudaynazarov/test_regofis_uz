@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\EmptyLessonsExport;
 use App\Models\Language;
 use App\Models\Question;
 use App\Models\Subject;
 use App\Models\SubjectList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LessonController extends Controller
 {
@@ -67,5 +69,10 @@ class LessonController extends Controller
         }, $fileName, [
             'Content-Type' => 'text/plain',
         ]);
+    }
+
+    public function empty_lessons_download()
+    {
+        return Excel::download(new EmptyLessonsExport, 'Bosh_fanlar_' . date('dmY_Hi') . '.xlsx');
     }
 }
