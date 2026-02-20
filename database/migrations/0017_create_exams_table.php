@@ -20,8 +20,9 @@ return new class extends Migration {
             $table->foreign('failed_subject_id')->references('failed_subject_id')->on('group_subjects')->cascadeOnDelete();
             $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
             $table->foreignId('semester_id')->constrained('semesters')->cascadeOnDelete();
-            $table->enum('status', ['0', '1', '2', '3', '4'])->default('0');
-            // 0 - baslanbagan, 1 - processte, 2 - juwmaqlagan, 3 - juwmaqlangan, 4 - sessiya uzilgen
+            $table->enum('status', ['0', '1', '2', '3', '4', '5', '6', '7', '8'])->default('0');
+            $table->timestamp('finished_at')->nullable();
+            // 0 - baslanbagan, 1 - processte, 2 - juwmaqlagan, 3 - qayta tapsiriw, 4 - qayta tapsiriw juwmaqlangan
             $table->timestamp('last_activity_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamps();
         });

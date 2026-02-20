@@ -15,12 +15,23 @@ class Attempt extends Model
         'student_id',
         'exam_id',
         'question_id',
+        'answer_id',
         'pos',
     ];
 
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class, 'id', 'question_id');
+    }
+
+    public function question(): HasOne
+    {
+        return $this->hasOne(Question::class, 'id', 'question_id');
+    }
+
+    public function positions(): HasMany
+    {
+        return $this->hasMany(Position::class, 'attempt_id', 'id');
     }
 
 }

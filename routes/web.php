@@ -45,10 +45,10 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
     Route::get('/', [StudentController::class, 'index'])->name('student.home');
     Route::resource('subjects', SubjectController::class)->only(['index']);
     Route::resource('applications', ApplicationController::class)->only(['index', 'store']);
-    Route::resource('tests', TestController::class)->only(['index', 'update']);
+    Route::resource('tests', TestController::class)->only(['index', 'show']);
+    Route::post('/exams/answer/upload', [TestController::class, 'upload_answer']);
+    Route::resource('results', ResultController::class)->only(['update']);
     //Route::resource('exams', ExamController::class)->only(['show', 'update']);
-    //Route::post('exams/answer/upload', [ExamController::class, 'upload_answer']);
-    //Route::resource('results', ResultController::class)->only(['store']);
 });
 
 

@@ -55,13 +55,14 @@
                                         <th style="width: 10%">Ariza raqami</th>
                                         <th style="width: 10%">Semestr</th>
                                         <th style="width: 10%">Kredit</th>
+                                        <th style="width: 10%">Holati</th>
                                         <th style="width: 10%"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     @forelse($subjects as $subject)
                                         <tr>
-                                            <td>#{{ $subject->failed_subject_id }}</td>
+                                            <td>#{{ $subject->id }}</td>
                                             <td class="text-left">
                                                 <div class="font-weight-bold">
                                                     {{ $subject->failed_subject->subject_name }}
@@ -86,17 +87,49 @@
                                                 </code>
                                             </td>
                                             <td>
+                                                {{ $subject->status }}
+                                            </td>
+                                            <td>
                                                 @if(auth()->user()->specialty->department->access == '1')
                                                     @if($subject->resource->questions->count())
-                                                        <form action="{{ route('tests.update', $subject->id) }}"
-                                                              method="POST" class="test-start-form">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <button type="submit"
-                                                                    class="btn btn-primary btn-sm start-test-btn">
-                                                                Test boshlash
-                                                            </button>
-                                                        </form>
+                                                        @php
+                                                            $lastResult = $subject->results->last();
+                                                        @endphp
+
+                                                        @if(!$lastResult)
+                                                            <a href="javascript:void(0)"
+                                                               data-url="{{ route('tests.show', $subject->id) }}"
+                                                               class="btn btn-primary btn-sm start-test-btn">
+                                                                Testni boshlash
+                                                            </a>
+                                                        @else
+                                                            @switch($lastResult->status)
+                                                                @case(0)
+                                                                @case(2)
+                                                                @case(4)
+                                                                    <a href="{{ route('tests.show', $subject->id) }}"
+                                                                       class="btn btn-warning btn-sm text-white">
+                                                                        Davom ettirish
+                                                                    </a>
+                                                                    @break
+
+                                                                @case(1)
+                                                                    <a href="javascript:void(0)"
+                                                                       data-url="{{ route('tests.show', $subject->id) }}"
+                                                                       class="btn btn-info btn-sm start-test-btn">
+                                                                        Qayta topshirish
+                                                                    </a>
+                                                                    @break
+
+                                                                @case(3)
+                                                                @case(5)
+                                                                    <span
+                                                                        class="badge badge-secondary p-2">Yakunlangan</span>
+                                                                    @break
+                                                                @default
+                                                                    <span class="text-muted">Yopiq</span>
+                                                            @endswitch
+                                                        @endif
                                                     @else
                                                         <a class="btn btn-danger btn-sm disabled">
                                                             Resurs kiritilmagan
@@ -134,19 +167,20 @@
         $(document).ready(function () {
             $(document).on('click', '.start-test-btn', function (e) {
                 e.preventDefault();
-                var form = $(this).closest('form');
+                var targetUrl = $(this).data('url');
                 Swal.fire({
-                    title: 'Testni boshlashga tayormisiz?',
-                    text: "Ushbu fandan test boshlangandan keyin yakuniga yetmagunga qadar boshqa fandan test ishlab bo‘lmaydi va testni boshlagandan so‘ng uni to‘xtatib va chiqib ketib bo‘lmaydi. Testni boshlashga tayormisiz?",
+                    title: 'Testni boshlashga tayyormisiz?',
+                    text: "Ushbu fandan test boshlangandan keyin uni to‘xtatib bo‘lmaydi. Tayyormisiz?",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#007bff',
                     confirmButtonText: 'Ha, boshlaymiz!',
-                    cancelButtonText: 'Yo‘q, qaytish'
+                    cancelButtonText: 'Yo‘q, qaytish',
+                    heightAuto: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        form.submit();
+                        window.location.href = targetUrl;
                     }
                 });
             });

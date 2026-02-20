@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Position extends Model
 {
@@ -14,4 +15,9 @@ class Position extends Model
         'answer_id',
         'pos',
     ];
+
+    public function answer(): HasOne
+    {
+        return $this->hasOne(Answer::class, 'id', 'answer_id');
+    }
 }

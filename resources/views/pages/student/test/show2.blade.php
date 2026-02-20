@@ -9,7 +9,7 @@
                 <div class="row mb-2">
                     <div class="col-sm-8">
                         <h4 class="font-weight-bold">{{ $test->name }}</h4>
-                        <p class="text-muted text-sm mb-0">Fan: | Jami
+                        <p class="text-muted text-sm mb-0">Fan: {{ $test->subject->name ?? 'Nomalum' }} | Jami
                             savollar: {{ $questions_pos->count() }} ta</p>
                     </div>
                 </div>
@@ -18,10 +18,9 @@
 
         <section class="content">
             <div class="container-fluid">
-                <form id="examForm" action="#" method="POST">
+                <form id="examForm" action="{{ route('results.store') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="exam_id" value="{{ $exam->id }}">
-
+                    <input type="hidden" name="exam_id" id="exam_id" value="{{ $exam->id }}">
                     <div class="row">
                         <div class="col-md-9">
                             @foreach($questions_pos as $index => $question)
@@ -29,20 +28,26 @@
                                     <div class="card-header bg-light">
                                         <h6 class="card-title font-weight-bold text-dark" style="line-height: 1.6;">
                                             <span class="badge badge-primary mr-2">{{ $index + 1 }}</span>
-                                            {!! $question->question->question !!}
+                                            {!! $question->question->question ?? $question->question !!}
                                         </h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="form-group mb-0">
                                             @foreach($question->answers as $answer)
-                                                <div class="custom-control custom-radio mb-2 p-2 rounded hover-effect">
-                                                    <input class="custom-control-input" type="radio"
+                                                <div class="custom-control custom-radio p-1 m-1 mx-3">
+                                                    <input class="custom-control-input answer-input"
+                                                           type="radio"
+                                                           @if(array_key_exists($question->id, $attempts) && $attempts[$question->id] == $answer->id) checked
+                                                           @endif
                                                            id="opt_{{ $answer->id }}"
-                                                           name="answers[{{ $question->id }}]"
-                                                           value="{{ $answer->id }}">
+                                                           name="answers[{{ $question->question->id }}]"
+                                                           value="{{ $answer->answer->id }}"
+                                                           data-question-id="{{ $question->id }}"
+                                                           data-index="{{ $index + 1 }}"
+                                                           onchange="saveAnswer(this)">
                                                     <label for="opt_{{ $answer->id }}"
                                                            class="custom-control-label w-100" style="cursor: pointer;">
-                                                        {{ $answer->answer->text }}
+                                                        {{ $answer->answer->text ?? $answer->text }}
                                                     </label>
                                                 </div>
                                             @endforeach
@@ -57,7 +62,7 @@
                                 <div class="card card-outline card-danger shadow">
                                     <div class="card-header text-center">
                                         <h3 class="card-title float-none font-weight-bold">
-                                            Imtihon yakunlanishigacha qolgan vaqt
+                                            Qolgan vaqt
                                         </h3>
                                     </div>
                                     <div class="card-body text-center py-3">
@@ -74,7 +79,14 @@
                                     <div class="card-body p-2">
                                         <div class="d-flex flex-wrap justify-content-center">
                                             @foreach($questions_pos as $index => $q)
-                                                <a href="#q_{{ $q->id }}" class="btn btn-outline-secondary btn-xs m-1"
+                                                @php
+                                                    $hasAnswer = isset($attempts[$q->id]);
+                                                    $btnClass = $hasAnswer ? 'btn-answered' : 'btn-outline-secondary';
+                                                @endphp
+
+                                                <a href="#q_{{ $q->id }}"
+                                                   id="map_btn_{{ $index + 1 }}"
+                                                   class="btn {{ $btnClass }} btn-xs m-1"
                                                    style="width: 30px;">
                                                     {{ $index + 1 }}
                                                 </a>
@@ -85,7 +97,7 @@
 
                                 <div class="card shadow-sm">
                                     <div class="card-body p-2">
-                                        <button type="button" class="btn btn-success btn-block font-weight-bold"
+                                        <button type="submit" class="btn btn-success btn-block font-weight-bold"
                                                 onclick="finishExam()">
                                             <i class="fas fa-check-circle mr-2"></i> Testni yakunlash
                                         </button>
@@ -115,10 +127,59 @@
         .card-title, .custom-control-label {
             user-select: none;
         }
+
+        /* Savol belgilanganda xaritadagi tugma rangi */
+        .btn-answered {
+            background-color: #007bff !important;
+            color: #fff !important;
+            border-color: #007bff !important;
+        }
     </style>
 
     @push('scripts')
         <script>
+            // --- AJAX JAVOB YUKLASH QISMI ---
+            function saveAnswer(element) {
+                const examId = document.getElementById('exam_id').value;
+                const questionId = element.getAttribute('data-question-id');
+                const answerId = element.value;
+                const index = element.getAttribute('data-index');
+
+                // Xaritadagi tugmani rangini o'zgartirish (Javob berildi degan ma'noda)
+                const mapBtn = document.getElementById('map_btn_' + index);
+                if (mapBtn) {
+                    mapBtn.classList.remove('btn-outline-secondary');
+                    mapBtn.classList.add('btn-answered');
+                }
+
+                // Serverga yuborish
+                fetch('/home/exams/answer/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        exam_id: examId,
+                        question_id: questionId,
+                        answer_id: answerId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Konsolga chiqarib turamiz (debug uchun)
+                            console.log('Javob saqlandi: ' + questionId);
+                        } else {
+                            console.error('Xatolik:', data.message);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Internet xatoligi:', error);
+                    });
+            }
+
+            // --- TIMER VA BOŞQA KODLAR (O'zgarmadi) ---
             let endTime = new Date("{{ $exam->finished_at }}").getTime();
             let serverTime = {{ time() * 1000 }};
             let localTime = new Date().getTime();
@@ -149,7 +210,7 @@
             function finishExam() {
                 Swal.fire({
                     title: 'Testni yakunlaysizmi?',
-                    text: "Belgilangan javoblar qabul qilinadi va natija hisoblanadi.",
+                    text: "Barcha javoblar allaqachon saqlab bo'lingan. Natijani hisoblash uchun tasdiqlang.",
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#28a745',
@@ -168,7 +229,7 @@
                 if (isAuto) {
                     Swal.fire({
                         title: '00:00:00',
-                        text: 'Javoblar avtomatik yuborilmoqda...',
+                        text: 'Vaqt tugadi! Natija hisoblanmoqda...',
                         icon: 'warning',
                         showConfirmButton: false,
                         allowOutsideClick: false
@@ -188,6 +249,7 @@
                 animation: blinker 1s linear infinite;
                 color: red !important;
             }
+
             @keyframes blinker {
                 50% {
                     opacity: 0;
