@@ -13,6 +13,10 @@
         .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
             color: #fff !important;
         }
+
+        .table-custom th, .table-custom td {
+            vertical-align: middle !important;
+        }
     </style>
 @endsection
 
@@ -38,7 +42,7 @@
             <div class="container-fluid">
                 <div class="card card-outline card-primary shadow-sm">
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover text-center">
+                        <table class="table table-hover text-center table-custom">
                             <thead>
                             <tr>
                                 <th style="width: 7%">#</th>
@@ -46,7 +50,12 @@
                                 <th style="width: 20%">Fakultet</th>
                                 <th style="width: 7%">O‘qituvchilar</th>
                                 <th style="width: 7%">Fanlar</th>
-                                <th class="text-right"></th>
+                                <th>
+                                    <a href="{{ route('departments.download') }}"
+                                       class="btn btn-outline-success btn-sm">
+                                        <i class="fa fa-cloud-download-alt"></i>
+                                    </a>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>

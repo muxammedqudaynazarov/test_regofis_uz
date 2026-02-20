@@ -55,6 +55,7 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
 Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/user/{role}', [HomeController::class, 'switch_role'])->name('switch.role');
+    Route::get('/departments/show/download', [DepartmentController::class, 'download'])->name('departments.download');
     Route::resource('departments', DepartmentController::class)->only(['show', 'update']);
     Route::resource('options', OptionController::class)->only(['index', 'update']);
     Route::resource('curriculum', CurriculumController::class)->only(['index', 'destroy']);

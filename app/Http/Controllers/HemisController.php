@@ -142,7 +142,7 @@ class HemisController extends Controller
             }
             $user->assignRole(end($roles));
             Auth::login($user);
-            return redirect('/home');
+            return redirect(route('home'));
         } catch (IdentityProviderException $e) {
             return response($e->getMessage(), 500);
         }

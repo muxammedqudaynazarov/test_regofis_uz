@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DepartmentSubjectExport;
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DepartmentController extends Controller
 {
@@ -52,5 +54,14 @@ class DepartmentController extends Controller
             return redirect()->back()->with('success', 'Ma’lumotlar yangilandi');
         }
         abort(404);
+    }
+
+    public function download()
+    {
+        if (!auth()->user()->can('department.faculties.view')) {
+            abort(403);
+        }
+        $fileName = 'Kafedralar_bo_yicha_savollar_hisoboti_' . now()->format('Y-m-d_H-i') . '.xlsx';
+        return Excel::download(new DepartmentSubjectExport, $fileName);
     }
 }
