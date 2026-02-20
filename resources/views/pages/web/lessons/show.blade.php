@@ -144,11 +144,7 @@
                                                 </div>
                                                 @foreach($file->answers as $answer)
                                                     @php($isCorrect = $answer->correct == '1')
-                                                    <div
-                                                        class="text-muted small @if($isCorrect) text-success font-weight-bold @endif">
-                                                        @if($isCorrect)
-                                                            <i class="fas fa-check mr-1"></i>
-                                                        @endif
+                                                    <div class="text-muted small">
                                                         {{ $answer->answer }}
                                                     </div>
                                                 @endforeach
