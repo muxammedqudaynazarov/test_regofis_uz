@@ -41,6 +41,7 @@ class LessonController extends Controller
     public function edit($id)
     {
         if (\auth()->user()->can('subjects.resource.view')) {
+
         }
     }
 }
