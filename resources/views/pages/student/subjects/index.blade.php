@@ -56,6 +56,7 @@
                                         <th style="width: 10%">Ariza raqami</th>
                                         <th style="width: 10%">Semestr</th>
                                         <th style="width: 10%">Kredit</th>
+                                        <th style="width: 10%">O‘tish ball</th>
                                         <th style="width: 10%">Holati</th>
                                         <th style="width: 10%"></th>
                                     </tr>
@@ -88,7 +89,16 @@
                                                 </code>
                                             </td>
                                             <td>
-                                                {{ $subject->status }}
+                                                60 ball
+                                            </td>
+                                            <td>
+                                                @if($subject->status == '0')
+                                                    Boshlanmagan
+                                                @elseif($subject->status == '1')
+                                                    Davom etmoqda
+                                                @elseif($subject->status == '2')
+                                                    Yakunlangan
+                                                @endif
                                             </td>
                                             <td class="text-nowrap">
                                                 @if(auth()->user()->specialty->department->access == '1')
@@ -109,18 +119,9 @@
                                                                 </a>
                                                             @endif
                                                         @else
-                                                            @php
-                                                                $point = $subject->results->first()->point;
-                                                                $min_points = Option::where('key', 'min_points')->value('value') ?? 60;
-                                                                $retest = Option::where('key', 'retest')->value('value') ?? 60;
-                                                            @endphp
-                                                            @if($point < $min_points && $retest == '1')
-                                                                <a href="javascript:void(0)"
-                                                                   data-url="{{ route('tests.show', ['test' => $subject->id, 'attempt' => $subject->id]) }}"
-                                                                   class="btn btn-info btn-sm start-test-btn">
-                                                                    Qayta topshirish
-                                                                </a>
-                                                            @endif
+                                                            <div class="badge badge-success">
+                                                                {{ $subject->results->first()->point }} ball
+                                                            </div>
                                                         @endif
                                                     @else
                                                         <a class="btn btn-danger btn-sm disabled shadow-sm">

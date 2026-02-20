@@ -71,9 +71,8 @@ class ApplicationController extends Controller
                                 'subject_id' => $subject_list->id,
                                 'failed_subject_id' => $detail['failed_subject_id'],
                                 'group_id' => $group->id,
-                                'semester_id' => $detail['semester_code'],
-                                'status' => '0',
-                            ]);
+                                'semester_id' => $detail['semester_code'],],
+                                ['status' => '0',]);
                         }
                     }
                 }
