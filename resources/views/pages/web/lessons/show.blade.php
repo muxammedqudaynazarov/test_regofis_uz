@@ -118,7 +118,6 @@
                             <div class="card-body p-0">
                                 <div class="list-group list-group-flush">
                                     @forelse($questions as $file)
-                                        @continue($file->user_id != auth()->id())
                                         <div
                                             class="list-group-item d-flex align-items-start py-3 px-4 lesson-item">
                                             <div class="mr-3 pt-1">

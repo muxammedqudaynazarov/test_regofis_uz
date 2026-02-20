@@ -32,7 +32,7 @@ class LessonController extends Controller
                 abort(403, 'Bu fanga kirish huquqingiz yo‘q.');
             }
             $languages = Language::where('status', '1')->get();
-            $questions = Question::where('subject_id', $id)->paginate(20);
+            $questions = Question::where('subject_id', $id)->where('user_id', \auth()->id())->paginate(20);
             return view('pages.web.lessons.show', compact(['subject', 'questions', 'languages']));
         }
         abort(404);
