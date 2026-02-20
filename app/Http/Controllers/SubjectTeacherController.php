@@ -105,9 +105,10 @@ class SubjectTeacherController extends Controller
             ]);
             $lesson = SubjectList::findOrFail($id);
             if ($lesson) {
+                $text = ($request->type == '0') ? 'Fan kafedraga qaytarildi.' : 'Talabnoma muvaffaqiyatli qanoatlantirildi. Fan o‘chirildi.';
                 $lesson->request_delete = $request->type;
                 $lesson->save();
-                return redirect()->back()->with('success', 'Talabnoma muvaffaqiyatli qanoatlantirildi. Fan o‘chirildi.');
+                return redirect()->back()->with('success', $text);
             }
         }
         abort(404);
