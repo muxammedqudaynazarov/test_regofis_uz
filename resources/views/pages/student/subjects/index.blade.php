@@ -124,12 +124,12 @@
                                                             </div>
                                                         @endif
                                                     @else
-                                                        <a class="btn btn-danger btn-sm disabled shadow-sm">
+                                                        <a class="btn btn-danger btn-sm disabled shadow-sm p-2">
                                                             <i class="fas fa-times-circle mr-1"></i> Resurs yo'q
                                                         </a>
                                                     @endif
                                                 @else
-                                                    <div class="badge badge-light text-info border">
+                                                    <div class="badge badge-light text-info border shadow-sm p-2">
                                                         <i class="fas fa-lock mr-1"></i> Taqiqlangan
                                                     </div>
                                                 @endif

@@ -37,6 +37,11 @@ class Exam extends Model
         return $this->hasOne(GroupSubject::class, 'failed_subject_id', 'failed_subject_id');
     }
 
+    public function subject(): HasOne
+    {
+        return $this->hasOne(SubjectList::class, 'id', 'subject_id');
+    }
+
     public function group(): HasOne
     {
         return $this->hasOne(Group::class, 'id', 'group_id');

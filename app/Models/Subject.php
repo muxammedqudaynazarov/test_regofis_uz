@@ -29,10 +29,8 @@ class Subject extends Model
         return $this->hasMany(GroupSubject::class, 'subject_id', 'id');
     }
 
-    public function teachers()
+    public function teachers(): BelongsToMany
     {
-        // oraliq jadval: subject_teachers
-        // kalitlar: subject_id va user_id
         return $this->belongsToMany(User::class, 'subject_teachers', 'subject_id', 'user_id');
     }
 

@@ -42,28 +42,54 @@
                     <div class="col-lg-7">
                         <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
                             <div class="card-header border-0 bg-white py-3">
-                                <h3 class="card-title font-weight-bold"><i class="fas fa-book text-success mr-2"></i>
-                                    Mening darslarim</h3>
+                                <h3 class="card-title font-weight-bold">
+                                    <i class="fas fa-book text-success mr-2"></i>
+                                    Mening fanlarim
+                                </h3>
                             </div>
                             <div class="card-body p-0">
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                                        <div>
-                                            <h6 class="mb-0 font-weight-bold">Algoritmlar</h6>
-                                            <small class="text-muted"><i class="far fa-clock"></i> 09:00 - 10:20 |
-                                                Domla: A. Toshmatov</small>
-                                        </div>
-                                        <span class="badge badge-success badge-pill px-3 py-2">Xonada</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                                        <div>
-                                            <h6 class="mb-0 font-weight-bold">Ma'lumotlar bazasi</h6>
-                                            <small class="text-muted"><i class="far fa-clock"></i> 10:30 - 11:50 |
-                                                Domla: B. Eshmatov</small>
-                                        </div>
-                                        <span
-                                            class="badge badge-warning text-white badge-pill px-3 py-2">Video dars</span>
-                                    </li>
+                                    @forelse($lessons as $lesson)
+                                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                            <div>
+                                                <h6 class="mb-0 font-weight-bold">
+                                                    {{ $lesson->failed_subject->subject_name }}
+                                                </h6>
+                                                <small class="text-muted">
+                                                    <div class="badge badge-primary">
+                                                        <i class="far fa-clock"></i>
+                                                        {{ $lesson->created_at->format('d.m.Y H:i') }}
+                                                    </div>
+                                                    <div class="badge badge-success">
+                                                        @forelse($lesson->subject->subject->teachers as $teacher)
+                                                            {{ json_decode($teacher->name)->short_name }}
+                                                        @empty
+                                                            O‘qituvchi biriktirilmagan
+                                                        @endforelse
+                                                    </div>
+                                                    @if($lesson->finished == '1')
+                                                        <div class="badge badge-info">
+                                                            Yakunlangan
+                                                        </div>
+                                                    @endif
+                                                </small>
+                                            </div>
+                                            <span class="badge badge-success badge-pill px-3 py-2">
+                                                @if($lesson->finished == '1')
+                                                    {{ $lesson->results->first()->point }} ball
+                                                @else
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                @endif
+                                            </span>
+                                        </li>
+                                    @empty
+                                        <li class="list-group-item py-3">
+                                            <div class="text-muted text-center small">
+                                                «Qarzdor fanlar» bo‘limiga o‘ting va «Arizalarni yangilash» tugmasi
+                                                orqali fanlarni yuklab oling.
+                                            </div>
+                                        </li>
+                                    @endforelse
                                 </ul>
                             </div>
                         </div>
@@ -72,19 +98,24 @@
                     <div class="col-lg-5">
                         <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
                             <div class="card-header border-0 bg-white py-3">
-                                <h3 class="card-title font-weight-bold"><i class="fas fa-bullhorn text-danger mr-2"></i>
-                                    Yangi bildirishnomalar</h3>
+                                <h3 class="card-title font-weight-bold">
+                                    <i class="fas fa-bullhorn text-danger mr-2"></i>
+                                    Yangi bildirishnomalar
+                                </h3>
                             </div>
                             <div class="card-body">
                                 <div class="alert alert-info border-0 shadow-sm"
                                      style="border-radius: 12px; background-color: #e3f2fd; color: #0d47a1;">
-                                    <i class="fas fa-info-circle mr-2"></i> <strong>Nazorat ishi!</strong> Ertaga soat
-                                    10:00 da matematika fanidan test bo'ladi.
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    @if(auth()->user()->specialty->department->access == '1')
+                                        <strong>Nazorat ishi!</strong> Hozirgi vaqtda «Qarzdor fanlar» bo‘limiga o‘tish
+                                        orqali akademik qarzdoorligingiz bor bo‘lgan fanlardan yakuniy nazoratlarni
+                                        topshirishingiz mumkin.
+                                    @else
+                                        <strong>Nazorat ishi!</strong> Yakuniy nazoratga qatnashish uchun Tizim
+                                        administrator tomonidan ruxsat berilmagan.
+                                    @endif
                                 </div>
-                                <button class="btn btn-block btn-success py-2 font-weight-bold"
-                                        style="border-radius: 10px;">
-                                    <i class="fas fa-upload mr-2"></i> Vazifani yuborish
-                                </button>
                             </div>
                         </div>
                     </div>
