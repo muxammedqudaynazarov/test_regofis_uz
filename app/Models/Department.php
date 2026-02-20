@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Department extends Model
 {
@@ -32,5 +33,10 @@ class Department extends Model
     public function workplaces()
     {
         return $this->hasMany(Workplace::class, 'department_id', 'id');
+    }
+
+    public function faculty(): HasOne
+    {
+        return $this->hasOne(Department::class, 'id', 'parent_id');
     }
 }

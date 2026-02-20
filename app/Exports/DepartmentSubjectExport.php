@@ -4,54 +4,78 @@ namespace App\Exports;
 
 use App\Models\Department;
 use App\Models\Language;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Models\Question;
+use Maatwebsite\Excel\Concerns\FromGenerator;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class DepartmentSubjectExport implements FromCollection, WithHeadings, WithStyles
+class DepartmentSubjectExport implements FromGenerator, WithHeadings, WithStyles, WithTitle, ShouldAutoSize
 {
-    public function collection()
+    public function title(): string
     {
+        return 'Resurslar hisoboti';
+    }
+
+    public function generator(): \Generator
+    {
+        set_time_limit(0);
         $activeLanguages = Language::where('status', '1')->get();
-        $departments = Department::where('structure', '12')->with(['subjects' => function ($query) use ($activeLanguages) {
-            foreach ($activeLanguages as $language) {
-                $query->withCount(['questions as lang_' . $language->id . '_count' => function ($q) use ($language) {
-                    $q->where('language_id', $language->id);
-                }]);
-            }
-        }])->get();
-        $data = collect();
+        $departments = Department::where('structure', '12')->with(['faculty', 'subjects.teachers', 'subjects.subject'])->cursor();
         foreach ($departments as $dept) {
             foreach ($dept->subjects as $subject) {
+                $teachersNames = [];
+                if (!empty($subject->teachers) && is_iterable($subject->teachers)) {
+                    foreach ($subject->teachers as $teacher) {
+                        $nameData = json_decode($teacher->name);
+                        if (isset($nameData->short_name)) {
+                            $teachersNames[] = $nameData->short_name;
+                        }
+                    }
+                }
+                $teachersString = !empty($teachersNames) ? implode(",\n", $teachersNames) : '-';
                 $row = [
+                    'id' => $subject->id,
+                    'subject' => $subject->subject->name ?? '-',
+                    'teachers' => $teachersString,
+                    'faculty' => $dept->faculty->name ?? '-',
                     'department' => $dept->name,
-                    'subject' => $subject->subject->name,
                 ];
 
                 foreach ($activeLanguages as $lang) {
-                    $countKey = 'lang_' . $lang->id . '_count';
-                    $row[$lang->name] = $subject->$countKey ?? '-';
+                    $countValue = Question::where('subject_id', $subject->id)->where('language_id', $lang->id)->count();
+                    $row[$lang->name] = ($countValue > 0) ? $countValue : '-';
                 }
-                $data->push($row);
+                yield $row;
             }
+            gc_collect_cycles();
         }
-
-        return $data;
     }
 
     public function headings(): array
     {
         $activeLanguages = Language::where('status', '1')->pluck('name')->toArray();
-        return array_merge(['Kafedra', 'Fan nomi'], $activeLanguages);
+        return array_merge(['#', 'Fan nomi', 'O‘qituvchilar', 'Fakultet', 'Kafedra'], $activeLanguages);
     }
 
     public function styles(Worksheet $sheet)
     {
+        $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setWrapText(true);
+        $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
         return [
             1 => [
                 'font' => ['bold' => true, 'size' => 12],
-                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER]
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+                'fill' => [
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'EFEFEF'],
+                ],
             ],
         ];
     }
