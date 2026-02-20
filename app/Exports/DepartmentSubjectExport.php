@@ -4,7 +4,7 @@ namespace App\Exports;
 
 use App\Models\Department;
 use App\Models\Language;
-use App\Models\Question;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromGenerator;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -24,9 +24,27 @@ class DepartmentSubjectExport implements FromGenerator, WithHeadings, WithStyles
     {
         set_time_limit(0);
         $activeLanguages = Language::where('status', '1')->get();
-        $departments = Department::where('structure', '12')->with(['faculty', 'subjects.teachers', 'subjects.subject'])->cursor();
+
+        // 1. ENG ASOSIY OPTIMIZATSIYA: Barcha savollar sonini BITTA so'rov bilan olamiz.
+        // Bu 1500+ ta so'rovni 1 ta tezkor so'rovga qisqartiradi.
+        $questionCounts = DB::table('questions')
+            ->select('subject_id', 'language_id', DB::raw('count(*) as total'))
+            ->groupBy('subject_id', 'language_id')
+            ->get()
+            ->groupBy('subject_id')
+            ->map(function ($items) {
+                return $items->keyBy('language_id');
+            });
+
+        // 2. Faqat kerakli ustunlarni yuklash xotirani sezilarli darajada tejaydi
+        // "faculty:id,name" kabi faqat kerakli ustunlar olingan.
+        $departments = Department::where('structure', '12')
+            ->with(['faculty:id,name', 'subjects.teachers', 'subjects.subject:id,name'])
+            ->cursor();
+
         foreach ($departments as $dept) {
             foreach ($dept->subjects as $subject) {
+
                 $teachersNames = [];
                 if (!empty($subject->teachers) && is_iterable($subject->teachers)) {
                     foreach ($subject->teachers as $teacher) {
@@ -37,6 +55,7 @@ class DepartmentSubjectExport implements FromGenerator, WithHeadings, WithStyles
                     }
                 }
                 $teachersString = !empty($teachersNames) ? implode(",\n", $teachersNames) : '-';
+
                 $row = [
                     'id' => $subject->id,
                     'subject' => $subject->subject->name ?? '-',
@@ -45,13 +64,16 @@ class DepartmentSubjectExport implements FromGenerator, WithHeadings, WithStyles
                     'department' => $dept->name,
                 ];
 
+                // 3. Bazaga qayta-qayta murojaat qilmasdan, tayyor massivdan raqamlarni olamiz
+                $subjectCounts = $questionCounts->get($subject->id);
+
                 foreach ($activeLanguages as $lang) {
-                    $countValue = Question::where('subject_id', $subject->id)->where('language_id', $lang->id)->count();
+                    $countValue = $subjectCounts ? ($subjectCounts->get($lang->id)->total ?? 0) : 0;
                     $row[$lang->name] = ($countValue > 0) ? $countValue : '-';
                 }
+
                 yield $row;
             }
-            gc_collect_cycles();
         }
     }
 
@@ -65,6 +87,7 @@ class DepartmentSubjectExport implements FromGenerator, WithHeadings, WithStyles
     {
         $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setWrapText(true);
         $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
         return [
             1 => [
                 'font' => ['bold' => true, 'size' => 12],

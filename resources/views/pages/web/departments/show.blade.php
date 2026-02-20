@@ -80,9 +80,9 @@
                                                 {{ $child->subjects->count() }}
                                             </td>
                                             <td style="vertical-align: middle">
-                                                <a href="#" class="btn btn-outline-success btn-sm">
+                                                {{--<a href="#" class="btn btn-outline-success btn-sm">
                                                     <i class="fa fa-cloud-download-alt"></i>
-                                                </a>
+                                                </a>--}}
                                             </td>
                                         </tr>
 
