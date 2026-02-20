@@ -88,10 +88,10 @@
                                                     {{ number_format($subject->failed_subject->credit, 2) }}
                                                 </code>
                                             </td>
-                                            <td>
+                                            <td class="small">
                                                 60 ball
                                             </td>
-                                            <td>
+                                            <td class="small">
                                                 @if($subject->status == '0')
                                                     Boshlanmagan
                                                 @elseif($subject->status == '1')
