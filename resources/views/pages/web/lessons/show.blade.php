@@ -102,7 +102,7 @@
                                         <button type="button" id="bulkDeleteBtn"
                                                 class="btn btn-danger btn-sm shadow-sm p-0 px-1 m-0"
                                                 style="display: none;" onclick="submitBulkDelete()">
-                                            <i class="fas fa-trash-alt mr-1"></i> Tanlanganlarni o‘chirish
+                                            <i class="fas fa-trash-alt mr-1"></i> O‘chirish
                                         </button>
                                         <form action="{{ route('lessons.update', $subject->id) }}" method="POST">
                                             @method('PUT')
