@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
             $table->foreignId('semester_id')->constrained('semesters')->cascadeOnDelete();
             $table->enum('finished', ['0', '1'])->default('0');
+            $table->enum('archived', ['0', '1'])->default('0');
             $table->enum('status', ['0', '1', '2'])->default('0');
             $table->timestamp('finished_at')->nullable();
             // 0 - baslanbagan, 1 - processte, 2 - juwmaqlagan, 3 - qayta tapsiriw, 4 - qayta tapsiriw juwmaqlangan

@@ -86,15 +86,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('tests.index') }}"
-                           class="nav-link {{ Request::is('student/tests*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-pen-square"></i>
-                            <p>Testga kirish</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('tests.index') }}"
-                           class="nav-link {{ Request::is('student/tests*') ? 'active' : '' }}">
+                        <a href="{{ route('results.index') }}"
+                           class="nav-link {{ Request::is('student/results*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-chart-area"></i>
                             <p>Natijalar</p>
                         </a>

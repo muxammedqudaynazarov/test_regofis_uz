@@ -47,7 +47,7 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
     Route::resource('applications', ApplicationController::class)->only(['index', 'store']);
     Route::resource('tests', TestController::class)->only(['index', 'show']);
     Route::post('/exams/answer/upload', [TestController::class, 'upload_answer']);
-    Route::resource('results', ResultController::class)->only(['update']);
+    Route::resource('results', ResultController::class)->only(['index', 'update']);
     //Route::resource('exams', ExamController::class)->only(['show', 'update']);
 });
 

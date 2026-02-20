@@ -15,6 +15,16 @@ use Illuminate\Support\Facades\DB;
 
 class ResultController extends Controller
 {
+    public function index()
+    {
+        $user = auth('student')->user();
+        if ($user) {
+            $subjects = Exam::where('student_id', auth('student')->id())->where('finished', '1')->paginate(20);
+            return view('pages.student.subjects.index', compact(['subjects', 'user']));
+        }
+        abort(404);
+    }
+
     public function update($id, Request $request)
     {
         $qCount = Option::where('key', 'questions')->value('value');
@@ -49,6 +59,6 @@ class ResultController extends Controller
                 $exam->save();
             } else return redirect()->back()->with('error', 'Imtihon yakunlangan, uni yana yuborib bo‘lmaydi');
         });
-        return redirect(route('subjects.index'))->with('success', 'Imtihon yakunlandi. Natijalar serverga qayta ishlash uchun yuborildi.');
+        return redirect(route('results.index'))->with('success', 'Imtihon yakunlandi. Natijalar serverga qayta ishlash uchun yuborildi.');
     }
 }
