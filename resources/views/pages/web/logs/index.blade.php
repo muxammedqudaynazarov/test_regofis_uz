@@ -106,7 +106,7 @@
 
                                         @if(isset($log->properties['old']) || isset($log->properties['attributes']))
                                             <details>
-                                                <summary><i class="fas fa-eye"></i> O'zgarishlarni ko'rish</summary>
+                                                <summary><i class="fas fa-eye"></i> O‘zgarishlarni ko‘rish</summary>
                                                 <div class="row mt-2">
                                                     @if(isset($log->properties['old']))
                                                         <div class="col-md-6">
