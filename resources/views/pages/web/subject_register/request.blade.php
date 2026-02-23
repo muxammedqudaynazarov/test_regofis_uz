@@ -45,7 +45,7 @@
                 <form action="{{ url()->current() }}" method="GET">
                     <div class="row">
                         <div class="col-12">
-                            <input type="text"
+                            <input type="search"
                                    name="search"
                                    class="form-control shadow-sm"
                                    placeholder="Fan nomi bo'yicha qidirish (Enter bosing)..."
