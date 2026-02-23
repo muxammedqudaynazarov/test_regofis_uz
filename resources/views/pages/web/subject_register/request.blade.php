@@ -84,7 +84,13 @@
                                                   method="POST" class="d-inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                @if($lesson->request_delete == '1')
+                                                @if($lesson->request_delete == '5')
+                                                    <input type="hidden" name="type" value="0">
+                                                    <button type="submit" class="btn btn-success btn-sm"
+                                                            title="Qayta tiklash">
+                                                        <i class="fas fa-trash-restore mr-1"></i> Tiklash
+                                                    </button>
+                                                @elseif($lesson->request_delete == '1')
                                                     <div class="input-group input-group-sm" style="width: 160px;">
                                                         <select name="type"
                                                                 class="custom-select custom-select-sm border-danger"

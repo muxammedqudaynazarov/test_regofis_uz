@@ -112,7 +112,7 @@ class SubjectTeacherController extends Controller
             $request->validate([
                 'type' => 'required|in:0,5',
             ]);
-            $lesson = SubjectList::findOrFail($id);
+            $lesson = SubjectList::withoutGlobalScope('active')->findOrFail($id);
             if ($lesson) {
                 $text = ($request->type == '0') ? 'Fan kafedraga qaytarildi.' : 'Talabnoma muvaffaqiyatli qanoatlantirildi. Fan o‘chirildi.';
                 $lesson->request_delete = $request->type;
