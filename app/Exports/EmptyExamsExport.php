@@ -5,8 +5,12 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize; // Kenglikni avtomatik sozlash
-use Maatwebsite\Excel\Concerns\WithStyles;     // Stil qo'shish interfeysi
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+
+// Kenglikni avtomatik sozlash
+use Maatwebsite\Excel\Concerns\WithStyles;
+
+// Stil qo'shish interfeysi
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -48,6 +52,7 @@ class EmptyExamsExport implements FromCollection, WithHeadings, WithMapping, Sho
             ($exam->subject->curriculum->specialty->code ?? '') . ' – ' . ($exam->subject->curriculum->specialty->name ?? ''),
             $exam->subject->semester->name ?? '-',
             $exam->application->student->language->name ?? '-',
+            $exam->application->application_number ?? '-',
             $exam->created_at ? $exam->created_at->format('Y-m-d H:i') : '-',
         ];
     }
