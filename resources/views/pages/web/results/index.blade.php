@@ -60,7 +60,7 @@
                                             <input type="checkbox" disabled>
                                         @endif
                                     </td>
-                                    <td>#1</td>
+                                    <td>#{{ ($loop->index)+1 }}</td>
                                     <td style="text-align: left">
                                         <div class="font-weight-bold">
                                             {{ json_decode($exam->student->name)->full_name }}
