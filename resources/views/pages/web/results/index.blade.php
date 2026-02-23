@@ -47,7 +47,7 @@
                                        class="btn btn-outline-primary btn-sm">
                                         <i class="fa fa-cloud-upload-alt"></i>
                                     </a>
-                                    <a href="#"
+                                    <a href="{{ route('final-results.download') }}"
                                        class="btn btn-outline-danger btn-sm">
                                         <i class="fa fa-cloud-download-alt"></i>
                                     </a>
