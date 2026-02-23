@@ -142,7 +142,7 @@
                     @endcan
                     @can('applications.view')
                         <li class="nav-item">
-                            <a href="#"
+                            <a href="{{ route('applications.index') }}"
                                class="nav-link {{ Request::is('home/applications*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-file-signature"></i>
                                 <p>

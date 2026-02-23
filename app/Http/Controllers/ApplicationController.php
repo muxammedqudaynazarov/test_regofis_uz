@@ -17,7 +17,8 @@ class ApplicationController extends Controller
 {
     public function index()
     {
-
+        $applications = Application::paginate(20);
+        return view('pages.web.applications.index', compact(['applications']));
     }
 
     public function store(Request $request)
