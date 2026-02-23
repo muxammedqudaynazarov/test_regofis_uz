@@ -45,7 +45,7 @@ class ApplicationController extends Controller
         }
 
         // Excel faylini yuklab berish
-        return Excel::download(new EmptyExamsExport($emptyExams), 'savoli_yoq_imtihonlar.xlsx');
+        return Excel::download(new EmptyExamsExport($emptyExams), 'resurslar_yoq_fanlar' . date('dmy-Hi') . '.xlsx');
     }
 
     public function store(Request $request)
