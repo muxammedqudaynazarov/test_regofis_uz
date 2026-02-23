@@ -31,6 +31,6 @@ class ExamController extends Controller
         if ($exams->isEmpty()) {
             return back()->with('error', 'Yuklab olish uchun yakunlangan imtihonlar topilmadi.');
         }
-        return Excel::download(new FinishedExamsExport($exams), 'Yakuniy_natijalar_' . date('dmY-Hi') . '.xlsx');
+        return Excel::download(new FinishedExamsExport($exams), 'Yakuniy_natijalar_' . date('dmY-His') . '.xlsx');
     }
 }
