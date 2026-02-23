@@ -85,7 +85,9 @@ class SubjectTeacherController extends Controller
 
     public function hasDeleted()
     {
-        $subjects = SubjectList::where('request_delete', '5')->paginate(20);
+        $subjects = SubjectList::withoutGlobalScope('active')
+            ->where('request_delete', '5')
+            ->paginate(20);
         dd($subjects);
     }
 
