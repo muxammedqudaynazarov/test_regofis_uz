@@ -77,7 +77,8 @@ class SubjectTeacherController extends Controller
     public function create()
     {
         if (auth()->user()->can('lessons.request.show')) {
-            $subjects = SubjectList::where('request_delete', '1')->paginate(20);
+            $subjects = SubjectList::withoutGlobalScope('active')
+                ->where('request_delete', '1')->where('request_delete', '5')->paginate(20);
             return view('pages.web.subject_register.request', compact(['subjects']));
         }
         abort(404);
