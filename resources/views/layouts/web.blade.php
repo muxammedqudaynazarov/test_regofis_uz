@@ -229,6 +229,17 @@
                             </a>
                         </li>
                     @endcan
+                    @can('statistics.view')
+                        <li class="nav-item">
+                            <a href="{{ route('logs.index') }}"
+                               class="nav-link {{ Request::is('home/logs*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-history"></i>
+                                <p>
+                                    Tizim jurnali
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
                     @can('system.view')
                         <li class="nav-item">
                             <a href="{{ route('options.index') }}"

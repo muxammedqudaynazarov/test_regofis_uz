@@ -8,6 +8,7 @@ use App\Http\Controllers\HemisController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\LogViewController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ResultController;
@@ -54,6 +55,7 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
 Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/user/{role}', [HomeController::class, 'switch_role'])->name('switch.role');
+    Route::resource('logs', LogViewController::class)->only(['index']);
     Route::resource('departments', DepartmentController::class)->only(['show', 'update']);
     Route::resource('options', OptionController::class)->only(['index', 'update']);
     Route::resource('applications', ApplicationController::class)->only(['index', 'show']);
