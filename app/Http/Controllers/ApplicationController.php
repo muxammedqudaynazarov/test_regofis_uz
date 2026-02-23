@@ -42,6 +42,12 @@ class ApplicationController extends Controller
                         'status' => $app['status'],
                         'created_at' => $app['created_at'],
                     ]);
+                    $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/curriculum-subject-list', [
+                        '_curriculum' => auth('student')->user()->curriculum_id,
+                        'limit' => 200,
+                    ]);
+                    $subject_hemis = $response->json();
+                    $subject_lists = $subject_hemis['data']['items'];
                     foreach ($app['details'] as $detail) {
                         if ($detail['student_group']) {
                             $group = Group::firstOrCreate([
@@ -61,8 +67,14 @@ class ApplicationController extends Controller
                                 'semester_code' => $detail['semester_code'],
                                 'credit' => $detail['credit'],
                             ]);
-                            $subject = Subject::where('name', $group_subject->subject_name)->first();
-                            $subject_list = SubjectList::where('subject_id', $subject->id)
+                            $subject_id = null;
+                            foreach ($subject_lists as $subject_list) {
+                                if (trim($subject_list['subject']['name']) == trim($detail['subject_name'])) {
+                                    $subject_id = $subject_list['subject']['id'];
+                                    break;
+                                }
+                            }
+                            $subject_list = SubjectList::where('subject_id', $subject_id)
                                 ->where('curriculum_id', auth('student')->user()->curriculum_id)
                                 ->where('semester_id', $detail['semester_code'])->first();
                             Exam::firstOrCreate([
