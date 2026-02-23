@@ -17,6 +17,10 @@
         .select2-custom {
             opacity: 0;
         }
+
+        .table-custom th, .table-custom td {
+            vertical-align: middle !important;
+        }
     </style>
 @endsection
 
@@ -100,37 +104,37 @@
                 {{-- JADVAL QISMI --}}
                 <div class="card card-outline card-primary shadow-sm">
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover text-center">
+                        <table class="table table-hover text-center table-custom">
                             <thead>
                             <tr>
-                                <th style="vertical-align: middle">#</th>
+                                <th>#</th>
                                 <th style="text-align: left; vertical-align: middle">Fan nomi</th>
-                                <th style="vertical-align: middle">Kafedra</th>
-                                <th style="vertical-align: middle">O‘quv rejalar</th>
-                                <th style="vertical-align: middle">O‘quv yili</th>
-                                <th style="vertical-align: middle">Semestrlar</th>
-                                <th style="vertical-align: middle">Masul o‘qituvchilar</th>
-                                <th style="vertical-align: middle">Resurslar</th>
-                                <th style="vertical-align: middle" class="text-right"></th>
+                                <th>Kafedra</th>
+                                <th>O‘quv rejalar</th>
+                                <th>O‘quv yili</th>
+                                <th>Semestrlar</th>
+                                <th>Masul o‘qituvchilar</th>
+                                <th>Resurslar</th>
+                                <th class="text-right"></th>
                             </tr>
                             </thead>
                             <tbody>
                             @forelse($subjects as $index => $lesson)
                                 <tr>
-                                    <td style="vertical-align: middle">#{{ $lesson->id }}</td>
+                                    <td>#{{ $lesson->id }}</td>
                                     <td style="text-align: left; vertical-align: middle">
                                         <div class="font-weight-bold">{{ $lesson->subject->name }}</div>
                                         <div class="small">{{ $lesson->code }}</div>
                                     </td>
-                                    <td style="vertical-align: middle">{{ $lesson->department->name }}</td>
-                                    <td style="vertical-align: middle">{{ $lesson->curriculum->name }}</td>
-                                    <td style="vertical-align: middle">
+                                    <td>{{ $lesson->department->name }}</td>
+                                    <td>{{ $lesson->curriculum->name }}</td>
+                                    <td>
                                         <div class="badge badge-primary">{{ $lesson->curriculum->edu_year->name }}</div>
                                     </td>
-                                    <td style="vertical-align: middle">
+                                    <td>
                                         <div class="badge badge-success">{{ $lesson->semester->name }}</div>
                                     </td>
-                                    <td style="vertical-align: middle">
+                                    <td>
                                         @forelse($lesson->teachers as $teacher)
                                             <span class="badge bg-purple">
                                                  {{ json_decode($teacher->name)->short_name ?? $teacher->short_name }}
@@ -142,7 +146,7 @@
                                     <td>
                                         {{ $lesson->questions->count() ?? 0 }}
                                     </td>
-                                    <td style="vertical-align: middle" class="text-right text-nowrap">
+                                    <td class="text-right text-nowrap">
                                         <button type="button" class="btn btn-default btn-sm"
                                                 data-toggle="modal"
                                                 data-target="#assignModal{{ $lesson->id }}">
