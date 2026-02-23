@@ -41,4 +41,5 @@ class StatisticsController extends Controller
             return view('pages.web.statistics.index', compact(['stats']));
         }
     }
+
 }

@@ -61,4 +61,39 @@ class ResultController extends Controller
         });
         return redirect(route('results.index'))->with('success', 'Imtihon yakunlandi. Natijalar serverga qayta ishlash uchun yuborildi.');
     }
+
+    public function autoFinishExams()
+    {
+        $qCount = (int)Option::where('key', 'questions')->value('value') ?: 1;
+        $maxPoints = (float)Option::where('key', 'max_points')->value('value') ?: 100;
+        $minPoints = (float)Option::where('key', 'min_points')->value('value') ?: 60;
+        $perPoint = $maxPoints / $qCount;
+        $exams = Exam::whereIn('status', ['1', '4', '7'])->where('finish_at', '<=', now())->get();
+        foreach ($exams as $exam) {
+            DB::transaction(function () use ($exam, $perPoint, $minPoints) {
+                $attempts = Attempt::where('exam_id', $exam->id)->get();
+                $correctCount = 0;
+                foreach ($attempts as $attempt) {
+                    $isCorrect = Answer::where('id', $attempt->answer_id)->where('correct', '1')->exists();
+                    if ($isCorrect) $correctCount++;
+                }
+                $point = $correctCount * $perPoint;
+                $newStatus = '2';
+                if ($exam->status == '4') $newStatus = '5';
+                if ($exam->status == '7') $newStatus = '8';
+                $exam->update([
+                    'status' => $newStatus,
+                    'finished' => '1'
+                ]);
+                Result::updateOrCreate(
+                    ['exam_id' => $exam->id, 'student_id' => $exam->student_id],
+                    [
+                        'point' => $point,
+                        'status' => ($point < $minPoints) ? '0' : '1',
+                    ]
+                );
+            });
+        }
+        return count($exams) . " ta imtihon avtomatik yakunlandi.";
+    }
 }
