@@ -67,6 +67,7 @@ Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::resource('statistics', StatisticsController::class)->only(['index']);
     Route::prefix('statistics')->group(function () {
         Route::get('/department/resources', [DepartmentRoleInfoController::class, 'role_department'])->name('statistics.department.resources');
+        Route::get('/department/resources', [ApplicationController::class, 'empty_lessons_download'])->name('applications.lessons.empty.download');
         Route::get('/department/resources/download', [DepartmentRoleInfoController::class, 'export_role_department'])->name('statistics.department.resources.export');
         Route::get('/departments/show/download', [DepartmentController::class, 'download'])->name('departments.download');
         Route::get('/lessons/empty/download', [LessonController::class, 'empty_lessons_download'])->name('lessons.empty.download');

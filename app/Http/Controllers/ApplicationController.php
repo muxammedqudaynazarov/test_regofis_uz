@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\EmptyExamsExport;
 use App\Models\Application;
 use App\Models\EduYear;
 use App\Models\Exam;
@@ -11,7 +12,9 @@ use App\Models\Student;
 use App\Models\Subject;
 use App\Models\SubjectList;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ApplicationController extends Controller
 {
@@ -19,6 +22,30 @@ class ApplicationController extends Controller
     {
         $applications = Application::paginate(20);
         return view('pages.web.applications.index', compact(['applications']));
+    }
+
+    public function empty_lessons_download()
+    {
+        // Bitta so'rov orqali kerakli ma'lumotlarni yig'amiz
+        $emptyExams = Exam::select('exams.*')
+            ->join('applications', 'exams.application_id', '=', 'applications.id')
+            ->join('students', 'applications.student_id', '=', 'students.id')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('questions')
+                    ->whereColumn('questions.subject_id', 'exams.subject_id')
+                    ->whereColumn('questions.language_id', 'students.language_id');
+            })
+            ->with(['application.student']) // Munosabatlarni oldindan yuklash
+            ->get();
+
+        // Agar ro'yxat bo'sh bo'lsa, foydalanuvchini orqaga qaytarish mumkin
+        if ($emptyExams->isEmpty()) {
+            return back()->with('info', 'Savolsiz imtihonlar topilmadi.');
+        }
+
+        // Excel faylini yuklab berish
+        return Excel::download(new EmptyExamsExport($emptyExams), 'savoli_yoq_imtihonlar.xlsx');
     }
 
     public function store(Request $request)

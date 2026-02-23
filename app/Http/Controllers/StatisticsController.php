@@ -32,6 +32,11 @@ class StatisticsController extends Controller
                     'route' => 'home',
                     'disabled' => true,
                 ],
+                [
+                    'name' => 'Talaba arizasi mavjud lekin bo‘sh fanlar (.XLSX)',
+                    'route' => 'applications.lessons.empty.download',
+                    'disabled' => false,
+                ],
             ];
             return view('pages.web.statistics.index', compact(['stats']));
         }
