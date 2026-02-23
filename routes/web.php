@@ -58,7 +58,8 @@ Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::resource('options', OptionController::class)->only(['index', 'update']);
     Route::resource('applications', ApplicationController::class)->only(['index', 'show']);
     Route::resource('curriculum', CurriculumController::class)->only(['index', 'destroy']);
-    Route::resource('subjects-register', SubjectTeacherController::class)->only(['index', 'store', 'edit', 'create', 'destroy']);
+    Route::get('/subjects-register/deleted-subjects', [SubjectTeacherController::class, 'hasDeleted'])->name('subjects-register.deleted');
+    Route::resource('subjects-register', SubjectTeacherController::class)->only(['index', 'create', 'store', 'edit', 'destroy']);
     Route::resource('lessons', LessonController::class)->only(['index', 'show', 'update']);
     Route::resource('languages', LanguageController::class)->only(['index', 'update']);
     Route::delete('/questions/destroy-many', [QuestionController::class, 'destroyMany'])->name('questions.destroyMany');

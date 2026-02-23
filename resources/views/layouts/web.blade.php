@@ -178,6 +178,15 @@
                                             </p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('subjects-register.deleted') }}"
+                                           class="nav-link {{ Request::is('home/subjects-register/deleted-subjects') ? 'active' : '' }}">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                O‘chirilgan fanlar
+                                            </p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                         @else

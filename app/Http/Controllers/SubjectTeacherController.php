@@ -83,6 +83,12 @@ class SubjectTeacherController extends Controller
         abort(404);
     }
 
+    public function hasDeleted()
+    {
+        $subjects = SubjectList::where('request_delete', '5')->paginate(20);
+        dd($subjects);
+    }
+
     public function store(Request $request)
     {
         if (\auth()->user()->can('lessons.teachers')) {
