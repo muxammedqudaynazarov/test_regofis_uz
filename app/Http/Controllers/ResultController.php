@@ -68,7 +68,7 @@ class ResultController extends Controller
         $maxPoints = (float)Option::where('key', 'max_points')->value('value') ?: 100;
         $minPoints = (float)Option::where('key', 'min_points')->value('value') ?: 60;
         $perPoint = $maxPoints / $qCount;
-        $exams = Exam::whereIn('status', ['1', '4', '7'])->where('finish_at', '<=', now())->get();
+        $exams = Exam::whereIn('status', ['1', '4', '7'])->where('finished_at', '<=', now())->get();
         foreach ($exams as $exam) {
             DB::transaction(function () use ($exam, $perPoint, $minPoints) {
                 $attempts = Attempt::where('exam_id', $exam->id)->get();
