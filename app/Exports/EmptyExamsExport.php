@@ -37,6 +37,7 @@ class EmptyExamsExport implements FromCollection, WithHeadings, WithMapping, Sho
             'Fan nomi',
             'Kafedra',
             'Mutaxassislik / Yo‘nalish',
+            'O‘quv reja',
             'Semestr',
             'Fan tili',
             'Ariza sanasi'
@@ -50,6 +51,7 @@ class EmptyExamsExport implements FromCollection, WithHeadings, WithMapping, Sho
             $exam->failed_subject->subject_name ?? '-',
             $exam->subject->department->name ?? '-',
             ($exam->subject->curriculum->specialty->code ?? '') . ' – ' . ($exam->subject->curriculum->specialty->name ?? ''),
+            ($exam->subject->curriculum->name ?? ''),
             $exam->subject->semester->name ?? '-',
             $exam->application->student->language->name ?? '-',
             $exam->application->application_number ?? '-',
