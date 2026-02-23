@@ -77,19 +77,18 @@ class SubjectTeacherController extends Controller
     public function create()
     {
         if (auth()->user()->can('lessons.request.show')) {
-            $subjects = SubjectList::withoutGlobalScope('active')
-                ->whereIn('request_delete', ['1', '5'])->paginate(20);
+            $query = SubjectList::withoutGlobalScope('active')
+                ->whereIn('request_delete', ['1', '5']);
+            if (request()->filled('search')) {
+                $searchTerm = request('search');
+                $query->whereHas('subject', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', '%' . $searchTerm . '%');
+                });
+            }
+            $subjects = $query->paginate(20)->appends(request()->query());
             return view('pages.web.subject_register.request', compact(['subjects']));
         }
         abort(404);
-    }
-
-    public function hasDeleted()
-    {
-        $subjects = SubjectList::withoutGlobalScope('active')
-            ->where('request_delete', '5')
-            ->paginate(20);
-        return view('pages.web.subject_register.deleted', compact(['subjects']));
     }
 
     public function store(Request $request)

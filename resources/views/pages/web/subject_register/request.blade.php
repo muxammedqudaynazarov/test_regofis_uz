@@ -40,6 +40,23 @@
             </div>
         </section>
 
+        <section class="content mb-3 text-sm">
+            <div class="container-fluid">
+                <form action="{{ url()->current() }}" method="GET">
+                    <div class="row">
+                        <div class="col-12">
+                            <input type="text"
+                                   name="search"
+                                   class="form-control shadow-sm"
+                                   placeholder="Fan nomi bo'yicha qidirish (Enter bosing)..."
+                                   value="{{ request('search') }}"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
         <section class="content text-sm">
             <div class="container-fluid">
                 <div class="card card-outline card-primary shadow-sm">
