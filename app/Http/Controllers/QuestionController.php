@@ -177,10 +177,15 @@ class QuestionController extends Controller
     {
         if (\auth()->user()->can('subjects.resource.delete')) {
             $question = Question::findOrFail($id);
-            if ($question->user_id == auth('web')->id()) {
-                $question->delete();
-                return redirect()->back()->with('success', 'Savol o‘chirildi.');
-            } else return redirect()->back()->with('error', 'Savolni o‘chirib bo‘lmaydi!');
+            if ($question->user_id !== auth('web')->id()) {
+                return redirect()->back()->with('error', 'Sizga tegishli bo‘lmagan savolni o‘chirib bo‘lmaydi!');
+            }
+            $hasAttempt = DB::table('attempts')->where('question_id', $id)->exists();
+            if ($hasAttempt) {
+                return redirect()->back()->with('error', 'Bu savoldan imtihonda foydalanilgan (urinishlar mavjud), uni o‘chirish taqiqlanadi!');
+            }
+            $question->delete();
+            return redirect()->back()->with('success', 'Savol muvaffaqiyatli o‘chirildi.');
         }
         abort(404);
     }
@@ -192,11 +197,22 @@ class QuestionController extends Controller
                 'ids' => 'required|array',
                 'ids.*' => 'exists:questions,id'
             ]);
-            $deletedCount = Question::whereIn('id', $request->ids)->where('user_id', auth()->id())->delete();
+            $totalRequested = count($request->ids);
+            $deletedCount = Question::whereIn('id', $request->ids)->where('user_id', auth('web')->id())
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('attempts')->whereColumn('attempts.question_id', 'questions.id');
+                })->delete();
+
             if ($deletedCount > 0) {
-                return redirect()->back()->with('success', $deletedCount . ' ta savol o‘chirildi.');
+                $message = $deletedCount . ' ta savol o‘chirildi.';
+                if ($deletedCount < $totalRequested) {
+                    $failedCount = $totalRequested - $deletedCount;
+                    $message .= ' Qolgan ' . $failedCount . ' ta savol imtihonda tushgani yoki sizga tegishli bo‘lmagani uchun o‘chirilishiga ruxsat berilmadi.';
+                }
+                return redirect()->back()->with('success', $message);
             }
-            return redirect()->back()->with('error', 'Hech qanday savol o‘chirilmadi yoki sizda huquq yo‘q.');
+            return redirect()->back()->with('error', 'Hech qanday savol o‘chirilmadi. Tanlangan savollar allaqachon imtihonda ishlatilgan bo‘lishi mumkin.');
         }
         abort(404);
     }
