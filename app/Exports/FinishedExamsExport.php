@@ -46,7 +46,7 @@ class FinishedExamsExport implements FromCollection, WithHeadings, WithMapping, 
             json_decode($exam->application->student->name)->full_name ?? 'Noma’lum talaba',
             $exam->application->application_number,
             $exam->failed_subject->subject_name ?? 'Noma’lum fan',
-            $exam->results->first()->point ?? '0',
+            $exam->results->first()->point ?? '-',
             'Yakunlangan',
             $exam->updated_at ? $exam->updated_at->format('d.m.Y H:i') : '-',
         ];
