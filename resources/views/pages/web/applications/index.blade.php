@@ -145,7 +145,7 @@
                                             </div>
                                         @endforeach
                                     </td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <a href="{{ route('applications.show', $item->application_number) }}"
                                            class="btn btn-default btn-sm">
                                             <i class="fa fa-eye" style="font-size: 11px; vertical-align: center"></i>
