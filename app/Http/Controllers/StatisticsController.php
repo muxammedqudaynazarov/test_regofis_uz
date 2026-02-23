@@ -29,8 +29,8 @@ class StatisticsController extends Controller
                 ],
                 [
                     'name' => 'Yakuniy qaydnomalar (.XLSX)',
-                    'route' => 'home',
-                    'disabled' => true,
+                    'route' => 'final-results.download',
+                    'disabled' => false,
                 ],
                 [
                     'name' => 'Talaba arizasi mavjud, lekin bo‘sh holatidagi fanlar (.XLSX)',
