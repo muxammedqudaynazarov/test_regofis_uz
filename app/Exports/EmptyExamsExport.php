@@ -6,11 +6,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-
-// Kenglikni avtomatik sozlash
 use Maatwebsite\Excel\Concerns\WithStyles;
-
-// Stil qo'shish interfeysi
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -40,7 +36,8 @@ class EmptyExamsExport implements FromCollection, WithHeadings, WithMapping, Sho
             'O‘quv reja',
             'Semestr',
             'Fan tili',
-            'Ariza sanasi'
+            'Ariza raqami',
+            'Ariza sanasi',
         ];
     }
 
@@ -59,20 +56,18 @@ class EmptyExamsExport implements FromCollection, WithHeadings, WithMapping, Sho
         ];
     }
 
-    // Excel stullarini shu yerda sozlaymiz
     public function styles(Worksheet $sheet)
     {
-        // 1. Sarlavha (1-qator) uchun maxsus uslub
         $sheet->getStyle('A1:I1')->applyFromArray([
             'font' => [
                 'bold' => true,
-                'color' => ['argb' => 'FFFFFFFF'], // Oq rangli shrift
+                'color' => ['argb' => 'FFFFFFFF'],
                 'size' => 12,
             ],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
                 'startColor' => [
-                    'argb' => 'FF4F81BD', // To'q ko'k rangli fon
+                    'argb' => 'FF4F81BD',
                 ],
             ],
             'alignment' => [
@@ -80,27 +75,21 @@ class EmptyExamsExport implements FromCollection, WithHeadings, WithMapping, Sho
                 'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
-
-        // 2. Barcha ma'lumotlar bor kataklarga chegara (border) chizish
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
-
         $sheet->getStyle('A1:' . $highestColumn . $highestRow)->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['argb' => 'FF000000'], // Qora chegara
+                    'color' => ['argb' => 'FF000000'],
                 ],
             ],
             'alignment' => [
                 'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
-
-        // 3. ID va Sanani o'rtaga (center) to'g'rilash (A va G ustunlari)
         $sheet->getStyle('A2:A' . $highestRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('G2:G' . $highestRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
         return [];
     }
 }
