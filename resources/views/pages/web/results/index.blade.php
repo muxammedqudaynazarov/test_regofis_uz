@@ -43,9 +43,13 @@
                                 <th style="width: 10%">To‘plagan ball</th>
                                 <th style="width: 10%">Holati</th>
                                 <th class="text-nowrap" style="width: 10%">
-                                    <a href="{{ route('departments.download') }}"
+                                    <a href="#"
                                        class="btn btn-outline-primary btn-sm">
                                         <i class="fa fa-cloud-upload-alt"></i>
+                                    </a>
+                                    <a href="#"
+                                       class="btn btn-outline-danger btn-sm">
+                                        <i class="fa fa-cloud-download-alt"></i>
                                     </a>
                                 </th>
                             </tr>
@@ -109,16 +113,16 @@
                                     <td>
                                         @if($exam->status == '2')
                                             @if($exam->results->first()->point >= $min_point)
-                                                <a href="{{ route('departments.download') }}"
+                                                <a href="#"
                                                    class="btn btn-primary btn-sm">
                                                     <i class="fa fa-cloud-upload-alt"></i>
                                                     Ko‘chirish
                                                 </a>
                                             @else
-                                                <a href="{{ route('departments.download') }}"
-                                                   class="btn btn-danger btn-sm">
+                                                <a href="#"
+                                                   class="btn btn-danger btn-sm font-weight-bold">
                                                     <i class="fa fa-archive"></i>
-                                                    Arxivga olish
+                                                    Arxivlash
                                                 </a>
                                             @endif
                                         @endif
