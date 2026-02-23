@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\LogsTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Answer extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsTrait;
 
     protected $fillable = [
         'question_id',

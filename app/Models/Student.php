@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\LogsTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -9,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Student extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, LogsTrait;
 
     protected $table = 'students';
     protected $primaryKey = 'id';

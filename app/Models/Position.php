@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Position extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsTrait;
 
     protected $fillable = [
         'attempt_id',

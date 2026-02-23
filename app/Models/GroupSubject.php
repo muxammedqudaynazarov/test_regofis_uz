@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class GroupSubject extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsTrait;
 
     protected $fillable = ['id', 'failed_subject_id', 'subject_id', 'group_id', 'application_id', 'subject_name', 'semester_code', 'credit'];
 }
