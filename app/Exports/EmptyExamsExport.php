@@ -63,7 +63,7 @@ class EmptyExamsExport implements FromCollection, WithHeadings, WithMapping, Sho
     public function styles(Worksheet $sheet)
     {
         // 1. Sarlavha (1-qator) uchun maxsus uslub
-        $sheet->getStyle('A1:G1')->applyFromArray([
+        $sheet->getStyle('A1:I1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['argb' => 'FFFFFFFF'], // Oq rangli shrift
