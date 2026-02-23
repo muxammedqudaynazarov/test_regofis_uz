@@ -88,7 +88,7 @@ class SubjectTeacherController extends Controller
         $subjects = SubjectList::withoutGlobalScope('active')
             ->where('request_delete', '5')
             ->paginate(20);
-        dd($subjects);
+        return view('pages.web.subject_register.deleted', compact(['subjects']));
     }
 
     public function store(Request $request)
