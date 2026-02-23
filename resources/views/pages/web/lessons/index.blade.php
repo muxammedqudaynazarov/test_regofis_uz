@@ -1,5 +1,11 @@
 @extends('layouts.web')
-
+@section('style')
+    <style>
+        .table-custom th, .table-custom td {
+            vertical-align: middle !important;
+        }
+    </style>
+@endsection
 @section('content')
     <div class="content-wrapper">
         <section class="content-header">
@@ -24,11 +30,11 @@
                     <div class="col-12">
                         <div class="card card-outline card-primary shadow-sm">
                             <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-sm text-center">
+                                <table class="table table-hover text-sm text-center table-custom">
                                     <thead class="bg-light">
                                     <tr>
                                         <th style="width: 50px" class="text-center">#</th>
-                                        <th>Fan nomi</th>
+                                        <th style="width: 30%">Fan nomi</th>
                                         <th>O‘quv reja</th>
                                         <th>Semestr</th>
                                         <th>Ma’sul o‘qituvchilar</th>
