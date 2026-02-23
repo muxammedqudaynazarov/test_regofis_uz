@@ -146,7 +146,11 @@
                                         @endforeach
                                     </td>
                                     <td>
-
+                                        <a href="{{ route('applications.show', $item->application_number) }}"
+                                           class="btn btn-default btn-sm">
+                                            <i class="fa fa-eye" style="font-size: 11px; vertical-align: center"></i>
+                                            Korish
+                                        </a>
                                     </td>
                                 </tr>
                             @empty

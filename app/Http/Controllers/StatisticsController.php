@@ -13,7 +13,7 @@ class StatisticsController extends Controller
         } elseif (auth()->user()->current_role != 'teacher') {
             $stats = [
                 [
-                    'name' => 'Kafedra resurslari hisoboti (.XLSX)',
+                    'name' => 'Kafedralar resurslari hisoboti (.XLSX)',
                     'route' => 'departments.download',
                     'disabled' => false,
                 ],
@@ -23,17 +23,17 @@ class StatisticsController extends Controller
                     'disabled' => false,
                 ],
                 [
-                    'name' => 'O‘qituvchi faolligi (.XLSX)',
+                    'name' => 'O‘qituvchi faolligi (tizimga kirmagan o‘qituvchilar) (.XLSX)',
                     'route' => 'home',
                     'disabled' => true,
                 ],
                 [
-                    'name' => 'Qaydnomalar (.XLSX)',
+                    'name' => 'Yakuniy qaydnomalar (.XLSX)',
                     'route' => 'home',
                     'disabled' => true,
                 ],
                 [
-                    'name' => 'Talaba arizasi mavjud lekin bo‘sh fanlar (.XLSX)',
+                    'name' => 'Talaba arizasi mavjud, lekin bo‘sh holatidagi fanlar (.XLSX)',
                     'route' => 'applications.lessons.empty.download',
                     'disabled' => false,
                 ],

@@ -24,6 +24,10 @@ class ApplicationController extends Controller
         return view('pages.web.applications.index', compact(['applications']));
     }
 
+    public function show($app_num)
+    {
+
+    }
     public function empty_lessons_download()
     {
         // Bitta so'rov orqali kerakli ma'lumotlarni yig'amiz

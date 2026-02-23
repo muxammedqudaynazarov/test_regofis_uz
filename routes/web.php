@@ -56,7 +56,7 @@ Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::get('/user/{role}', [HomeController::class, 'switch_role'])->name('switch.role');
     Route::resource('departments', DepartmentController::class)->only(['show', 'update']);
     Route::resource('options', OptionController::class)->only(['index', 'update']);
-    Route::resource('applications', ApplicationController::class)->only(['index']);
+    Route::resource('applications', ApplicationController::class)->only(['index', 'show']);
     Route::resource('curriculum', CurriculumController::class)->only(['index', 'destroy']);
     Route::resource('subjects-register', SubjectTeacherController::class)->only(['index', 'store', 'edit', 'create', 'destroy']);
     Route::resource('lessons', LessonController::class)->only(['index', 'show', 'update']);

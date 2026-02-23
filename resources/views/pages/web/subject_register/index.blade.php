@@ -110,6 +110,7 @@
                                 <th style="vertical-align: middle">O‘quv yili</th>
                                 <th style="vertical-align: middle">Semestrlar</th>
                                 <th style="vertical-align: middle">Masul o‘qituvchilar</th>
+                                <th style="vertical-align: middle">Resurslar</th>
                                 <th style="vertical-align: middle" class="text-right"></th>
                             </tr>
                             </thead>
@@ -137,6 +138,9 @@
                                         @empty
                                             <span class="text-muted small">O‘qituvchi biriktirilmagan</span>
                                         @endforelse
+                                    </td>
+                                    <td>
+                                        {{ $lesson->questions->count() ?? 0 }}
                                     </td>
                                     <td style="vertical-align: middle" class="text-right text-nowrap">
                                         <button type="button" class="btn btn-default btn-sm"
