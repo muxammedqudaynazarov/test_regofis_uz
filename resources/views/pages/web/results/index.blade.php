@@ -23,7 +23,7 @@
                 </div>
             </div>
         </section>
-
+        @php($min_point = \App\Models\Option::where('key', 'min_points')->value('value'))
         <section class="content text-sm">
             <div class="container-fluid">
                 <div class="card card-outline card-primary shadow-sm">
@@ -54,7 +54,11 @@
                             @forelse($exams as $exam)
                                 <tr>
                                     <td>
-                                        <input type="checkbox">
+                                        @if(($exam->results->first()->point ?? 0) >= $min_point)
+                                            <input type="checkbox">
+                                        @else
+                                            <input type="checkbox" disabled>
+                                        @endif
                                     </td>
                                     <td>#1</td>
                                     <td style="text-align: left">
@@ -103,7 +107,6 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @php($min_point = \App\Models\Option::where('key', 'min_points')->value('value'))
                                         @if($exam->status == '2')
                                             @if($exam->results->first()->point >= $min_point)
                                                 <a href="{{ route('departments.download') }}"
