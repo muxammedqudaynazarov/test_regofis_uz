@@ -133,6 +133,11 @@
                             @endforelse
                             </tbody>
                         </table>
+                        <div class="card-footer bg-white clearfix">
+                            <div class="float-right">
+                                {{ $exams->appends(request()->query())->links() }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
