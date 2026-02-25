@@ -35,18 +35,6 @@
                     <div class="col-12">
 
                         <div class="card card-outline card-danger">
-                            <div class="card-header font-weight-bold">
-                                <div class="card-title font-weight-bold">Fanlar ro‘yxati</div>
-                                <div class="card-tools">
-                                    <form action="{{ route('applications.store') }}" method="POST"
-                                          onsubmit="return confirm('Fanlar ro‘yxati ma’lumotlari yangilansinmi?')">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                            Arizalarni yangilash
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
                             <div class="card-body table-responsive p-0">
                                 <table class="table table-hover text-center table-custom">
                                     <thead>
@@ -57,9 +45,8 @@
                                         <th style="width: 10%">Semestr</th>
                                         <th style="width: 10%">Kredit</th>
                                         <th style="width: 10%">O‘tish ball</th>
-                                        <th style="width: 10%">Urinish</th>
                                         <th style="width: 10%">Holati</th>
-                                        <th style="width: 10%"></th>
+                                        <th style="width: 10%">To‘plagan ball</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -93,9 +80,6 @@
                                                 60 ball
                                             </td>
                                             <td class="small">
-                                                {{ $subject->attempt }}
-                                            </td>
-                                            <td class="small">
                                                 @if($subject->status == '0')
                                                     Boshlanmagan
                                                 @elseif($subject->status == '1')
@@ -105,36 +89,9 @@
                                                 @endif
                                             </td>
                                             <td class="text-nowrap">
-                                                @if(auth()->user()->specialty->department->access == '1')
-                                                    @if($subject->resource->questions->count())
-                                                        @if($subject->finished == '0')
-                                                            @if($subject->status == '0')
-                                                                <a href="javascript:void(0)"
-                                                                   data-url="{{ route('tests.show', $subject->id) }}"
-                                                                   class="btn btn-primary btn-sm start-test-btn">
-                                                                    <i class="fas fa-play mr-1"
-                                                                       style="font-size: 10px"></i> Testni boshlash
-                                                                </a>
-                                                            @elseif($subject->status == '1')
-                                                                <a href="{{ route('tests.show', $subject->id) }}"
-                                                                   class="btn btn-warning btn-sm text-white font-weight-bold shadow-sm">
-                                                                    <i class="fas fa-spinner fa-spin mr-1"></i>
-                                                                    Davom ettirish
-                                                                </a>
-                                                            @endif
-                                                        @else
-
-                                                        @endif
-                                                    @else
-                                                        <a class="btn btn-danger btn-sm disabled shadow-sm p-2">
-                                                            <i class="fas fa-times-circle mr-1"></i> Resurs yo'q
-                                                        </a>
-                                                    @endif
-                                                @else
-                                                    <div class="badge badge-light text-info border shadow-sm p-2">
-                                                        <i class="fas fa-lock mr-1"></i> Taqiqlangan
-                                                    </div>
-                                                @endif
+                                                <div class="badge badge-success">
+                                                    {{ $subject->results->first()->point }} ball
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty
@@ -155,30 +112,3 @@
     </div>
 @endsection
 
-@section('scripts')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        $(document).ready(function () {
-            $(document).on('click', '.start-test-btn', function (e) {
-                e.preventDefault();
-                var targetUrl = $(this).data('url');
-                Swal.fire({
-                    title: 'Testni boshlashga tayyormisiz?',
-                    text: "Ushbu fandan test boshlangandan keyin uni to‘xtatib bo‘lmaydi. Tayyormisiz?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#007bff',
-                    confirmButtonText: 'Ha, boshlaymiz!',
-                    cancelButtonText: 'Yo‘q, qaytish',
-                    heightAuto: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = targetUrl;
-                    }
-                });
-            });
-        });
-    </script>
-@endsection

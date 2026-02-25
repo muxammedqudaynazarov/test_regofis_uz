@@ -20,7 +20,7 @@ class ResultController extends Controller
         $user = auth('student')->user();
         if ($user) {
             $subjects = Exam::where('student_id', auth('student')->id())->where('finished', '1')->paginate(20);
-            return view('pages.student.subjects.index', compact(['subjects', 'user']));
+            return view('pages.student.subjects.result', compact(['subjects', 'user']));
         }
         abort(404);
     }

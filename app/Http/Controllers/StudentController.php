@@ -10,7 +10,7 @@ class StudentController extends Controller
 {
     public function index()
     {
-        $lessons = Exam::where('student_id', auth()->id())->take(10)->get();
+        $lessons = Exam::where('student_id', auth()->id())->where('archived', '0')->take(10)->get();
         return view('pages.student.home', compact(['lessons']));
     }
 }

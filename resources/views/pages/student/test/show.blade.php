@@ -299,28 +299,43 @@
                 .catch(err => console.error('Network error:', err));
         }
 
-        let endTime = new Date("{{ $lesson->finished_at }}").getTime();
+        // 1. PHP dan to'g'ridan-to'g'ri Unix Timestamp (millisekundlarda) olamiz.
+        // Bu hech qanday Timezone xatoliklarisiz aniq ishlaydi.
+        let endTime = {{ \Carbon\Carbon::parse($lesson->finished_at)->timestamp * 1000 }};
         let serverTime = {{ time() * 1000 }};
-        let timeDiff = serverTime - new Date().getTime();
+        let clientTime = new Date().getTime();
+
+        // Server va foydalanuvchi kompyuteri o'rtasidagi vaqt farqini hisoblaymiz
+        let timeDiff = serverTime - clientTime;
 
         let timerInterval = setInterval(function () {
+            // Kompyuter vaqtini serverga moslashtiramiz
             let now = new Date().getTime() + timeDiff;
             let distance = endTime - now;
-            if (distance < 0) {
+
+            // Agar vaqt tugasa
+            if (distance <= 0) {
                 clearInterval(timerInterval);
                 document.getElementById("timerDisplay").innerHTML = "00:00:00";
-                submitExam(true);
+                submitExam(true); // Avtomat yakunlash
                 return;
             }
+
+            // Vaqtni soat, minut va sekundlarga ajratish
             let hours = Math.floor(distance / (1000 * 60 * 60));
             let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Ekranga chiqarish
             document.getElementById("timerDisplay").innerHTML =
                 (hours < 10 ? "0" + hours : hours) + ":" +
                 (minutes < 10 ? "0" + minutes : minutes) + ":" +
                 (seconds < 10 ? "0" + seconds : seconds);
 
-            if (distance < 60000) document.getElementById("timerDisplay").classList.add("text-blink");
+            // Vaqt 1 minutdan kam qolsa qizil rangda miltillash
+            if (distance < 60000) {
+                document.getElementById("timerDisplay").classList.add("text-blink");
+            }
         }, 1000);
 
         function finishExam() {

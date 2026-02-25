@@ -28,6 +28,27 @@ class ExamController extends Controller
         abort(404);
     }
 
+    public function update(Request $request, $id)
+    {
+        $exam = Exam::findOrFail($id);
+        if ($exam->finished == '1' && $exam->attempt == 1 && $exam->archived == '0') {
+            $result = $exam->results->first();
+
+            if ($result && $result->status == '0') {
+                $newExam = $exam->replicate();
+                $newExam->finished = '0';
+                $newExam->archived = '0';
+                $newExam->attempt = 2;
+                $newExam->status = '0';
+                $newExam->finished_at = null;
+                $newExam->save();
+                $exam->archived = '1';
+                $exam->save();
+                return redirect(route('final-results.index'))->with('success', 'Talabaning imtihon natijalari arxivga olindi.');
+            }
+        }
+    }
+
     public function download()
     {
         if (!auth()->user()->can('statistics.view.sv')) abort(404);
