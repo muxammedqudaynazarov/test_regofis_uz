@@ -40,4 +40,9 @@ class Department extends Model
     {
         return $this->hasOne(Department::class, 'id', 'parent_id');
     }
+
+    public function students()
+    {
+        return $this->hasManyThrough(Student::class, Specialty::class);
+    }
 }

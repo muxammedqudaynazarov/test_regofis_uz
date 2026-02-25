@@ -12,21 +12,20 @@ class DepartmentController extends Controller
     public function show($type)
     {
         if ($type === 'faculties' || $type === 'show') {
-            $faculties = Department::where('structure', '11')->with('children')->paginate(20);
             if ($type === 'faculties') {
+                $faculties = Department::where('structure', '11')->with('children')->withCount('students')->paginate(20);
                 if (auth()->user()->can('department.faculties.view')) {
                     return view('pages.web.departments.faculties', compact(['faculties']));
                 }
             }
             if ($type === 'show') {
                 if (auth()->user()->can('department.faculties.view')) {
-                    $faculties = Department::where('structure', '11')
-                        ->with(['children' => function ($query) {
-                            $query->withCount(['workplaces as teachers_count' => function ($q) {
-                                $q->select(\DB::raw('count(distinct user_id)'));
-                            }]);
-                        }])->paginate(20);
-
+                    $faculties = Department::where('structure', '12')
+                        ->withCount(['workplaces as teachers_count' => function ($q) {
+                            // Har bir kafedraga tegishli noyob (takrorlanmas) o'qituvchilar sonini hisoblash
+                            $q->select(\DB::raw('count(distinct user_id)'));
+                        }])
+                        ->paginate(20);
                     return view('pages.web.departments.show', compact(['faculties']));
                 }
             }

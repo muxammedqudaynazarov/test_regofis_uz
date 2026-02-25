@@ -51,7 +51,7 @@
                                         @endforeach
                                     </td>
                                     <td style="vertical-align: middle">{{ $faculty->curricula->count() }}</td>
-                                    <td style="vertical-align: middle">0</td>
+                                    <td style="vertical-align: middle">{{ $faculty->students_count }}</td>
                                     <td style="vertical-align: middle">
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox"

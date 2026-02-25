@@ -59,35 +59,30 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @forelse($faculties as $faculty)
-                                @if(count($faculty->children))
-                                    @foreach($faculty->children as $child)
-                                        <tr>
-                                            <td style="vertical-align: middle">#{{ $child->id }}</td>
-                                            <td style="text-align: left; vertical-align: middle"
-                                                class="font-weight-bold">
-                                                {{ $child->name }}
-                                            </td>
-                                            <td style="vertical-align: middle">
-                                                <div class="badge badge-info">
-                                                    {{ $faculty->name }}
-                                                </div>
-                                            </td>
-                                            <td style="vertical-align: middle">
-                                                {{ $child->teachers_count }}
-                                            </td>
-                                            <td style="vertical-align: middle">
-                                                {{ $child->subjects->count() }}
-                                            </td>
-                                            <td style="vertical-align: middle">
-                                                {{--<a href="#" class="btn btn-outline-success btn-sm">
-                                                    <i class="fa fa-cloud-download-alt"></i>
-                                                </a>--}}
-                                            </td>
-                                        </tr>
-
-                                    @endforeach
-                                @endif
+                            @forelse($faculties as $dep)
+                                <tr>
+                                    <td style="vertical-align: middle">#{{ $dep->id }}</td>
+                                    <td style="text-align: left; vertical-align: middle"
+                                        class="font-weight-bold">
+                                        {{ $dep->name }}
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        <div class="badge badge-info">
+                                            {{ $dep->faculty->name }}
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        {{ $dep->teachers_count }}
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        {{ $dep->subjects->count() }}
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        {{--<a href="#" class="btn btn-outline-success btn-sm">
+                                            <i class="fa fa-cloud-download-alt"></i>
+                                        </a>--}}
+                                    </td>
+                                </tr>
                             @empty
                                 <tr>
                                     <td colspan="4" class="text-center py-4 text-muted">Kafedralar topilmadi.
@@ -96,6 +91,11 @@
                             @endforelse
                             </tbody>
                         </table>
+                        <div class="card-footer bg-white clearfix">
+                            <div class="float-right">
+                                {{ $faculties->links() }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
