@@ -100,7 +100,7 @@
                                         @endforelse
                                     </td>
                                     <td class="text-nowrap">
-                                        @can('lessons.delete')
+                                        @can('lessons.status')
                                             <form action="{{ route('subjects-register.destroy', $lesson->id) }}"
                                                   method="POST" class="d-inline-block">
                                                 @csrf
