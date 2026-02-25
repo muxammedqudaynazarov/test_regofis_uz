@@ -18,14 +18,14 @@ trait LogsTrait
                 'question_text',
                 'subject_id',
                 'language_id',
-                'created_at',
-                'updated_at',
                 'answer',
                 'question_id',
                 'request_delete',
                 'answer_id',
                 'exam_id',
-                'student_id'
+                'student_id',
+                'created_at',
+                'updated_at',
             ])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
