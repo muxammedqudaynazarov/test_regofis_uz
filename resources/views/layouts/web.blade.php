@@ -162,34 +162,40 @@
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ route('subjects-register.index') }}"
-                                           class="nav-link {{ Request::is('home/subjects-register') ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Fanlar ro‘yxati</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('subjects-register.create') }}"
-                                           class="nav-link {{ Request::is('home/subjects-register/create') ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>
-                                                O‘chirish so‘rovlari
-                                            </p>
-                                        </a>
-                                    </li>
+                                    @can('lessons.view')
+                                        <li class="nav-item">
+                                            <a href="{{ route('subjects-register.index') }}"
+                                               class="nav-link {{ Request::is('home/subjects-register') ? 'active' : '' }}">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Fanlar ro‘yxati</p>
+                                            </a>
+                                        </li>
+                                    @endcan
+                                    @can('lessons.request.view')
+                                        <li class="nav-item">
+                                            <a href="{{ route('subjects-register.create') }}"
+                                               class="nav-link {{ Request::is('home/subjects-register/create') ? 'active' : '' }}">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>
+                                                    O‘chirish so‘rovlari
+                                                </p>
+                                            </a>
+                                        </li>
+                                    @endcan
                                 </ul>
                             </li>
                         @else
-                            <li class="nav-item">
-                                <a href="{{ route('subjects-register.index') }}"
-                                   class="nav-link {{ Request::is('home/subjects-register*') ? 'active' : '' }}">
-                                    <i class="nav-icon fas fa-book"></i>
-                                    <p>
-                                        Fanlar ro‘yxati
-                                    </p>
-                                </a>
-                            </li>
+                            @can('lessons.view')
+                                <li class="nav-item">
+                                    <a href="{{ route('subjects-register.index') }}"
+                                       class="nav-link {{ Request::is('home/subjects-register*') ? 'active' : '' }}">
+                                        <i class="nav-icon fas fa-book"></i>
+                                        <p>
+                                            Fanlar ro‘yxati
+                                        </p>
+                                    </a>
+                                </li>
+                            @endcan
                         @endif
                     @endcan
                     @can('subjects.view')
@@ -229,7 +235,7 @@
                             </a>
                         </li>
                     @endcan
-                    @can('statistics.view')
+                    @can('log.view')
                         <li class="nav-item">
                             <a href="{{ route('logs.index') }}"
                                class="nav-link {{ Request::is('home/logs*') ? 'active' : '' }}">

@@ -57,6 +57,7 @@ Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::get('/user/{role}', [HomeController::class, 'switch_role'])->name('switch.role');
     Route::resource('logs', LogViewController::class)->only(['index']);
     Route::resource('departments', DepartmentController::class)->only(['show', 'update']);
+    Route::get('/department/resources', [DepartmentRoleInfoController::class, 'role_department'])->name('statistics.department.resources');
     Route::resource('options', OptionController::class)->only(['index', 'update']);
     Route::resource('applications', ApplicationController::class)->only(['index', 'show']);
     Route::resource('curriculum', CurriculumController::class)->only(['index', 'destroy']);
@@ -65,14 +66,13 @@ Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::resource('languages', LanguageController::class)->only(['index', 'update']);
     Route::delete('/questions/destroy-many', [QuestionController::class, 'destroyMany'])->name('questions.destroyMany');
     Route::resource('questions', QuestionController::class)->only(['update', 'destroy']);
-    Route::get('/final-results/download', [ExamController::class, 'download'])->name('final-results.download');
     Route::resource('final-results', ExamController::class)->only(['index']);
     Route::resource('statistics', StatisticsController::class)->only(['index']);
     Route::prefix('statistics')->group(function () {
-        Route::get('/department/resources', [DepartmentRoleInfoController::class, 'role_department'])->name('statistics.department.resources');
-        Route::get('/department/resources', [ApplicationController::class, 'empty_lessons_download'])->name('applications.lessons.empty.download');
-        Route::get('/department/resources/download', [DepartmentRoleInfoController::class, 'export_role_department'])->name('statistics.department.resources.export');
         Route::get('/departments/show/download', [DepartmentController::class, 'download'])->name('departments.download');
         Route::get('/lessons/empty/download', [LessonController::class, 'empty_lessons_download'])->name('lessons.empty.download');
+        Route::get('/final-results/download', [ExamController::class, 'download'])->name('final-results.download');
+        Route::get('/department/resources', [ApplicationController::class, 'empty_lessons_download'])->name('applications.lessons.empty.download');
+        Route::get('/department/resources/download', [DepartmentRoleInfoController::class, 'export_role_department'])->name('statistics.department.resources.export');
     });
 });

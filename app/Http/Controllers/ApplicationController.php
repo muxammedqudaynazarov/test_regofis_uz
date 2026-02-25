@@ -20,36 +20,34 @@ class ApplicationController extends Controller
 {
     public function index()
     {
-        $applications = Application::paginate(20);
-        return view('pages.web.applications.index', compact(['applications']));
+        if (auth()->user()->can('applications.view')) {
+            $applications = Application::paginate(20);
+            return view('pages.web.applications.index', compact(['applications']));
+        }
+        abort(404);
     }
 
     public function show($app_num)
     {
-        $app = Application::where('application_number', $app_num)->firstOrFail();
-        return view('pages.web.applications.show', compact(['app']));
+        if (auth()->user()->can('applications.show')) {
+            $app = Application::where('application_number', $app_num)->firstOrFail();
+            return view('pages.web.applications.show', compact(['app']));
+        }
+        abort(404);
     }
+
     public function empty_lessons_download()
     {
-        // Bitta so'rov orqali kerakli ma'lumotlarni yig'amiz
+        if (!auth()->user()->can('statistics.view.sv')) abort(404);
         $emptyExams = Exam::select('exams.*')
             ->join('applications', 'exams.application_id', '=', 'applications.id')
             ->join('students', 'applications.student_id', '=', 'students.id')
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
-                    ->from('questions')
-                    ->whereColumn('questions.subject_id', 'exams.subject_id')
+                    ->from('questions')->whereColumn('questions.subject_id', 'exams.subject_id')
                     ->whereColumn('questions.language_id', 'students.language_id');
-            })
-            ->with(['application.student']) // Munosabatlarni oldindan yuklash
-            ->get();
-
-        // Agar ro'yxat bo'sh bo'lsa, foydalanuvchini orqaga qaytarish mumkin
-        if ($emptyExams->isEmpty()) {
-            return back()->with('info', 'Savolsiz imtihonlar topilmadi.');
-        }
-
-        // Excel faylini yuklab berish
+            })->with(['application.student'])->get();
+        if ($emptyExams->isEmpty()) return back()->with('info', 'Savolsiz imtihonlar topilmadi.');
         return Excel::download(new EmptyExamsExport($emptyExams), 'resurslar_yoq_fanlar' . date('dmy-Hi') . '.xlsx');
     }
 

@@ -12,12 +12,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="font-weight-bold">Tillar ro‘yxati</h1>
+                        <h1 class="font-weight-bold">Yakuniy nazoratlar</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right text-sm">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">Asosiy</a></li>
-                            <li class="breadcrumb-item active">Statistikalar</li>
+                            <li class="breadcrumb-item active">Yakuniy nazoratlar</li>
                         </ol>
                     </div>
                 </div>
@@ -43,14 +43,18 @@
                                 <th style="width: 10%">To‘plagan ball</th>
                                 <th style="width: 10%">Holati</th>
                                 <th class="text-nowrap" style="width: 10%">
-                                    <a href="#"
-                                       class="btn btn-outline-primary btn-sm">
-                                        <i class="fa fa-cloud-upload-alt"></i>
-                                    </a>
-                                    <a href="{{ route('final-results.download') }}"
-                                       class="btn btn-outline-danger btn-sm">
-                                        <i class="fa fa-cloud-download-alt"></i>
-                                    </a>
+                                    @can('exam.upload.all')
+                                        <a href="#"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fa fa-cloud-upload-alt"></i>
+                                        </a>
+                                    @endcan
+                                    @can('exam.download')
+                                        <a href="{{ route('final-results.download') }}"
+                                           class="btn btn-outline-danger btn-sm">
+                                            <i class="fa fa-cloud-download-alt"></i>
+                                        </a>
+                                    @endcan
                                 </th>
                             </tr>
                             </thead>
@@ -113,17 +117,21 @@
                                     <td>
                                         @if($exam->status == '2')
                                             @if($exam->results->first()->point >= $min_point)
-                                                <a href="#"
-                                                   class="btn btn-primary btn-sm">
-                                                    <i class="fa fa-cloud-upload-alt"></i>
-                                                    Ko‘chirish
-                                                </a>
+                                                @can('exam.upload')
+                                                    <a href="#"
+                                                       class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-cloud-upload-alt"></i>
+                                                        Ko‘chirish
+                                                    </a>
+                                                @endcan
                                             @else
-                                                <a href="#"
-                                                   class="btn btn-danger btn-sm font-weight-bold">
-                                                    <i class="fa fa-archive"></i>
-                                                    Arxivlash
-                                                </a>
+                                                @can('exam.archive')
+                                                    <a href="#"
+                                                       class="btn btn-danger btn-sm font-weight-bold">
+                                                        <i class="fa fa-archive"></i>
+                                                        Arxivlash
+                                                    </a>
+                                                @endcan
                                             @endif
                                         @endif
                                     </td>

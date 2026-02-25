@@ -76,7 +76,7 @@ class SubjectTeacherController extends Controller
 
     public function create()
     {
-        if (auth()->user()->can('lessons.request.show')) {
+        if (auth()->user()->can('lessons.request.view')) {
             $query = SubjectList::withoutGlobalScope('active')
                 ->whereIn('request_delete', ['1', '5']);
             if (request()->filled('search')) {
@@ -93,7 +93,7 @@ class SubjectTeacherController extends Controller
 
     public function store(Request $request)
     {
-        if (\auth()->user()->can('lessons.teachers')) {
+        if (\auth()->user()->can('lessons.create.teachers')) {
             $request->validate([
                 'subject_id' => 'required|exists:subject_lists,id',
                 'user_ids' => 'nullable|array',
@@ -107,13 +107,13 @@ class SubjectTeacherController extends Controller
 
     public function destroy($id, Request $request)
     {
-        if (\auth()->user()->can('lessons.delete')) {
+        if (\auth()->user()->can('lessons.status')) {
             $request->validate([
                 'type' => 'required|in:0,5',
             ]);
             $lesson = SubjectList::withoutGlobalScope('active')->findOrFail($id);
             if ($lesson) {
-                $text = ($request->type == '0') ? 'Fan kafedraga qaytarildi.' : 'Talabnoma muvaffaqiyatli qanoatlantirildi. Fan o‘chirildi.';
+                $text = ($request->type == '0') ? 'Fan kafedraga qaytarildi.' : 'Talabnoma muvaffaqiyatli qanoatlantirildi. Fan o‘chirildi!';
                 $lesson->request_delete = $request->type;
                 $lesson->save();
                 return redirect()->back()->with('success', $text);

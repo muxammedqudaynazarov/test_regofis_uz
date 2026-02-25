@@ -17,7 +17,6 @@ class LessonController extends Controller
     {
         if (\auth()->user()->can('subjects.view')) {
             $user = auth('web')->user();
-
             $subjects = SubjectList::whereHas('teachers', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })->with('teachers')->paginate(20);
@@ -73,6 +72,7 @@ class LessonController extends Controller
 
     public function empty_lessons_download()
     {
+        if (!auth()->user()->can('statistics.view.sv')) abort(404);
         return Excel::download(new EmptyLessonsExport, 'Bosh_fanlar_' . date('dmY_Hi') . '.xlsx');
     }
 }

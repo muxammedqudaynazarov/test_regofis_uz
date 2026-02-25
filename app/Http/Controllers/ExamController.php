@@ -21,16 +21,18 @@ class ExamController extends Controller
 {
     public function index()
     {
-        $exams = Exam::paginate(20);
-        return view('pages.web.results.index', compact(['exams']));
+        if (auth()->user()->can('exam.view')) {
+            $exams = Exam::paginate(20);
+            return view('pages.web.results.index', compact(['exams']));
+        }
+        abort(404);
     }
 
     public function download()
     {
+        if (!auth()->user()->can('statistics.view.sv')) abort(404);
         $exams = Exam::with(['application.student', 'subject'])->where('status', '2')->get();
-        if ($exams->isEmpty()) {
-            return back()->with('error', 'Yuklab olish uchun yakunlangan imtihonlar topilmadi.');
-        }
+        if ($exams->isEmpty()) return back()->with('error', 'Yuklab olish uchun yakunlangan imtihonlar topilmadi.');
         return Excel::download(new FinishedExamsExport($exams), 'Yakuniy_natijalar_' . date('dmY-His') . '.xlsx');
     }
 }

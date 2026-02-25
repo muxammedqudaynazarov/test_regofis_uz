@@ -19,13 +19,11 @@ class DepartmentController extends Controller
                 }
             }
             if ($type === 'show') {
-                if (auth()->user()->can('department.faculties.view')) {
+                if (auth()->user()->can('department.view')) {
                     $faculties = Department::where('structure', '12')
                         ->withCount(['workplaces as teachers_count' => function ($q) {
-                            // Har bir kafedraga tegishli noyob (takrorlanmas) o'qituvchilar sonini hisoblash
                             $q->select(\DB::raw('count(distinct user_id)'));
-                        }])
-                        ->paginate(20);
+                        }])->paginate(20);
                     return view('pages.web.departments.show', compact(['faculties']));
                 }
             }
@@ -57,9 +55,7 @@ class DepartmentController extends Controller
 
     public function download()
     {
-        if (!auth()->user()->can('department.faculties.view')) {
-            abort(403);
-        }
+        if (!auth()->user()->can('statistics.view.sv')) abort(404);
         $fileName = 'Kafedralar_bo_yicha_savollar_hisoboti_' . now()->format('Y-m-d_H-i') . '.xlsx';
         return Excel::download(new DepartmentSubjectExport, $fileName);
     }
