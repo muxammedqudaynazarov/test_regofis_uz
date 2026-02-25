@@ -123,9 +123,7 @@
                                                         Yakunlangan
                                                     </span>
                                                 @else
-                                                    <span class="badge badge-primary">
-                                                        Yangi
-                                                    </span>
+
                                                 @endif
                                             </td>
                                             <td>
