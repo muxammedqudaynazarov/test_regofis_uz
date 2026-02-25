@@ -49,10 +49,21 @@
         <section class="content text-sm">
             <div class="container-fluid">
                 <div class="card card-outline card-primary shadow-sm">
-                    <div class="card-header bg-white">
-                        <form action="{{ url()->current() }}" method="GET">
-                            <div class="row">
-                                <div class="col-12">
+                    <div class="card-header bg-white mb-2">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <form action="{{ route('logs.destroy', 'clear') }}" method="POST"
+                                      onsubmit="return confirm('Haqiqatan ham barcha loglarni tozalashni xohlaysizmi?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger font-weight-bold w-100">
+                                        <i class="fas fa-trash-alt"></i>
+                                        Jurnalni tozalash
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-10">
+                                <form action="{{ url()->current() }}" method="GET">
                                     <div class="input-group input-group-sm">
                                         <input type="text"
                                                name="search"
@@ -72,11 +83,11 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                    <div class="card card-outline card-primary shadow-sm">
+                    <div class="card card-outline card-primary shadow-sm m-0">
                         <div class="card-body table-responsive p-0">
                             <table class="table table-hover table-custom text-center">
                                 <thead class="bg-light">
