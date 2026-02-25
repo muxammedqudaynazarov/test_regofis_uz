@@ -44,13 +44,20 @@
                                 <th style="width: 10%">Holati</th>
                                 <th class="text-nowrap" style="width: 10%">
                                     @can('exam.upload.all')
-                                        <a href="#"
+                                        <a href="#" title="O‘tish balidan yuqori to‘plagan hammani ko‘chirish"
                                            class="btn btn-outline-primary btn-sm">
                                             <i class="fa fa-cloud-upload-alt"></i>
                                         </a>
                                     @endcan
+                                    {{--@can('exam.upload.all')
+                                        <a href="#" title="Hamma test natijalarini qayta ko‘rib chiqish"
+                                           class="btn btn-outline-warning btn-sm">
+                                            <i class="fa fa-reply"></i>
+                                        </a>
+                                    @endcan--}}
                                     @can('exam.download')
                                         <a href="{{ route('final-results.download') }}"
+                                           title="Imtihonlarning umumiy ro‘yxatini .XLSx formatida yuklab olish"
                                            class="btn btn-outline-danger btn-sm">
                                             <i class="fa fa-cloud-download-alt"></i>
                                         </a>
