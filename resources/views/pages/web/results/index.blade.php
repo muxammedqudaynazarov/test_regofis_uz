@@ -133,17 +133,19 @@
                                                 @endcan
                                             @else
                                                 @can('exam.archive')
-                                                    <form action="{{ route('final-results.update', $exam->id) }}"
-                                                          method="POST">
-                                                        @method('PUT')
-                                                        @csrf
-                                                        <button class="btn btn-danger btn-sm font-weight-bold"
-                                                                type="submit"
-                                                                onclick="return confirm('{{ json_decode($exam->student->name)->full_name }}ning {{ $exam->failed_subject->subject_name }} fanidan hozirgi natijasini arxivga olishni tasdiqlaysizmi?')">
-                                                            <i class="fa fa-archive"></i>
-                                                            Arxivlash
-                                                        </button>
-                                                    </form>
+                                                    @if($exam->attempt == 1)
+                                                        <form action="{{ route('final-results.update', $exam->id) }}"
+                                                              method="POST">
+                                                            @method('PUT')
+                                                            @csrf
+                                                            <button class="btn btn-danger btn-sm font-weight-bold"
+                                                                    type="submit"
+                                                                    onclick="return confirm('{{ json_decode($exam->student->name)->full_name }}ning {{ $exam->failed_subject->subject_name }} fanidan hozirgi natijasini arxivga olishni tasdiqlaysizmi?')">
+                                                                <i class="fa fa-archive"></i>
+                                                                Arxivlash
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 @endcan
                                             @endif
                                         @endif

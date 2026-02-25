@@ -46,6 +46,7 @@
                                         <th style="width: 10%">Kredit</th>
                                         <th style="width: 10%">O‘tish ball</th>
                                         <th style="width: 10%">Holati</th>
+                                        <th style="width: 10%">Urinish</th>
                                         <th style="width: 10%">To‘plagan ball</th>
                                     </tr>
                                     </thead>
@@ -87,6 +88,9 @@
                                                 @elseif($subject->status == '2')
                                                     Yakunlangan
                                                 @endif
+                                            </td>
+                                            <td class="small">
+                                                {{ $subject->attempt }}
                                             </td>
                                             <td class="text-nowrap">
                                                 <div class="badge badge-success">

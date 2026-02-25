@@ -22,7 +22,7 @@ class ExamController extends Controller
     public function index()
     {
         if (auth()->user()->can('exam.view')) {
-            $exams = Exam::orderBy('created_at', 'desc')->paginate(20);
+            $exams = Exam::orderBy('created_at', 'desc')->where('archived', '0')->paginate(20);
             return view('pages.web.results.index', compact(['exams']));
         }
         abort(404);
@@ -47,6 +47,7 @@ class ExamController extends Controller
                 return redirect(route('final-results.index'))->with('success', 'Talabaning imtihon natijalari arxivga olindi.');
             }
         }
+        return redirect()->back()->with('error', 'Talabaning natijalarini arxivlab bo‘lmaydi yoki oldindan arxiv ma’lumotlar mavjud!');
     }
 
     public function download()
