@@ -139,7 +139,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center py-4 text-muted">
+                                            <td colspan="9" class="text-center py-4 text-muted">
                                                 Ma'lumotlar topilmadi.
                                             </td>
                                         </tr>
@@ -165,7 +165,7 @@
                 var targetUrl = $(this).data('url');
                 Swal.fire({
                     title: 'Testni boshlashga tayyormisiz?',
-                    text: "Ushbu fandan test boshlangandan keyin uni to‘xtatib bo‘lmaydi. Tayyormisiz?",
+                    text: "Ushbu fandan test boshlangandan keyin uni to‘xtatib bo‘lmaydi. Eslatma: test davomida boshqa sahifaga o‘tish yoki boshqa dasturlardan foydalanish testni vaqtidan avval yakunlanishiga olib kelishi mumkin. Tayyormisiz?",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#28a745',

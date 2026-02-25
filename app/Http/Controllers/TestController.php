@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class TestController extends Controller
 {
-    public function show($id, Request $request)
+    /*public function show($id, Request $request)
     {
         $qCount = (int)(Option::where('key', 'questions')->value('value') ?? 50);
         $duration = (int)(Option::where('key', 'duration')->value('value') ?? 50);
@@ -121,6 +121,90 @@ class TestController extends Controller
             }])
             ->orderBy('pos', 'asc')
             ->get();
+
+        return view('pages.student.test.show', compact('attempts', 'exam'), ['lesson' => $exam]);
+    }*/
+    public function show($id, Request $request)
+    {
+        $qCount = (int)(Option::where('key', 'questions')->value('value') ?? 50);
+        $duration = (int)(Option::where('key', 'duration')->value('value') ?? 50);
+        if ($qCount <= 0) $qCount = 50;
+        if ($duration <= 0) $duration = 50;
+
+        $exam = Exam::findOrFail($id);
+        $studentId = Auth::guard('student')->id();
+
+        // 1. Agar imtihon yakunlangan bo'lsa (2-urinish mantiqi)
+        if ($exam->finished == '1') {
+            $oExam = Exam::where([
+                'application_id' => $exam->application_id, 'student_id' => $studentId,
+                'subject_id' => $exam->subject_id, 'failed_subject_id' => $exam->failed_subject_id,
+                'group_id' => $exam->group_id, 'semester_id' => $exam->semester_id, 'attempt' => 1
+            ])->first();
+
+            if ($oExam && $oExam->finished == '1' && $oExam->archived == '1') {
+                $latestExam = Exam::where([
+                    'application_id' => $exam->application_id, 'student_id' => $studentId,
+                    'subject_id' => $exam->subject_id, 'semester_id' => $exam->semester_id
+                ])->latest('id')->first();
+
+                if ($latestExam->id === $oExam->id) {
+                    $newExam = $oExam->replicate();
+                    $newExam->attempt = $oExam->attempt + 1;
+                    $newExam->status = (string)((int)$oExam->status + 1);
+                    $newExam->finished = '0';
+                    $newExam->finished_at = null;
+                    $newExam->archived = '0';
+                    $newExam->save();
+
+                    return redirect()->route('tests.show', $newExam->id)->with('success', 'Ikkinchi urinish uchun imkoniyat berildi.');
+                } elseif ($latestExam->id !== $exam->id) {
+                    return redirect()->route('tests.show', $latestExam->id);
+                }
+            } else {
+                return redirect()->route('student.home')->with('error', 'Siz ushbu imtihonni yakunlagansiz. Qayta topshirish uchun ruxsat yo‘q.');
+            }
+        }
+
+        // 2. Taymerni ishga tushirish
+        if (empty($exam->finished_at)) {
+            $exam->finished_at = now()->addMinutes($duration);
+            $exam->status = (string)((int)$exam->status + 1);
+            $exam->save();
+        }
+
+        // 3. Savollarni generatsiya qilish (agar hali qilinmagan bo'lsa)
+        $exists = Attempt::where('exam_id', $exam->id)->where('student_id', $studentId)->exists();
+        if (!$exists) {
+            $questions = Question::where('subject_id', $exam->subject_id)
+                ->where('language_id', Auth::guard('student')->user()->language_id)
+                ->with('answers')->get();
+
+            if ($questions->isEmpty()) {
+                return redirect()->route('student.home')->with('error', 'Bazada ushbu fan uchun savollar mavjud emas.');
+            }
+
+            $actualQCount = min($qCount, $questions->count());
+
+            DB::transaction(function () use ($questions, $actualQCount, $exam, $studentId) {
+                $selectedQuestions = $questions->shuffle()->take($actualQCount);
+                $qPos = 1;
+                foreach ($selectedQuestions as $question) {
+                    $attempt = Attempt::create(['exam_id' => $exam->id, 'student_id' => $studentId, 'question_id' => $question->id, 'pos' => $qPos++]);
+                    $aPos = 1;
+                    foreach ($question->answers->shuffle() as $answer) {
+                        Position::create(['attempt_id' => $attempt->id, 'answer_id' => $answer->id, 'pos' => $aPos++]);
+                    }
+                }
+            });
+        }
+
+        // 4. Savollarni view'ga yuborish
+        $attempts = Attempt::where('exam_id', $exam->id)->where('student_id', $studentId)
+            ->with(['question', 'positions' => function ($query) {
+                $query->orderBy('pos', 'asc')->with('answer');
+            }])
+            ->orderBy('pos', 'asc')->get();
 
         return view('pages.student.test.show', compact('attempts', 'exam'), ['lesson' => $exam]);
     }
