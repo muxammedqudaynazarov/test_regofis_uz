@@ -19,8 +19,12 @@ class Exam extends Model
         'failed_subject_id',
         'group_id',
         'semester_id',
-        'finished_at',
+        'finished',
+        'archived',
+        'attempt',
         'status',
+        'finished_at',
+        'last_activity_at',
     ];
 
     public function application(): HasOne
@@ -31,6 +35,11 @@ class Exam extends Model
     public function results(): HasMany
     {
         return $this->hasMany(Result::class, 'exam_id', 'id');
+    }
+
+    public function result(): HasOne
+    {
+        return $this->hasOne(Result::class, 'exam_id', 'id')->latestOfMany();
     }
 
     public function failed_subject(): HasOne

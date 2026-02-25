@@ -44,10 +44,16 @@
                                 <th style="width: 10%">Holati</th>
                                 <th class="text-nowrap" style="width: 10%">
                                     @can('exam.upload.all')
-                                        <a href="#" title="O‘tish balidan yuqori to‘plagan hammani ko‘chirish"
-                                           class="btn btn-outline-primary btn-sm">
-                                            <i class="fa fa-cloud-upload-alt"></i>
-                                        </a>
+                                        {{--<form action="{{ route('final-results.store') }}" method="POST"
+                                              class="d-inline-block">
+                                            @csrf
+                                            <button class="btn btn-primary btn-sm font-weight-bold"
+                                                    type="submit"
+                                                    title="O‘tish balidan yuqori bo‘lgan hamma talabalarning natijalarini ko‘chirish"
+                                                    onclick="return confirm('O‘tish balidan yuqori bo‘lgan hamma talabalarning natijalarini ko‘chirishni tasdiqlaysizmi?')">
+                                                <i class="fa fa-cloud-upload-alt"></i>
+                                            </button>
+                                        </form>--}}
                                     @endcan
                                     {{--@can('exam.upload.all')
                                         <a href="#" title="Hamma test natijalarini qayta ko‘rib chiqish"
@@ -55,13 +61,13 @@
                                             <i class="fa fa-reply"></i>
                                         </a>
                                     @endcan--}}
-                                    @can('exam.download')
+                                    {{--@can('exam.download')
                                         <a href="{{ route('final-results.download') }}"
                                            title="Imtihonlarning umumiy ro‘yxatini .XLSx formatida yuklab olish"
                                            class="btn btn-outline-danger btn-sm">
                                             <i class="fa fa-cloud-download-alt"></i>
                                         </a>
-                                    @endcan
+                                    @endcan--}}
                                 </th>
                             </tr>
                             </thead>
@@ -125,8 +131,9 @@
                                         @if($exam->status == '2')
                                             @if($exam->results->first()->point >= $min_point)
                                                 @can('exam.upload')
-                                                    <a href="#"
-                                                       class="btn btn-primary btn-sm">
+                                                    <a href="{{ route('final-results.show', $exam->id) }}"
+                                                       class="btn btn-primary btn-sm"
+                                                       onclick="return confirm('{{ addslashes(json_decode($exam->student->name)->full_name ?? '') }}ning {{ addslashes($exam->failed_subject->subject_name ?? '') }} fanidan bahosini serverga ko‘chirishni tasdiqlaysizmi?')">
                                                         <i class="fa fa-cloud-upload-alt"></i>
                                                         Ko‘chirish
                                                     </a>

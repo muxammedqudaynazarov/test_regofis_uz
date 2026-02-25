@@ -10,11 +10,13 @@ use App\Models\Exam;
 use App\Models\GroupSubject;
 use App\Models\Question;
 use App\Models\QuestionPos;
+use App\Models\Result;
 use App\Models\Test;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExamController extends Controller
@@ -30,8 +32,54 @@ class ExamController extends Controller
 
     public function store(Request $request)
     {
+        $exams = Exam::with('result')->where('finished', '1')->where('archived', '0')
+            ->whereHas('result', function ($query) {
+                $query->where('status', '1')->where('uploaded', '0');
+            })->get();
 
+        //https://edu.regofis.uz/api/grade-sheets/create/
+        foreach ($exams as $exam) {
+            $res = Result::where('exam_id', $exam->id)->first();
+            if ($res) {
+                $response = Http::withToken(env('REGOFIS_TOKEN'))->post('https://edu.regofis.uz/api/grade-sheets/create/', [
+                    'student_group' => $exam->group_id,
+                    'failed_subject' => $exam->failed_subject_id,
+                    'jn' => 0,
+                    'on' => 0,
+                    'yn' => $exam->result->point,
+                ]);
+                $exam->archived = '1';
+                $exam->save();
+                $res->uploaded = $response->successful() ? '1' : '0';
+                $res->save();
+            } else continue;
+        }
+        return redirect()->route('final-results.index')->with('success', 'Natijalar serverga yuklandi!');
     }
+
+    public function show($id)
+    {
+        $exam = Exam::findOrFail($id);
+        if ($exam->finished == '1' && $exam->archived == '0') {
+            $res = Result::where('exam_id', $exam->id)->firstOrFail();
+            if ($res->status == '1' && $res->uploaded == '0') {
+                $response = Http::withToken(env('REGOFIS_TOKEN'))->post('https://edu.regofis.uz/api/grade-sheets/create/', [
+                    'student_group' => $exam->group_id,
+                    'failed_subject' => $exam->failed_subject_id,
+                    'jn' => 0,
+                    'on' => 0,
+                    'yn' => $res->point,
+                ]);
+                $exam->archived = '1';
+                $exam->save();
+                $res->uploaded = $response->successful() ? '1' : '0';
+                $res->save();
+                return redirect()->route('final-results.index')->with('success', 'Natijalar serverga yuklandi!');
+            }
+        }
+        return redirect()->route('final-results.index')->with('error', 'Server xatoligi. Natijani ko‘chirib bo‘lmadi!');
+    }
+
     public function update(Request $request, $id)
     {
         $exam = Exam::findOrFail($id);
