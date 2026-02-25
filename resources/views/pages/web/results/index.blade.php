@@ -132,7 +132,7 @@
                                             @if($exam->results->first()->point >= $min_point)
                                                 @can('exam.upload')
                                                     <a href="{{ route('final-results.show', $exam->id) }}"
-                                                       class="btn btn-primary btn-sm"
+                                                       class="btn btn-primary btn-sm font-weight-bold"
                                                        onclick="return confirm('{{ addslashes(json_decode($exam->student->name)->full_name ?? '') }}ning {{ addslashes($exam->failed_subject->subject_name ?? '') }} fanidan bahosini serverga ko‘chirishni tasdiqlaysizmi?')">
                                                         <i class="fa fa-cloud-upload-alt"></i>
                                                         Ko‘chirish
