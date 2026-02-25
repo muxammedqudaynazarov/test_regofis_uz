@@ -116,7 +116,7 @@
                                             <td>
                                                 @if($exam->status == '1')
                                                     <span class="badge badge-warning">
-                                                        Kutilmoqda
+                                                        Jarayonda
                                                     </span>
                                                 @elseif($exam->status == '2')
                                                     <span class="badge badge-success">

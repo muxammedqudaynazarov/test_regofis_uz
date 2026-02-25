@@ -13,14 +13,24 @@ trait LogsTrait
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logAll()
+            ->logOnly([
+                'id',
+                'question_text',
+                'subject_id',
+                'language_id',
+                'created_at',
+                'updated_at',
+                'answer',
+                'question_id',
+                'request_delete',
+                'answer_id',
+            ])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
 
     public function tapActivity(Activity $activity, string $eventName)
     {
-        // Mavjud xususiyatlarga (properties) IP, Browser va URL qo'shamiz
         $activity->properties = $activity->properties->merge([
             'ip' => request()->ip(),
             'user_agent' => request()->userAgent(),
