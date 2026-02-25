@@ -83,7 +83,7 @@
 
                                 <div class="col-md-2 text-right">
                                     <button type="button" class="btn btn-sm btn-danger font-weight-bold w-100"
-                                            onclick="if(confirm('Jurnalni tozalash?')) document.getElementById('clear-form').submit();">
+                                            onclick="if(confirm('Haqiqatan ham barcha loglarni tozalashni xohlaysizmi?')) document.getElementById('clear-form').submit();">
                                         <i class="fas fa-trash-alt"></i> Jurnalni tozalash
                                     </button>
                                 </div>
