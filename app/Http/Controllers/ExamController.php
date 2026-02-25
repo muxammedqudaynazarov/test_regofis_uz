@@ -22,7 +22,7 @@ class ExamController extends Controller
     public function index()
     {
         if (auth()->user()->can('exam.view')) {
-            $exams = Exam::paginate(20);
+            $exams = Exam::orderBy('created_at', 'desc')->paginate(20);
             return view('pages.web.results.index', compact(['exams']));
         }
         abort(404);

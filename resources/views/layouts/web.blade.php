@@ -219,7 +219,7 @@
                                class="nav-link {{ Request::is('home/final-results*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-clipboard-check"></i>
                                 <p>
-                                    Yakuniy nazoratlar
+                                    Imtihonlar
                                 </p>
                             </a>
                         </li>
