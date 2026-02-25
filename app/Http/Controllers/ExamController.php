@@ -28,6 +28,10 @@ class ExamController extends Controller
         abort(404);
     }
 
+    public function store(Request $request)
+    {
+
+    }
     public function update(Request $request, $id)
     {
         $exam = Exam::findOrFail($id);
