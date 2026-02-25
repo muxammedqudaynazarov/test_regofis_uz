@@ -50,42 +50,50 @@
             <div class="container-fluid">
                 <div class="card card-outline card-primary shadow-sm">
                     <div class="card-header bg-white mb-2">
-                        <div class="row">
-                            <div class="col-md-2">
-                                <form action="{{ route('logs.destroy', 'clear') }}" method="POST"
-                                      onsubmit="return confirm('Haqiqatan ham barcha loglarni tozalashni xohlaysizmi?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger font-weight-bold w-100">
-                                        <i class="fas fa-trash-alt"></i>
-                                        Jurnalni tozalash
+                        <form action="{{ url()->current() }}" method="GET">
+                            <div class="row align-items-end">
+                                <div class="col-md-4">
+                                    <label class="small font-weight-bold mb-0">Foydalanuvchi F.I.Sh.</label>
+                                    <input type="text" name="search" class="form-control form-control-sm"
+                                           placeholder="F.I.Sh..." value="{{ request('search') }}">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="small font-weight-bold mb-0">Sana (dan)</label>
+                                    <input type="date" name="date_from" class="form-control form-control-sm"
+                                           value="{{ request('date_from') }}">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="small font-weight-bold mb-0">Sana (gacha)</label>
+                                    <input type="date" name="date_to" class="form-control form-control-sm"
+                                           value="{{ request('date_to') }}">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-filter"></i> Saralash
                                     </button>
-                                </form>
+                                    @if(request()->anyFilled(['search', 'date_from', 'date_to']))
+                                        <a href="{{ url()->current() }}" class="btn btn-sm btn-default text-danger">
+                                            <i class="fas fa-times"></i> Tozalash
+                                        </a>
+                                    @endif
+                                </div>
+
+                                <div class="col-md-2 text-right">
+                                    <button type="button" class="btn btn-sm btn-danger font-weight-bold w-100"
+                                            onclick="if(confirm('Jurnalni tozalash?')) document.getElementById('clear-form').submit();">
+                                        <i class="fas fa-trash-alt"></i> Jurnalni tozalash
+                                    </button>
+                                </div>
                             </div>
-                            <div class="col-md-10">
-                                <form action="{{ url()->current() }}" method="GET">
-                                    <div class="input-group input-group-sm">
-                                        <input type="text"
-                                               name="search"
-                                               class="form-control"
-                                               placeholder="Foydalanuvchi ismi bo‘yicha qidirish..."
-                                               value="{{ request('search') }}"
-                                               autocomplete="off">
-                                        <div class="input-group-append">
-                                            <button type="submit" class="btn btn-primary" title="Qidirish">
-                                                <i class="fas fa-search"></i>
-                                            </button>
-                                            @if(request('search'))
-                                                <a href="{{ url()->current() }}" class="btn btn-default"
-                                                   title="Filtrni tozalash">
-                                                    <i class="fas fa-times text-danger"></i>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        </form>
+
+                        <form id="clear-form" action="{{ route('logs.destroy', 'clear') }}" method="POST" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
                     </div>
                     <div class="card card-outline card-primary shadow-sm m-0">
                         <div class="card-body table-responsive p-0">
