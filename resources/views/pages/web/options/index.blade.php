@@ -55,11 +55,17 @@
                                         @endif
                                     </td>
                                     <td style="vertical-align: middle" class="text-right">
-                                        <button type="button" class="btn btn-outline-success btn-sm"
-                                                data-toggle="modal"
-                                                data-target="#editOption{{ $option->id }}">
-                                            <i class="fas fa-edit"></i> o‘zgartirish
-                                        </button>
+                                        @can('system.update')
+                                            <button type="button" class="btn btn-outline-success btn-sm"
+                                                    data-toggle="modal"
+                                                    data-target="#editOption{{ $option->id }}">
+                                                <i class="fas fa-edit"></i> o‘zgartirish
+                                            </button>
+                                        @else
+                                            <button type="button" class="btn btn-outline-success btn-sm disabled">
+                                                <i class="fas fa-edit"></i> o‘zgartirish
+                                            </button>
+                                        @endcan
                                     </td>
                                 </tr>
                             @empty
@@ -73,56 +79,56 @@
                 </div>
             </div>
         </section>
-
-        @foreach($options as $option)
-            <div class="modal fade" id="editOption{{ $option->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <form action="{{ route('options.update', $option->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <div class="modal-header bg-light">
-                                <div class="modal-title font-weight-bold">Sozlamani o‘zgartirish</div>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body small">
-                                <div class="form-group">
-                                    <label>Nomi:</label>
-                                    <input type="text" class="form-control" value="{{ $option->name }}" disabled>
-                                    <small class="text-muted">Tizim nomi o'zgartirilmaydi</small>
+        @can('system.update')
+            @foreach($options as $option)
+                <div class="modal fade" id="editOption{{ $option->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form action="{{ route('options.update', $option->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-header bg-light">
+                                    <div class="modal-title font-weight-bold">Sozlamani o‘zgartirish</div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
-                                <div class="form-group">
-                                    <label>Qiymatni kiriting:</label>
-                                    @if($option->key == 'retest')
-                                        <select name="value" class="form-control">
-                                            <option value="1" {{ $option->value == 1 ? 'selected' : '' }}>
-                                                Ha (ruxsat berish)
-                                            </option>
-                                            <option value="0" {{ $option->value == 0 ? 'selected' : '' }}>
-                                                Yo‘q (taqiqlash)
-                                            </option>
-                                        </select>
-                                    @elseif(in_array($option->key, ['questions', 'durations', 'min_points', 'max_points', 'attempts']))
-                                        <input type="number" name="value" class="form-control" required
-                                               min="0" value="{{ $option->value }}">
-                                    @else
-                                        <input type="text" name="value" class="form-control" required
-                                               value="{{ $option->value }}">
-                                    @endif
+                                <div class="modal-body small">
+                                    <div class="form-group">
+                                        <label>Nomi:</label>
+                                        <input type="text" class="form-control" value="{{ $option->name }}" disabled>
+                                        <small class="text-muted">Tizim nomi o'zgartirilmaydi</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Qiymatni kiriting:</label>
+                                        @if($option->key == 'retest')
+                                            <select name="value" class="form-control">
+                                                <option value="1" {{ $option->value == 1 ? 'selected' : '' }}>
+                                                    Ha (ruxsat berish)
+                                                </option>
+                                                <option value="0" {{ $option->value == 0 ? 'selected' : '' }}>
+                                                    Yo‘q (taqiqlash)
+                                                </option>
+                                            </select>
+                                        @elseif(in_array($option->key, ['questions', 'durations', 'min_points', 'max_points', 'attempts']))
+                                            <input type="number" name="value" class="form-control" required
+                                                   min="0" value="{{ $option->value }}">
+                                        @else
+                                            <input type="text" name="value" class="form-control" required
+                                                   value="{{ $option->value }}">
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer justify-content-end">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save mr-1"></i> Saqlash
-                                </button>
-                            </div>
-                        </form>
+                                <div class="modal-footer justify-content-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save mr-1"></i> Saqlash
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
-
+            @endforeach
+        @endcan
     </div>
 @endsection
