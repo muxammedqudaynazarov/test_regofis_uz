@@ -15,9 +15,9 @@ trait LogsTrait
         return LogOptions::defaults()
             ->logAll()
             ->logOnlyDirty()
-            /*->logExcept([
-                'correct',
-            ])*/
+            ->logExcept([
+                'correct', 'type',
+            ])
             ->dontSubmitEmptyLogs();
     }
 
