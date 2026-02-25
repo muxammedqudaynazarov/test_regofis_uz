@@ -26,6 +26,11 @@ class Student extends Authenticatable
         return $this->hasOne(Specialty::class, 'id', 'specialty_id');
     }
 
+    public function curriculum(): HasOne
+    {
+        return $this->hasOne(Curriculum::class, 'id', 'curriculum_id');
+    }
+
     public function exams(): HasMany
     {
         return $this->hasMany(Exam::class, 'student_id', 'id');

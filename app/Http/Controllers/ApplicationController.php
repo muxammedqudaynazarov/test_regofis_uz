@@ -26,7 +26,8 @@ class ApplicationController extends Controller
 
     public function show($app_num)
     {
-
+        $app = Application::where('application_number', $app_num)->firstOrFail();
+        return view('pages.web.applications.show', compact(['app']));
     }
     public function empty_lessons_download()
     {
