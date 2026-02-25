@@ -24,6 +24,8 @@ trait LogsTrait
                 'question_id',
                 'request_delete',
                 'answer_id',
+                'exam_id',
+                'student_id'
             ])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
