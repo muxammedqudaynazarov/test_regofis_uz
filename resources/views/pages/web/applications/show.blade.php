@@ -134,7 +134,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted">
+                                            <td colspan="6" class="text-center py-4 text-muted">
                                                 <i class="fas fa-inbox fa-3x d-block mb-2"></i>
                                                 Ushbu arizaga hech qanday fan biriktirilmagan.
                                             </td>
