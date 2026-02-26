@@ -14,6 +14,22 @@ use Illuminate\Support\Facades\DB;
 
 class TestController extends Controller
 {
+    public function edit($id)
+    {
+        $studentId = auth('student')->id();
+        $exam = Exam::findOrFail($id);
+        if ($exam->student_id == $studentId) {
+            $lessons = Attempt::where('exam_id', $exam->id)->where('student_id', $studentId)
+                ->with(['question', 'positions' => function ($query) {
+                    $query->orderBy('pos', 'asc')->with('answer');
+                }])
+                ->orderBy('pos', 'asc')->get();
+
+            return view('pages.student.test.review', compact('lessons'));
+        }
+        abort(403, 'Sizda bu natijani ko\'rish huquqi yo\'q.');
+    }
+
     /*public function show($id, Request $request)
     {
         $qCount = (int)(Option::where('key', 'questions')->value('value') ?? 50);

@@ -48,6 +48,7 @@
                                         <th style="width: 10%">Holati</th>
                                         <th style="width: 10%">Urinish</th>
                                         <th style="width: 10%">To‘plagan ball</th>
+                                        <th style="width: 10%"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -96,6 +97,13 @@
                                                 <div class="badge badge-success">
                                                     {{ $subject->results->first()->point }} ball
                                                 </div>
+                                            </td>
+                                            <td class="text-nowrap">
+                                                <a href="{{ route('tests.edit', $subject->id) }}"
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    <i class="far fa-eye"></i>
+                                                    Testni ko‘rish
+                                                </a>
                                             </td>
                                         </tr>
                                     @empty

@@ -52,7 +52,7 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
     Route::get('/', [StudentController::class, 'index'])->name('student.home');
     Route::resource('subjects', SubjectController::class)->only(['index']);
     Route::resource('applications', ApplicationController::class)->only(['store']);
-    Route::resource('tests', TestController::class)->only(['index', 'show']);
+    Route::resource('tests', TestController::class)->only(['show', 'edit']);
     Route::post('/exams/answer/upload', [TestController::class, 'upload_answer']);
     Route::resource('results', ResultController::class)->only(['index', 'update']);
 });
