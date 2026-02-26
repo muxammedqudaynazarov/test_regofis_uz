@@ -31,11 +31,11 @@
                         <table class="table table-hover text-center table-custom">
                             <thead>
                             <tr>
-{{--
-                                <th style="width: 3%">
-                                    <input type="checkbox">
-                                </th>
---}}
+                                {{--
+                                                                <th style="width: 3%">
+                                                                    <input type="checkbox">
+                                                                </th>
+                                --}}
                                 <th style="width: 5%">#</th>
                                 <th style="text-align: left">Talaba F.I.Sh.</th>
                                 <th style="width: 7%">Ariza raqami</th>
@@ -141,7 +141,11 @@
                                     @if($status=='uploaded' || $status=='archived')
                                         <td class="text-nowrap">
                                             <div>
-                                                {{ json_decode($exam->admin->name)->short_name ?? 'Administrator' }}
+                                                @if($exam->admin)
+                                                    {{ json_decode($exam->admin->name)->short_name ?? 'Noma’lum' }}
+                                                @else
+                                                    <span class="text-muted text-xs">Tizim (Avtomat)</span>
+                                                @endif
                                             </div>
                                             <code>
                                                 {{ $exam->updated_at->format('d.m.Y H:i:s') }}
