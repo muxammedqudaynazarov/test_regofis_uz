@@ -149,7 +149,7 @@
                                         </td>
                                     @endif
                                     @if($status == 'all')
-                                        <td>
+                                        <td class="text-nowrap">
                                             @if($exam->status == '2')
                                                 @if($exam->results->first()->point >= $min_point)
                                                     @can('exam.upload')
