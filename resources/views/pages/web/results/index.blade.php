@@ -144,7 +144,7 @@
                                                 @if($exam->admin)
                                                     {{ json_decode($exam->admin->name)->short_name ?? 'Noma’lum' }}
                                                 @else
-                                                    <span class="text-muted text-xs">Tizim (Avtomat)</span>
+                                                    <span class="text-muted text-xs">Tizim (avtomat)</span>
                                                 @endif
                                             </div>
                                             <code>
