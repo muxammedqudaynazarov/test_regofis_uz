@@ -238,7 +238,7 @@
                                            class="nav-link {{ Request::is('home/final-results/archived/list') ? 'active' : '' }}">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
-                                                Arxiv imtihonlar
+                                                Arxivlar
                                             </p>
                                         </a>
                                     </li>
@@ -249,7 +249,7 @@
                                            class="nav-link {{ Request::is('home/final-results/uploaded/list') ? 'active' : '' }}">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
-                                                Yuklangan imtihonlar
+                                                Yuklanganlar
                                             </p>
                                         </a>
                                     </li>
