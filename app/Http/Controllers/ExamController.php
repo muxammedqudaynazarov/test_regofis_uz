@@ -109,8 +109,8 @@ class ExamController extends Controller
 
     public function update(Request $request, $id)
     {
+        dd('OK');
         $exam = Exam::findOrFail($id);
-        dd($exam);
         if ($exam->finished == '1' && $exam->attempt == 1 && $exam->archived == '0') {
             $result = $exam->results->first();
 
