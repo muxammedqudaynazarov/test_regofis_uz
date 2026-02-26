@@ -113,9 +113,14 @@ class QuestionController extends Controller
     {
         if (\auth()->user()->can('subjects.resource.create')) {
             $request->validate([
-                'questions_file' => 'required|file|mimetypes:text/plain,application/octet-stream',
                 'language_id' => 'required',
+            ], [
+                'language_id.required' => 'Savol tili tanlanishi shart.'
             ]);
+            $file = $request->file('questions_file');
+            if ($file->getClientOriginalExtension() !== 'txt') {
+                return redirect()->back()->withErrors(['questions_file' => 'Faqat .txt fayl yuklang!']);
+            }
 
             try {
                 $file = $request->file('questions_file');
