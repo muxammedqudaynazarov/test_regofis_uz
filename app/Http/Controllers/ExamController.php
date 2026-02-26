@@ -35,11 +35,16 @@ class ExamController extends Controller
     {
         if (auth()->user()->can('exam.view')) {
             if (in_array($status, ['archived', 'uploaded'])) {
-                if ($status == 'archived') $exams = Exam::orderBy('created_at', 'desc')->where('archived', '1')->paginate(20);
+                if ($status == 'archived') {
+                    $exams = Exam::with('result')->where('finished', '1')->where('archived', '1')
+                        ->whereHas('result', function ($query) {
+                            $query->where('status', '0')->where('uploaded', '0');
+                        })->paginate(20);
+                }
                 if ($status == 'uploaded') {
                     $exams = Exam::with('result')->where('finished', '1')->where('archived', '1')
                         ->whereHas('result', function ($query) {
-                            $query->where('uploaded', '1');
+                            $query->where('status', '1')->where('uploaded', '1');
                         })->paginate(20);
                 }
                 return view('pages.web.results.index', compact(['exams', 'status']));
