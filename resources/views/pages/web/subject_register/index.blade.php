@@ -126,7 +126,7 @@
                                         <div class="font-weight-bold">{{ $lesson->subject->name }}</div>
                                         <div class="small">{{ $lesson->code }}</div>
                                     </td>
-                                    <td>{{ $lesson->department->name ?? 'Noma’lum' }}</td>
+                                    <td>{!! $lesson->department->name ?? '<s>Noma’lum</s>' !!}</td>
                                     <td>{{ $lesson->curriculum->name }}</td>
                                     <td>
                                         <div class="badge badge-primary">{{ $lesson->curriculum->edu_year->name }}</div>
