@@ -18,10 +18,7 @@ class FinishedExamsExport implements FromCollection, WithHeadings, WithMapping, 
 
     public function __construct($exams)
     {
-        $this->exams = $exams->filter(function ($exam) {
-            $point = $exam->results->first()->point ?? 0;
-            return (float)$point > 0;
-        });
+        $this->exams = $exams;
     }
 
     public function collection()
