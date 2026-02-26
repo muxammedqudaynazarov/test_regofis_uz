@@ -52,7 +52,7 @@ class FinishedExamsExport implements FromCollection, WithHeadings, WithMapping, 
             $exam->student->specialty->name,
             $exam->failed_subject->subject_name ?? 'Noma’lum fan',
             $exam->results->first()->point ?? '-',
-            ($exam->result->updated == '1') ? 'Ha' : 'Yo‘q',
+            ($exam->result->uploaded == '1') ? 'Ha' : 'Yo‘q',
             'Yakunlangan',
             $exam->updated_at ? $exam->updated_at->format('d.m.Y H:i') : '-',
         ];
@@ -61,7 +61,7 @@ class FinishedExamsExport implements FromCollection, WithHeadings, WithMapping, 
     public function styles(Worksheet $sheet)
     {
         // Sarlavhalar dizayni
-        $sheet->getStyle('A1:I1')->applyFromArray([
+        $sheet->getStyle('A1:J1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['argb' => 'FFFFFFFF'],
