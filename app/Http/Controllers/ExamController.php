@@ -55,10 +55,7 @@ class ExamController extends Controller
 
     public function store(Request $request)
     {
-        // Eager loading orqali so'rovlar sonini kamaytiramiz
-        $exams = Exam::with('result')
-            ->where('finished', '1')
-            ->where('archived', '0')
+        $exams = Exam::with('result')->where('finished', '1')->where('archived', '0')
             ->whereHas('result', function ($query) {
                 $query->where('status', '1')->where('uploaded', '0');
             })->get();
@@ -71,11 +68,9 @@ class ExamController extends Controller
         $errorCount = 0;
 
         foreach ($exams as $exam) {
-            $res = $exam->result; // with('result') ishlatganimiz uchun bazaga qayta so'rov bermaydi
-
+            $res = $exam->result;
             try {
-                $response = Http::withToken(env('REGOFIS_TOKEN'))
-                [cite_start]->timeout(30) // Har bir so'rov uchun 30 soniya limit [cite: 1]
+                $response = Http::withToken(env('REGOFIS_TOKEN'))->timeout(30)
                     ->post('https://edu.regofis.uz/api/grade-sheets/create/', [
                         'student_group' => $exam->group_id,
                         'failed_subject' => $exam->failed_subject_id,
@@ -85,7 +80,6 @@ class ExamController extends Controller
                     ]);
 
                 if ($response->successful()) {
-                    // API muvaffaqiyatli javob bersagina bazani yangilaymiz
                     $exam->update([
                         'archived' => '1',
                         'user_id' => Auth::id()
@@ -101,7 +95,6 @@ class ExamController extends Controller
                     $errorCount++;
                 }
             } catch (\Exception $e) {
-                // Timeout yoki tarmoq xatosi bo'lsa, siklni to'xtatmasdan keyingisiga o'tadi
                 $errorCount++;
                 continue;
             }
