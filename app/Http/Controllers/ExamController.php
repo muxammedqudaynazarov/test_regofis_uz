@@ -67,8 +67,10 @@ class ExamController extends Controller
                     'yn' => $exam->result->point,
                 ]);
                 $exam->archived = '1';
+                $exam->user_id = Auth::id();
                 $exam->save();
                 $res->uploaded = $response->successful() ? '1' : '0';
+                $res->user_id = Auth::id();
                 $res->save();
             } else continue;
         }
@@ -89,8 +91,10 @@ class ExamController extends Controller
                     'yn' => $res->point,
                 ]);
                 $exam->archived = '1';
+                $exam->user_id = Auth::id();
                 $exam->save();
                 $res->uploaded = $response->successful() ? '1' : '0';
+                $res->user_id = Auth::id();
                 $res->save();
                 return redirect()->route('final-results.index')->with('success', 'Natijalar serverga yuklandi!');
             }
@@ -113,6 +117,7 @@ class ExamController extends Controller
                 $newExam->finished_at = null;
                 $newExam->save();
                 $exam->archived = '1';
+                $exam->user_id = Auth::id();
                 $exam->save();
                 return redirect(route('final-results.index'))->with('success', 'Talabaning imtihon natijalari arxivga olindi.');
             }
