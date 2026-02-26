@@ -235,7 +235,7 @@
                                 @can('lessons.request.view')
                                     <li class="nav-item">
                                         <a href="{{ route('final-results.status', 'archived') }}"
-                                           class="nav-link {{ Request::is('home/final-results/archived') ? 'active' : '' }}">
+                                           class="nav-link {{ Request::is('home/final-results/archived/list') ? 'active' : '' }}">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
                                                 Arxiv imtihonlar
@@ -246,7 +246,7 @@
                                 @can('lessons.request.view')
                                     <li class="nav-item">
                                         <a href="{{ route('final-results.status', 'uploaded') }}"
-                                           class="nav-link {{ Request::is('home/final-results/uploaded') ? 'active' : '' }}">
+                                           class="nav-link {{ Request::is('home/final-results/uploaded/list') ? 'active' : '' }}">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
                                                 Yuklangan imtihonlar
