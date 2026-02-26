@@ -113,7 +113,7 @@ class QuestionController extends Controller
     {
         if (\auth()->user()->can('subjects.resource.create')) {
             $request->validate([
-                'questions_file' => 'required|file|mimes:txt',
+                'questions_file' => 'required|file|mimetypes:text/plain,application/octet-stream',
                 'language_id' => 'required',
             ]);
 
@@ -127,7 +127,7 @@ class QuestionController extends Controller
                     return redirect()->back()->with('error', 'Fayldagi barcha savollarda xatolik topildi.<br>' . implode('<br>', array_slice($errors, 0, 5)));
                 }
                 if (empty($validQuestions)) {
-                    return redirect()->back()->with('error', 'Fayl bo\'sh yoki format noto\'g\'ri.');
+                    return redirect()->back()->with('error', 'Fayl bo‘sh yoki format noto‘g‘ri.');
                 }
                 // DB tranzaksiyasi
                 DB::beginTransaction();
