@@ -84,8 +84,8 @@ class ExamController extends Controller
 
     public function show($id)
     {
+        dd($id);
         $exam = Exam::findOrFail($id);
-        dd($exam);
         if ($exam->finished == '1' && $exam->archived == '0') {
             $res = Result::where('exam_id', $exam->id)->firstOrFail();
             if ($res->status == '1' && $res->uploaded == '0') {
