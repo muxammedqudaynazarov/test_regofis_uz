@@ -87,7 +87,7 @@
         <div class="sidebar">
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                    data-accordion="false">
+                    data-accordion="true">
 
                     <li class="nav-item">
                         <a href="{{ route('home') }}" class="nav-link {{ Request::is('home') ? 'active' : '' }}">
@@ -161,7 +161,7 @@
                                         <i class="fas fa-angle-left right"></i>
                                     </p>
                                 </a>
-                                <ul class="nav nav-treeview">
+                                <ul class="nav nav-treeview" style="background: #454545">
                                     @can('lessons.view')
                                         <li class="nav-item">
                                             <a href="{{ route('subjects-register.index') }}"
@@ -214,14 +214,47 @@
                         </li>
                     @endcan
                     @can('exam.view')
-                        <li class="nav-item">
-                            <a href="{{ route('final-results.index') }}"
-                               class="nav-link {{ Request::is('home/final-results*') ? 'active' : '' }}">
+                        <li class="nav-item {{ Request::is('home/final-results*') ? 'menu-is-opening menu-open' : '' }}">
+                            <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-clipboard-check"></i>
                                 <p>
                                     Imtihonlar
+                                    <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
+                            <ul class="nav nav-treeview" style="background: #454545">
+                                @can('lessons.view')
+                                    <li class="nav-item">
+                                        <a href="{{ route('final-results.index') }}"
+                                           class="nav-link {{ Request::is('home/final-results') ? 'active' : '' }}">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Umumiy ro‘yxat</p>
+                                        </a>
+                                    </li>
+                                @endcan
+                                @can('lessons.request.view')
+                                    <li class="nav-item">
+                                        <a href="{{ route('final-results.status', 'archived') }}"
+                                           class="nav-link {{ Request::is('home/final-results/archived') ? 'active' : '' }}">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                Arxiv imtihonlar
+                                            </p>
+                                        </a>
+                                    </li>
+                                @endcan
+                                @can('lessons.request.view')
+                                    <li class="nav-item">
+                                        <a href="{{ route('final-results.status', 'uploaded') }}"
+                                           class="nav-link {{ Request::is('home/final-results/uploaded') ? 'active' : '' }}">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                Yuklangan imtihonlar
+                                            </p>
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
                         </li>
                     @endcan
                     @can('statistics.view')

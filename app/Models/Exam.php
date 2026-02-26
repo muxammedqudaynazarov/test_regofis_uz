@@ -19,6 +19,7 @@ class Exam extends Model
         'failed_subject_id',
         'group_id',
         'semester_id',
+        'user_id',
         'finished',
         'archived',
         'attempt',
@@ -70,5 +71,10 @@ class Exam extends Model
     public function student(): HasOne
     {
         return $this->hasOne(Student::class, 'id', 'student_id');
+    }
+
+    public function admin(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }

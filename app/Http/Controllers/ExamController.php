@@ -24,8 +24,26 @@ class ExamController extends Controller
     public function index()
     {
         if (auth()->user()->can('exam.view')) {
+            $status = 'all';
             $exams = Exam::orderBy('created_at', 'desc')->where('archived', '0')->paginate(20);
-            return view('pages.web.results.index', compact(['exams']));
+            return view('pages.web.results.index', compact(['exams', 'status']));
+        }
+        abort(404);
+    }
+
+    public function status($status)
+    {
+        if (auth()->user()->can('exam.view')) {
+            if (in_array($status, ['archived', 'uploaded'])) {
+                if ($status == 'archived') $exams = Exam::orderBy('created_at', 'desc')->where('archived', '1')->paginate(20);
+                if ($status == 'uploaded') {
+                    $exams = Exam::with('result')->where('finished', '1')->where('archived', '1')
+                        ->whereHas('result', function ($query) {
+                            $query->where('uploaded', '1');
+                        })->paginate(20);
+                }
+                return view('pages.web.results.index', compact(['exams', 'status']));
+            }
         }
         abort(404);
     }

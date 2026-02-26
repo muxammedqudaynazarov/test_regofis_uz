@@ -14,7 +14,8 @@ class Result extends Model
         'student_id',
         'exam_id',
         'point',
-        'status',
         'uploaded',
+        'user_id',
+        'status',
     ];
 }

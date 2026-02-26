@@ -31,56 +31,64 @@
                         <table class="table table-hover text-center table-custom">
                             <thead>
                             <tr>
+{{--
                                 <th style="width: 3%">
                                     <input type="checkbox">
                                 </th>
+--}}
                                 <th style="width: 5%">#</th>
                                 <th style="text-align: left">Talaba F.I.Sh.</th>
-                                <th style="width: 10%">Ariza raqami</th>
+                                <th style="width: 7%">Ariza raqami</th>
                                 <th>Fan nomi va guruhi</th>
-                                <th style="width: 10%">Ta’lim tili</th>
+                                <th style="width: 7%">Ta’lim tili</th>
                                 <th style="width: 10%">Semestr / Kredit</th>
-                                <th style="width: 10%">To‘plagan ball</th>
-                                <th style="width: 10%">Holati</th>
-                                <th class="text-nowrap" style="width: 10%">
-                                    @can('exam.upload.all')
-                                        {{--<form action="{{ route('final-results.store') }}" method="POST"
-                                              class="d-inline-block">
-                                            @csrf
-                                            <button class="btn btn-primary btn-sm font-weight-bold"
-                                                    type="submit"
-                                                    title="O‘tish balidan yuqori bo‘lgan hamma talabalarning natijalarini ko‘chirish"
-                                                    onclick="return confirm('O‘tish balidan yuqori bo‘lgan hamma talabalarning natijalarini ko‘chirishni tasdiqlaysizmi?')">
-                                                <i class="fa fa-cloud-upload-alt"></i>
-                                            </button>
-                                        </form>--}}
-                                    @endcan
-                                    {{--@can('exam.upload.all')
-                                        <a href="#" title="Hamma test natijalarini qayta ko‘rib chiqish"
-                                           class="btn btn-outline-warning btn-sm">
-                                            <i class="fa fa-reply"></i>
-                                        </a>
-                                    @endcan--}}
-                                    {{--@can('exam.download')
-                                        <a href="{{ route('final-results.download') }}"
-                                           title="Imtihonlarning umumiy ro‘yxatini .XLSx formatida yuklab olish"
-                                           class="btn btn-outline-danger btn-sm">
-                                            <i class="fa fa-cloud-download-alt"></i>
-                                        </a>
-                                    @endcan--}}
-                                </th>
+                                <th style="width: 7%">To‘plagan ball</th>
+                                <th style="width: 7%">Urinish</th>
+                                <th style="width: 7%">Holati</th>
+                                @if($status=='uploaded' || $status=='archived')
+                                    <th style="width: 7%">Amalni bajardi</th>
+                                @endif
+                                @if($status == 'all')
+                                    <th class="text-nowrap" style="width: 7%">
+                                        @can('exam.upload.all')
+                                            <form action="{{ route('final-results.store') }}" method="POST"
+                                                  class="d-inline-block">
+                                                @csrf
+                                                <button class="btn btn-primary btn-sm font-weight-bold"
+                                                        type="submit"
+                                                        title="O‘tish balidan yuqori bo‘lgan hamma talabalarning natijalarini ko‘chirish"
+                                                        onclick="return confirm('O‘tish balidan yuqori bo‘lgan hamma talabalarning natijalarini ko‘chirishni tasdiqlaysizmi?')">
+                                                    <i class="fa fa-cloud-upload-alt"></i>
+                                                </button>
+                                            </form>
+                                        @endcan
+                                        {{--@can('exam.upload.all')
+                                            <a href="#" title="Hamma test natijalarini qayta ko‘rib chiqish"
+                                               class="btn btn-outline-warning btn-sm">
+                                                <i class="fa fa-reply"></i>
+                                            </a>
+                                        @endcan--}}
+                                        {{--@can('exam.download')
+                                            <a href="{{ route('final-results.download') }}"
+                                               title="Imtihonlarning umumiy ro‘yxatini .XLSx formatida yuklab olish"
+                                               class="btn btn-outline-danger btn-sm">
+                                                <i class="fa fa-cloud-download-alt"></i>
+                                            </a>
+                                        @endcan--}}
+                                    </th>
+                                @endif
                             </tr>
                             </thead>
                             <tbody>
                             @forelse($exams as $exam)
                                 <tr>
-                                    <td>
+                                    {{--<td>
                                         @if(($exam->results->first()->point ?? 0) >= $min_point)
                                             <input type="checkbox">
                                         @else
                                             <input type="checkbox" disabled>
                                         @endif
-                                    </td>
+                                    </td>--}}
                                     <td>#{{ $exam->id }}</td>
                                     <td style="text-align: left">
                                         <div class="font-weight-bold">
@@ -113,6 +121,9 @@
                                         {{ number_format($exam->results->first()->point ?? 0, 2) }}
                                     </td>
                                     <td>
+                                        {{ $exam->attempt }}
+                                    </td>
+                                    <td>
                                         @if($exam->status == '0')
                                             <div class="badge badge-primary">
                                                 Yangi
@@ -127,39 +138,57 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td>
-                                        @if($exam->status == '2')
-                                            @if($exam->results->first()->point >= $min_point)
-                                                @can('exam.upload')
-                                                    <a href="{{ route('final-results.show', $exam->id) }}"
-                                                       class="btn btn-primary btn-sm font-weight-bold"
-                                                       onclick="return confirm('{{ addslashes(json_decode($exam->student->name)->full_name ?? '') }}ning {{ addslashes($exam->failed_subject->subject_name ?? '') }} fanidan bahosini serverga ko‘chirishni tasdiqlaysizmi?')">
-                                                        <i class="fa fa-cloud-upload-alt"></i>
-                                                        Ko‘chirish
-                                                    </a>
-                                                @endcan
-                                            @else
-                                                @can('exam.archive')
-                                                    @if($exam->attempt == 1)
-                                                        <form action="{{ route('final-results.update', $exam->id) }}"
-                                                              method="POST">
-                                                            @method('PUT')
-                                                            @csrf
-                                                            <button class="btn btn-danger btn-sm font-weight-bold"
-                                                                    type="submit"
-                                                                    onclick="return confirm('{{ addslashes(json_decode($exam->student->name)->full_name ?? '') }}ning {{ addslashes($exam->failed_subject->subject_name ?? '') }} fanidan hozirgi natijasini arxivga olishni tasdiqlaysizmi?')">
-                                                                <i class="fa fa-archive"></i>
-                                                                Arxivlash
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                @endcan
+                                    @if($status=='uploaded' || $status=='archived')
+                                        <td class="text-nowrap">
+                                            <div>
+                                                {{ json_decode($exam->admin->name)->short_name ?? 'Administrator' }}
+                                            </div>
+                                            <code>
+                                                {{ $exam->updated_at->format('d.m.Y H:i:s') }}
+                                            </code>
+                                        </td>
+                                    @endif
+                                    @if($status == 'all')
+                                        <td>
+                                            @if($exam->status == '2')
+                                                @if($exam->results->first()->point >= $min_point)
+                                                    @can('exam.upload')
+                                                        <a href="{{ route('final-results.show', $exam->id) }}"
+                                                           class="btn btn-primary btn-sm font-weight-bold"
+                                                           onclick="return confirm('{{ addslashes(json_decode($exam->student->name)->full_name ?? '') }}ning {{ addslashes($exam->failed_subject->subject_name ?? '') }} fanidan bahosini serverga ko‘chirishni tasdiqlaysizmi?')">
+                                                            <i class="fa fa-cloud-upload-alt"></i>
+                                                            Ko‘chirish
+                                                        </a>
+                                                    @endcan
+                                                @else
+                                                    @can('exam.archive')
+                                                        @if($exam->attempt == 1)
+                                                            <form
+                                                                action="{{ route('final-results.update', $exam->id) }}"
+                                                                method="POST">
+                                                                @method('PUT')
+                                                                @csrf
+                                                                <button class="btn btn-danger btn-sm font-weight-bold"
+                                                                        type="submit"
+                                                                        onclick="return confirm('{{ addslashes(json_decode($exam->student->name)->full_name ?? '') }}ning {{ addslashes($exam->failed_subject->subject_name ?? '') }} fanidan hozirgi natijasini arxivga olishni tasdiqlaysizmi?')">
+                                                                    <i class="fa fa-archive"></i>
+                                                                    Arxivlash
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    @endcan
+                                                @endif
                                             @endif
-                                        @endif
-                                    </td>
+                                        </td>
+                                    @endif
                                 </tr>
                             @empty
-
+                                <tr>
+                                    <td colspan="10" class="text-center py-4 text-muted">
+                                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                        Ma’lumot topilmadi.
+                                    </td>
+                                </tr>
                             @endforelse
                             </tbody>
                         </table>

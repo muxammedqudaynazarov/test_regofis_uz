@@ -72,6 +72,7 @@ Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::resource('languages', LanguageController::class)->only(['index', 'update']);
     Route::delete('/questions/destroy-many', [QuestionController::class, 'destroyMany'])->name('questions.destroyMany');
     Route::resource('questions', QuestionController::class)->only(['update', 'destroy']);
+    Route::get('/final-results/{to}', [ExamController::class, 'status'])->name('final-results.status');
     Route::resource('final-results', ExamController::class)->only(['index', 'store', 'update', 'show']);
     Route::resource('statistics', StatisticsController::class)->only(['index']);
     Route::prefix('statistics')->group(function () {
