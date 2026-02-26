@@ -55,56 +55,109 @@ class ExamController extends Controller
 
     public function store(Request $request)
     {
-        $exams = Exam::with('result')->where('finished', '1')->where('archived', '0')
+        // Eager loading orqali so'rovlar sonini kamaytiramiz
+        $exams = Exam::with('result')
+            ->where('finished', '1')
+            ->where('archived', '0')
             ->whereHas('result', function ($query) {
                 $query->where('status', '1')->where('uploaded', '0');
             })->get();
 
-        //https://edu.regofis.uz/api/grade-sheets/create/
-        foreach ($exams as $exam) {
-            $res = Result::where('exam_id', $exam->id)->first();
-            if ($res) {
-                $response = Http::withToken(env('REGOFIS_TOKEN'))->post('https://edu.regofis.uz/api/grade-sheets/create/', [
-                    'student_group' => $exam->group_id,
-                    'failed_subject' => $exam->failed_subject_id,
-                    'jn' => 0,
-                    'on' => 0,
-                    'yn' => $exam->result->point,
-                ]);
-                $exam->archived = '1';
-                $exam->user_id = Auth::id();
-                $exam->save();
-                $res->uploaded = $response->successful() ? '1' : '0';
-                $res->user_id = Auth::id();
-                $res->save();
-            } else continue;
+        if ($exams->isEmpty()) {
+            return redirect()->route('final-results.index')->with('info', 'Yuklash uchun yangi natijalar topilmadi.');
         }
-        return redirect()->route('final-results.index')->with('success', 'Natijalar serverga yuklandi!');
+
+        $successCount = 0;
+        $errorCount = 0;
+
+        foreach ($exams as $exam) {
+            $res = $exam->result; // with('result') ishlatganimiz uchun bazaga qayta so'rov bermaydi
+
+            try {
+                $response = Http::withToken(env('REGOFIS_TOKEN'))
+                [cite_start]->timeout(30) // Har bir so'rov uchun 30 soniya limit [cite: 1]
+                    ->post('https://edu.regofis.uz/api/grade-sheets/create/', [
+                        'student_group' => $exam->group_id,
+                        'failed_subject' => $exam->failed_subject_id,
+                        'jn' => 0,
+                        'on' => 0,
+                        'yn' => $res->point,
+                    ]);
+
+                if ($response->successful()) {
+                    // API muvaffaqiyatli javob bersagina bazani yangilaymiz
+                    $exam->update([
+                        'archived' => '1',
+                        'user_id' => Auth::id()
+                    ]);
+
+                    $res->update([
+                        'uploaded' => '1',
+                        'user_id' => Auth::id()
+                    ]);
+
+                    $successCount++;
+                } else {
+                    $errorCount++;
+                }
+            } catch (\Exception $e) {
+                // Timeout yoki tarmoq xatosi bo'lsa, siklni to'xtatmasdan keyingisiga o'tadi
+                $errorCount++;
+                continue;
+            }
+        }
+
+        $msg = "$successCount ta natija yuklandi.";
+        if ($errorCount > 0) $msg .= " $errorCount tasida xatolik yuz berdi.";
+
+        return redirect()->route('final-results.index')->with($errorCount > 0 ? 'warning' : 'success', $msg);
     }
 
     public function show(Request $request, $id)
     {
-        $exam = Exam::findOrFail($id);
-        if ($exam->finished == '1' && $exam->archived == '0') {
-            $res = Result::where('exam_id', $exam->id)->firstOrFail();
-            if ($res->status == '1' && $res->uploaded == '0') {
-                $response = Http::withToken(env('REGOFIS_TOKEN'))->post('https://edu.regofis.uz/api/grade-sheets/create/', [
-                    'student_group' => $exam->group_id,
-                    'failed_subject' => $exam->failed_subject_id,
-                    'jn' => 0,
-                    'on' => 0,
-                    'yn' => $res->point,
-                ]);
-                $exam->archived = '1';
-                $exam->user_id = Auth::id();
-                $exam->save();
-                $res->uploaded = $response->successful() ? '1' : '0';
-                $res->user_id = Auth::id();
-                $res->save();
-                return redirect()->route('final-results.index')->with('success', 'Natijalar serverga yuklandi!');
+        $exam = Exam::with('results')->findOrFail($id);
+        $res = $exam->results->first();
+
+        // Shartlarni tekshirish
+        if ($exam->finished == '1' && $exam->archived == '0' && $res && $res->status == '1' && $res->uploaded == '0') {
+            try {
+                // API so'rovini yuborish (Timeoutni oshirgan holda)
+                $response = Http::withToken(env('REGOFIS_TOKEN'))
+                    ->timeout(60) // 60 soniyagacha kutishga ruxsat beramiz
+                    ->connectTimeout(15)
+                    ->post('https://edu.regofis.uz/api/grade-sheets/create/', [
+                        'student_group' => $exam->group_id,
+                        'failed_subject' => $exam->failed_subject_id,
+                        'jn' => 0,
+                        'on' => 0,
+                        'yn' => $res->point,
+                    ]);
+
+                if ($response->successful()) {
+                    // Faqat javob muvaffaqiyatli bo'lsagina arxivlaymiz va belgilaymiz
+                    $exam->update([
+                        'archived' => '1',
+                        'user_id' => Auth::id()
+                    ]);
+
+                    $res->update([
+                        'uploaded' => '1',
+                        'user_id' => Auth::id()
+                    ]);
+
+                    return redirect()->route('final-results.index')->with('success', 'Natijalar serverga yuklandi!');
+                }
+
+                // API xato qaytarsa
+                return redirect()->route('final-results.index')->with('error', 'API xatoligi: ' . $response->status());
+
+            } catch (\Exception $e) {
+                // Timeout yoki ulanish xatosi (cURL error 28) yuzaga kelsa
+                return redirect()->route('final-results.index')->with('error', 'Tashqi server bilan bog‘lanish vaqti tugadi (Timeout).');
             }
         }
-        return redirect()->route('final-results.index')->with('error', 'Server xatoligi. Natijani ko‘chirib bo‘lmadi!');
+
+        return redirect()->route('final-results.index')->with('error', 'Ushbu amalni bajarib bo‘lmaydi yoki natija allaqachon yuklangan.');
     }
 
     public function update(Request $request, $id)
