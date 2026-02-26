@@ -84,7 +84,6 @@ class ExamController extends Controller
 
     public function show(Request $request, $id)
     {
-        return redirect()->back();
         $exam = Exam::find($id);
         dd($id);
         if ($exam->finished == '1' && $exam->archived == '0') {
