@@ -39,13 +39,13 @@ class ExamController extends Controller
                     $exams = Exam::with('result')->where('finished', '1')->where('archived', '1')
                         ->whereHas('result', function ($query) {
                             $query->where('status', '0')->where('uploaded', '0');
-                        })->paginate(20);
+                        })->orderBy('updated_at')->paginate(20);
                 }
                 if ($status == 'uploaded') {
                     $exams = Exam::with('result')->where('finished', '1')->where('archived', '1')
                         ->whereHas('result', function ($query) {
                             $query->where('status', '1')->where('uploaded', '1');
-                        })->paginate(20);
+                        })->orderBy('updated_at')->paginate(20);
                 }
                 return view('pages.web.results.index', compact(['exams', 'status']));
             }
