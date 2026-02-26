@@ -82,10 +82,10 @@ class ExamController extends Controller
         return redirect()->route('final-results.index')->with('success', 'Natijalar serverga yuklandi!');
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        $exam = Exam::find($id);
         dd($id);
-        $exam = Exam::findOrFail($id);
         if ($exam->finished == '1' && $exam->archived == '0') {
             $res = Result::where('exam_id', $exam->id)->firstOrFail();
             if ($res->status == '1' && $res->uploaded == '0') {
@@ -110,7 +110,6 @@ class ExamController extends Controller
 
     public function update(Request $request, $id)
     {
-        dd('OK');
         $exam = Exam::findOrFail($id);
         if ($exam->finished == '1' && $exam->attempt == 1 && $exam->archived == '0') {
             $result = $exam->results->first();

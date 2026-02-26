@@ -161,7 +161,7 @@
                                                            class="btn btn-outline-primary btn-sm"
                                                            onclick="return confirm('{{ addslashes(json_decode($exam->student->name)->full_name ?? '') }}ning {{ addslashes($exam->failed_subject->subject_name ?? '') }} fanidan bahosini serverga ko‘chirishni tasdiqlaysizmi?')">
                                                             <i class="fa fa-cloud-upload-alt"></i>
-
+                                                            Ko‘chirish
                                                         </a>
                                                     @endcan
                                                 @else
