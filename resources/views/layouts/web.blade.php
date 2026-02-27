@@ -12,10 +12,11 @@
     <link rel="icon" href="{{ asset('dist/img/logo.ico') }}">
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+
     <style>
         body {
             font-family: 'Google Sans', sans-serif;
@@ -308,45 +309,53 @@
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+<script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
-<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+
 <script>
     $(function () {
-        var Toast = Swal.mixin({
-            toast: true,
-            position: 'bottom-end',
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true,
-        });
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right", // Pastki o'ng tomon
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
 
-        // Muvaffaqiyatli xabar (Success)
-        @if(session('success'))
-        Toast.fire({
-            icon: 'success',
-            title: '{{ session('success') }}'
-        });
+        @if(Session::has('success'))
+        toastr.success("{!! Session::get('success') !!}", 'Muvaffaqiyatli');
         @endif
 
-        // Xatolik xabari (Error)
-        @if(session('error'))
-        Toast.fire({
-            icon: 'error',
-            title: '{{ session('error') }}'
-        });
+        @if(Session::has('error'))
+        toastr.error("{!! Session::get('error') !!}", 'Xatolik');
         @endif
 
-        // Validatsiya xatolari (Validation Errors)
+        @if(Session::has('info'))
+        toastr.info("{!! Session::get('info') !!}", 'Ma’lumot');
+        @endif
+
+        @if(Session::has('warning'))
+        toastr.warning("{!! Session::get('warning') !!}", 'Ogohlantirish');
+        @endif
+
         @if($errors->any())
         @foreach($errors->all() as $error)
-        Toast.fire({
-            icon: 'warning',
-            title: '{{ $error }}'
-        });
+        toastr.error("{!! $error !!}", 'Validatsiya xatosi');
         @endforeach
         @endif
     });
 </script>
+
 @yield('scripts')
 </body>
 </html>

@@ -109,48 +109,49 @@
 <script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
+    $(function () {
+        const showToast = (type, title, message) => {
+            let classMap = {
+                'success': 'bg-success',
+                'error': 'bg-danger',
+                'info': 'bg-info',
+                'warning': 'bg-warning'
+            };
 
-    // Laravel Session xabarlarini ushlab olish va Toast orqali ko'rsatish
-    @if(Session::has('success'))
-    Toast.fire({
-        icon: 'success',
-        title: "{!! Session::get('success') !!}"
-    });
-    @endif
+            $(document).Toasts('create', {
+                class: classMap[type] || 'bg-maroon',
+                title: title,
+                autohide: true,
+                delay: 4000,
+                body: message,
+                icon: 'fas fa-bell fa-lg',
+                position: 'bottomRight' // Pastki o'ng tomon
+            });
+        };
 
-    @if(Session::has('error'))
-    Toast.fire({
-        icon: 'error',
-        title: "{!! Session::get('error') !!}"
-    });
-    @endif
+        @if(Session::has('success'))
+        showToast('success', 'Muvaffaqiyatli', "{!! Session::get('success') !!}");
+        @endif
 
-    @if(Session::has('info'))
-    Toast.fire({
-        icon: 'info',
-        title: "{!! Session::get('info') !!}"
-    });
-    @endif
+        @if(Session::has('error'))
+        showToast('error', 'Xatolik', "{!! Session::get('error') !!}");
+        @endif
 
-    @if(Session::has('warning'))
-    Toast.fire({
-        icon: 'warning',
-        title: "{!! Session::get('warning') !!}"
+        @if(Session::has('info'))
+        showToast('info', 'Ma’lumot', "{!! Session::get('info') !!}");
+        @endif
+
+        @if(Session::has('warning'))
+        showToast('warning', 'Ogohlantirish', "{!! Session::get('warning') !!}");
+        @endif
+
+        @if($errors->any())
+        @foreach($errors->all() as $error)
+        showToast('error', 'Validatsiya xatosi', "{!! $error !!}");
+        @endforeach
+        @endif
     });
-    @endif
 </script>
 
 @yield('scripts')
