@@ -108,7 +108,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center py-4 text-muted">
+                                            <td colspan="10" class="text-center py-4 text-muted">
                                                 Ma'lumotlar topilmadi.
                                             </td>
                                         </tr>
