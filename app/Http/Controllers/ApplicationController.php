@@ -55,36 +55,34 @@ class ApplicationController extends Controller
     public function store(Request $request)
     {
         try {
-            // 1. REGOFIS API dan arizalarni olish (Timeout belgilaymiz)
             $response = Http::withToken(env('REGOFIS_TOKEN'))
-                ->timeout(30)
-                ->get('https://edu.regofis.uz/api/applications/', [
+                ->timeout(60)->get('https://edu.regofis.uz/api/applications/', [
                     'student_id' => auth('student')->id(),
                     'pageSize' => 100,
                 ]);
 
-            // Agar server 200 OK qaytarmasa
             if (!$response->successful()) {
-                return redirect()->route('subjects.index')->with('error', 'RegOFIS tizimi bilan aloqa o‘rnatilmadi. Qayta urinib ko‘ring.');
+                return redirect()->route('subjects.index')
+                    ->with('error', 'RegOFIS tizimi bilan aloqa o‘rnatilmadi. Qayta urinib ko‘ring.');
             }
 
             $data = $response->json();
             $apps = $data['data'][0]['items'] ?? []; // Xavfsiz olish
 
             if (empty($apps)) {
-                return redirect()->route('subjects.index')->with('info', 'Sizda tasdiqlangan arizalar mavjud emas.');
+                return redirect()->route('subjects.index')
+                    ->with('info', 'Sizda tasdiqlangan arizalar mavjud emas.');
             }
 
-            // OPTIMIZATSIYA: HEMIS API ni sikl ichidan tashqariga chiqardik (tezlikni 10 barobar oshiradi)
-            $hemisResponse = Http::withToken(env('API_HEMIS'))
-                ->timeout(30)
+            $hemisResponse = Http::withToken(env('API_HEMIS'))->timeout(60)
                 ->get('https://student.karsu.uz/rest/v1/data/curriculum-subject-list', [
                     '_curriculum' => auth('student')->user()->curriculum_id,
                     'limit' => 200,
                 ]);
 
             if (!$hemisResponse->successful()) {
-                return redirect()->route('subjects.index')->with('error', 'HEMIS tizimi bilan aloqa o‘rnatilmadi. Qayta urinib ko‘ring.');
+                return redirect()->route('subjects.index')
+                    ->with('error', 'HEMIS tizimi bilan aloqa o‘rnatilmadi. Qayta urinib ko‘ring.');
             }
 
             $subject_hemis = $hemisResponse->json();
@@ -137,7 +135,6 @@ class ApplicationController extends Controller
                                 ->where('semester_id', $detail['semester_code'])
                                 ->first();
 
-                            // 500 xatolikning oldini olish: Agar subject_list topilsagina Exam yaratamiz
                             if ($db_subject_list) {
                                 Exam::firstOrCreate([
                                     'application_id' => $application->id,
@@ -154,18 +151,16 @@ class ApplicationController extends Controller
                     }
                 }
             }
-
-            return redirect()->route('subjects.index')->with('success', 'Fan ma’lumotlari muvaffaqiyatli yangilandi.');
-
+            return redirect()->route('subjects.index')
+                ->with('success', 'Fan ma’lumotlari muvaffaqiyatli yangilandi.');
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            // API serverlar javob bermasa yoki ulanish uzilib qolsa ushlaymiz
-            return redirect()->route('subjects.index')->with('error', 'Tashqi tizimlar (RegOFIS/HEMIS) bilan aloqa vaqti tugadi. Iltimos, birozdan so‘ng qayta urinib ko‘ring.');
+            return redirect()->route('subjects.index')
+                ->with('error', 'Tashqi tizimlar (RegOFIS/HEMIS) bilan aloqa yo‘q. Iltimos, birozdan so‘ng qayta urinib ko‘ring.');
 
         } catch (\Exception $e) {
-            // Boshqa kutilmagan xatolar (masalan, bazadagi xatolar) ni ushlaymiz
-            // Log::error orqali xatoni xotiraga yozamiz, shunda Laravel log faylida aniq ko'rasiz
             Log::error('RegOFIS Store Xatoligi: ' . $e->getMessage(), ['line' => $e->getLine(), 'file' => $e->getFile()]);
-            return redirect()->route('subjects.index')->with('error', 'Kutilmagan xatolik yuz berdi. Iltimos, administratorga murojaat qiling.');
+            return redirect()->route('subjects.index')
+                ->with('error', 'Kutilmagan xatolik yuz berdi. Iltimos, administratorga murojaat qiling.');
         }
     }
 }
