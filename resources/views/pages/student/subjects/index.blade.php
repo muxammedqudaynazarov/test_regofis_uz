@@ -106,7 +106,11 @@
                                             </td>
                                             <td class="text-nowrap">
                                                 @if(auth()->user()->specialty->department->access == '1')
-                                                    @if($subject->resource->questions->count())
+                                                    @php
+                                                        $studentLangId = auth()->user()->language_id;
+                                                        $hasQuestions = $subject->resource->questions->where('language_id', $studentLangId)->count() > 0;
+                                                    @endphp
+                                                    @if($hasQuestions)
                                                         @if($subject->finished == '0')
                                                             @if($subject->status == '0')
                                                                 <a href="javascript:void(0)"
