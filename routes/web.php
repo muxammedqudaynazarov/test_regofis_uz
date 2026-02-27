@@ -61,8 +61,8 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
 Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/user/{role}', [HomeController::class, 'switch_role'])->name('switch.role');
-    Route::resource('logs', LogViewController::class)->only(['index', 'destroy']);
     Route::resource('departments', DepartmentController::class)->only(['show', 'update']);
+    Route::resource('logs', LogViewController::class)->only(['index', 'destroy']);
     Route::get('/department/resources', [DepartmentRoleInfoController::class, 'role_department'])->name('statistics.department.resources');
     Route::resource('options', OptionController::class)->only(['index', 'update']);
     Route::resource('applications', ApplicationController::class)->only(['index', 'show']);

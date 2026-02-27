@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
 
@@ -309,49 +309,25 @@
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
-<script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
-    $(function () {
+    $(document).ready(function () {
         toastr.options = {
             "closeButton": true,
-            "debug": false,
-            "newestOnTop": true,
             "progressBar": true,
-            "positionClass": "toast-bottom-right", // Pastki o'ng tomon
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
+            "positionClass": "toast-bottom-right",
+            "timeOut": "4000"
         };
 
         @if(Session::has('success'))
-        toastr.success("{!! Session::get('success') !!}", 'Muvaffaqiyatli');
+        toastr.success("{!! Session::get('success') !!}");
         @endif
 
         @if(Session::has('error'))
-        toastr.error("{!! Session::get('error') !!}", 'Xatolik');
-        @endif
-
-        @if(Session::has('info'))
-        toastr.info("{!! Session::get('info') !!}", 'Ma’lumot');
-        @endif
-
-        @if(Session::has('warning'))
-        toastr.warning("{!! Session::get('warning') !!}", 'Ogohlantirish');
-        @endif
-
-        @if($errors->any())
-        @foreach($errors->all() as $error)
-        toastr.error("{!! $error !!}", 'Validatsiya xatosi');
-        @endforeach
+        toastr.error("{!! Session::get('error') !!}");
         @endif
     });
 </script>

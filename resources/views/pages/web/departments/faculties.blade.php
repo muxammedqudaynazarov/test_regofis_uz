@@ -113,21 +113,11 @@
                         _method: 'PUT'
                     },
                     success: function (response) {
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-
-                        Toast.fire({
-                            icon: 'success',
-                            title: response.message
-                        });
-
+                        toastr.success(response.message || 'Muvaffaqiyatli saqlandi!');
                     },
                     error: function (xhr) {
+                        checkbox.prop('checked', !access);
+                        toastr.error('Xatolik yuz berdi. Ma’lumotni saqlab bo‘lmadi.');
                     }
                 });
             });

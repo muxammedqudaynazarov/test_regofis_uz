@@ -12,7 +12,8 @@
     <link rel="icon" href="{{ asset('dist/img/logo.ico') }}">
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
 
@@ -104,52 +105,27 @@
         </div>
     </footer>
 </div>
+
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
-    $(function () {
-        const showToast = (type, title, message) => {
-            let classMap = {
-                'success': 'bg-success',
-                'error': 'bg-danger',
-                'info': 'bg-info',
-                'warning': 'bg-warning'
-            };
-
-            $(document).Toasts('create', {
-                class: classMap[type] || 'bg-maroon',
-                title: title,
-                autohide: true,
-                delay: 4000,
-                body: message,
-                icon: 'fas fa-bell fa-lg',
-                position: 'bottomRight' // Pastki o'ng tomon
-            });
+    $(document).ready(function () {
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "timeOut": "4000"
         };
 
         @if(Session::has('success'))
-        showToast('success', 'Muvaffaqiyatli', "{!! Session::get('success') !!}");
+        toastr.success("{!! Session::get('success') !!}");
         @endif
 
         @if(Session::has('error'))
-        showToast('error', 'Xatolik', "{!! Session::get('error') !!}");
-        @endif
-
-        @if(Session::has('info'))
-        showToast('info', 'Ma’lumot', "{!! Session::get('info') !!}");
-        @endif
-
-        @if(Session::has('warning'))
-        showToast('warning', 'Ogohlantirish', "{!! Session::get('warning') !!}");
-        @endif
-
-        @if($errors->any())
-        @foreach($errors->all() as $error)
-        showToast('error', 'Validatsiya xatosi', "{!! $error !!}");
-        @endforeach
+        toastr.error("{!! Session::get('error') !!}");
         @endif
     });
 </script>
