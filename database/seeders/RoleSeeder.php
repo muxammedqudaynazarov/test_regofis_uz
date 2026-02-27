@@ -129,7 +129,10 @@ class RoleSeeder extends Seeder
                 'statistics.view',
                 'statistics.export',
                 'statistics.view.sv',
+                'log.view',
+                'log.clean',
                 'system.view',
+                'system.update',
             ],
             'department' => [
                 'enter.home',
