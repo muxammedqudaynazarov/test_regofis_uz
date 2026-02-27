@@ -81,19 +81,23 @@
                                     @endif
                                 </div>
 
-                                <div class="col-md-2 text-right">
-                                    <button type="button" class="btn btn-sm btn-danger font-weight-bold w-100"
-                                            onclick="if(confirm('Haqiqatan ham barcha loglarni tozalashni xohlaysizmi?')) document.getElementById('clear-form').submit();">
-                                        <i class="fas fa-trash-alt"></i> Jurnalni tozalash
-                                    </button>
-                                </div>
+                                @can('log.clean')
+                                    <div class="col-md-2 text-right">
+                                        <button type="button" class="btn btn-sm btn-danger font-weight-bold w-100"
+                                                onclick="if(confirm('Haqiqatan ham barcha loglarni tozalashni xohlaysizmi?')) document.getElementById('clear-form').submit();">
+                                            <i class="fas fa-trash-alt"></i> Jurnalni tozalash
+                                        </button>
+                                    </div>
+                                @endcan
                             </div>
                         </form>
-
-                        <form id="clear-form" action="{{ route('logs.destroy', 'clear') }}" method="POST" style="display: none;">
-                            @csrf
-                            @method('DELETE')
-                        </form>
+                        @can('log.clean')
+                            <form id="clear-form" action="{{ route('logs.destroy', 'clear') }}" method="POST"
+                                  style="display: none;">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        @endcan
                     </div>
                     <div class="card card-outline card-primary shadow-sm m-0">
                         <div class="card-body table-responsive p-0">
