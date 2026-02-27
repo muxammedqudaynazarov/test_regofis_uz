@@ -21,13 +21,27 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ExamController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (auth()->user()->can('exam.view')) {
             $status = 'all';
-            $exams = Exam::orderBy('created_at', 'desc')->where('archived', '0')->paginate(20);
+            $query = Exam::query()->with(['student.specialty', 'application', 'failed_subject', 'group', 'semester', 'results'])->where('archived', '0');
+            if ($status === 'all') {
+                $query->where('archived', '0');
+                if ($request->filled('search')) {
+                    $search = $request->search;
+                    $query->whereHas('student', function ($q) use ($search) {
+                        $q->where('name', 'LIKE', "%{$search}%");
+                    });
+                }
+                if ($request->filled('exam_status')) {
+                    $query->where('status', $request->exam_status);
+                }
+            }
+            $exams = $query->orderBy('created_at', 'desc')->paginate(20);
             return view('pages.web.results.index', compact(['exams', 'status']));
         }
+
         abort(404);
     }
 

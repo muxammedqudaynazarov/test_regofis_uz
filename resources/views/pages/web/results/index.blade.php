@@ -27,6 +27,53 @@
         <section class="content text-sm">
             <div class="container-fluid">
                 <div class="card card-outline card-primary shadow-sm">
+                    @if($status == 'all')
+                        <div class="card-header bg-light">
+                            <form action="{{ route('final-results.index') }}" method="GET">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8 mb-2 mb-md-0">
+                                        <input type="text" name="search" class="form-control"
+                                               placeholder="Talaba F.I.Sh. bo‘yicha qidirish..."
+                                               value="{{ request('search') }}">
+                                    </div>
+
+                                    <div class="col-md-2 mb-2 mb-md-0">
+                                        <select name="exam_status" class="form-control">
+                                            <option value=""></option>
+                                            <option value="0" {{ request('exam_status') === '0' ? 'selected' : '' }}>
+                                                Yangi
+                                            </option>
+                                            <option value="1" {{ request('exam_status') === '1' ? 'selected' : '' }}>
+                                                Jarayonda
+                                            </option>
+                                            <option value="2" {{ request('exam_status') === '2' ? 'selected' : '' }}>
+                                                Yakunlangan
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2 mb-2 mb-md-0">
+                                        <div class="d-flex justify-content-between" style="gap: 5px;">
+                                            @if(request()->filled('search') || request()->filled('exam_status'))
+                                                <button type="submit" class="btn btn-primary shadow-sm flex-fill">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                                <a href="{{ route('final-results.index') }}"
+                                                   class="btn btn-default shadow-sm flex-fill"
+                                                   title="Filtrni tozalash">
+                                                    <i class="fas fa-times text-danger"></i>
+                                                </a>
+                                            @else
+                                                <button type="submit" class="btn btn-primary shadow-sm w-100">
+                                                    <i class="fas fa-search mr-1"></i> Izlash
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    @endif
                     <div class="card-body table-responsive p-0">
                         <table class="table table-hover text-center table-custom">
                             <thead>

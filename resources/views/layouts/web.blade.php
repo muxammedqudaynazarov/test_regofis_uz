@@ -239,7 +239,7 @@
                                            class="nav-link {{ Request::is('home/final-results/archived/list') ? 'active' : '' }}">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
-                                                Arxivlar
+                                                Arxivlanganlar
                                             </p>
                                         </a>
                                     </li>
@@ -250,7 +250,7 @@
                                            class="nav-link {{ Request::is('home/final-results/uploaded/list') ? 'active' : '' }}">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
-                                                Yuklanganlar
+                                                Ko‘chirilganlar
                                             </p>
                                         </a>
                                     </li>
