@@ -148,7 +148,20 @@ class TestController extends Controller
         if ($duration <= 0) $duration = 50;
 
         $exam = Exam::findOrFail($id);
-        $studentId = Auth::guard('student')->id();
+
+        // Guardni aniq ko'rsatib, talaba obyektini olamiz
+        $student = Auth::guard('student')->user();
+        $studentId = $student->id;
+        $studentLangId = $student->language_id;
+
+        // XAVFSIZ TEKSHIRUV: resource orqali emas, to'g'ridan-to'g'ri baza (SQL) orqali tekshiramiz
+        $hasQuestions = Question::where('subject_id', $exam->subject_id)
+            ->where('language_id', $studentLangId)
+            ->exists();
+
+        if (!$hasQuestions) {
+            return redirect()->back()->with('error', 'Imtihonni boshlash uchun resurslar yo‘q.');
+        }
 
         // 1. Agar imtihon yakunlangan bo'lsa (2-urinish mantiqi)
         if ($exam->finished == '1') {
@@ -189,16 +202,14 @@ class TestController extends Controller
             $exam->save();
         }
 
-        // 3. Savollarni generatsiya qilish (agar hali qilinmagan bo'lsa)
+        // 3. Savollarni generatsiya qilish
         $exists = Attempt::where('exam_id', $exam->id)->where('student_id', $studentId)->exists();
         if (!$exists) {
             $questions = Question::where('subject_id', $exam->subject_id)
-                ->where('language_id', Auth::guard('student')->user()->language_id)
+                ->where('language_id', $studentLangId) // $studentLangId o'zgaruvchisidan foydalanildi
                 ->with('answers')->get();
 
-            if ($questions->isEmpty()) {
-                return redirect()->route('student.home')->with('error', 'Bazada ushbu fan uchun savollar mavjud emas.');
-            }
+            // Tepadagi $hasQuestions tufayli bu yerda isEmpty() tekshiruvi olib tashlandi
 
             $actualQCount = min($qCount, $questions->count());
 
