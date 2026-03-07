@@ -87,7 +87,6 @@ class ApplicationController extends Controller
 
             $subject_hemis = $hemisResponse->json();
             $subject_lists = $subject_hemis['data']['items'] ?? [];
-
             foreach ($apps as $app) {
                 if ($app['status'] == 'approved') {
                     $application = Application::firstOrCreate([
@@ -99,9 +98,8 @@ class ApplicationController extends Controller
                         'status' => $app['status'],
                         'created_at' => $app['created_at'],
                     ]);
-
+                    $sdd = [];
                     $details = $app['details'] ?? [];
-
                     foreach ($details as $detail) {
                         if (!empty($detail['student_group'])) {
                             $group = Group::firstOrCreate([
@@ -109,7 +107,6 @@ class ApplicationController extends Controller
                             ], [
                                 'name' => $detail['student_group']['name'],
                             ]);
-
                             GroupSubject::firstOrCreate([
                                 'id' => $detail['id'],
                                 'failed_subject_id' => $detail['failed_subject_id'],
@@ -123,18 +120,19 @@ class ApplicationController extends Controller
                             ]);
 
                             $subject_id = null;
+                            $semester_id = null;
                             foreach ($subject_lists as $s_list) {
                                 if (isset($s_list['subject']['name']) && trim($s_list['subject']['name']) == trim($detail['subject_name'])) {
                                     $subject_id = $s_list['subject']['id'];
+                                    $semester_id = $s_list['semester']['code'];
                                     break;
                                 }
                             }
 
                             $db_subject_list = SubjectList::where('subject_id', $subject_id)
                                 ->where('curriculum_id', auth('student')->user()->curriculum_id)
-                                ->where('semester_id', $detail['semester_code'])
+                                ->where('semester_id', $semester_id)
                                 ->first();
-
                             if ($db_subject_list) {
                                 Exam::firstOrCreate([
                                     'application_id' => $application->id,
@@ -142,7 +140,7 @@ class ApplicationController extends Controller
                                     'subject_id' => $db_subject_list->id,
                                     'failed_subject_id' => $detail['failed_subject_id'],
                                     'group_id' => $group->id,
-                                    'semester_id' => $detail['semester_code'],
+                                    'semester_id' => $semester_id,
                                 ], [
                                     'status' => '0',
                                 ]);
