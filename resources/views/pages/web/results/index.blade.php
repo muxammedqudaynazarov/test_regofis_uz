@@ -247,6 +247,10 @@
                             <div class="float-right">
                                 {{ $exams->appends(request()->query())->links() }}
                             </div>
+                            <div class="text-muted small mt-2">
+                                Jami: <b>{{ $exams->total() }}</b> ta harakat,
+                                sahifada <b>{{ $exams->firstItem() }}</b> dan <b>{{ $exams->lastItem() }}</b> gacha.
+                            </div>
                         </div>
                     </div>
                 </div>
