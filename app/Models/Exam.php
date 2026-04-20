@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\LogsTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+class Exam extends Model
+{
+    use HasFactory, LogsTrait;
+
+    protected $fillable = [
+        'application_id',
+        'student_id',
+        'subject_id',
+        'failed_subject_id',
+        'group_id',
+        'semester_id',
+        'user_id',
+        'finished',
+        'archived',
+        'attempt',
+        'status',
+        'finished_at',
+        'last_activity_at',
+    ];
+
+    public function application(): HasOne
+    {
+        return $this->hasOne(Application::class, 'id', 'application_id');
+    }
+
+    public function results(): HasMany
+    {
+        return $this->hasMany(Result::class, 'exam_id', 'id');
+    }
+
+    public function result(): HasOne
+    {
+        return $this->hasOne(Result::class, 'exam_id', 'id')->latestOfMany();
+    }
+
+    public function failed_subject(): HasOne
+    {
+        return $this->hasOne(GroupSubject::class, 'failed_subject_id', 'failed_subject_id');
+    }
+
+    public function subject(): HasOne
+    {
+        return $this->hasOne(SubjectList::class, 'id', 'subject_id');
+    }
+
+    public function group(): HasOne
+    {
+        return $this->hasOne(Group::class, 'id', 'group_id');
+    }
+
+    public function semester(): HasOne
+    {
+        return $this->hasOne(Semester::class, 'id', 'semester_id');
+    }
+
+    public function resource(): HasOne
+    {
+        return $this->hasOne(SubjectList::class, 'id', 'subject_id');
+    }
+
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class, 'id', 'student_id');
+    }
+
+    public function admin(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+}

@@ -1,0 +1,224 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Answer;
+use App\Models\Question;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class QuestionController extends Controller
+{
+    private function detectQuestionType($text)
+    {
+        if (preg_match('/\\\\\(|\\\\\[|\$\$|\\\\begin\{equation\}/', $text)) {
+            return 'math';
+        }
+        if (preg_match('/\\\(frac|sqrt|int|sum|lim|sin|cos|tan|cot|log|ln|pi|infty|theta|alpha|beta|gamma)/', $text)) {
+            return 'math';
+        }
+        if (preg_match('/[a-zA-Z0-9]\^[a-zA-Z0-9\{]|\_[a-zA-Z0-9\{]/', $text)) {
+            return 'math';
+        }
+
+        return 'text';
+    }
+
+    private function parseAikenWithErrors($lines)
+    {
+        $validQuestions = [];
+        $errors = [];
+        $buffer = [];
+        $blockStartLine = 1;
+        $lines[] = "";
+        foreach ($lines as $index => $line) {
+            $line = trim($line);
+            $currentLineNum = $index + 1;
+            if ($line === '') {
+                if (!empty($buffer)) {
+                    $result = $this->processBlock($buffer);
+                    if ($result['status'] === 'success') {
+                        $validQuestions[] = $result['data'];
+                    } else {
+                        $errors[] = "Qator {$blockStartLine}-{$index}: " . $result['message'];
+                    }
+                    $buffer = [];
+                }
+                $blockStartLine = $currentLineNum + 1;
+            } else {
+                $buffer[] = $line;
+            }
+        }
+        return ['valid' => $validQuestions, 'errors' => $errors];
+    }
+
+    private function processBlock($lines)
+    {
+        if (count($lines) < 3) {
+            return ['status' => 'error', 'message' => 'Format noto\'g\'ri yoki qatorlar yetarli emas.'];
+        }
+        $lastLine = array_pop($lines);
+        if (!preg_match('/^ANSWER:\s*([A-Z])\s*$/i', $lastLine, $answerMatch)) {
+            return ['status' => 'error', 'message' => "ANSWER qatori topilmadi yoki noto'g'ri: '$lastLine'"];
+        }
+        $correctOption = strtoupper($answerMatch[1]);
+        $answers = [];
+        $questionTextArr = [];
+        $isOptionSection = false;
+        foreach ($lines as $line) {
+            if (!$isOptionSection && preg_match('/^([A-Z])[\.\)]\s+(.+)/', $line, $optMatch)) {
+                $isOptionSection = true;
+            }
+            if ($isOptionSection) {
+                if (preg_match('/^([A-Z])[\.\)]\s+(.+)/', $line, $optMatch)) {
+                    $key = strtoupper($optMatch[1]);
+                    $value = trim($optMatch[2]);
+                    $answers[$key] = $value;
+                } else {
+                    $keys = array_keys($answers);
+                    if (!empty($keys)) {
+                        $lastParams = end($keys);
+                        $answers[$lastParams] .= " " . $line;
+                    }
+                }
+            } else {
+                $questionTextArr[] = $line;
+            }
+        }
+        $questionText = implode(" ", $questionTextArr);
+        if (empty($questionText)) {
+            return ['status' => 'error', 'message' => 'Savol matni topilmadi.'];
+        }
+        if (count($answers) < 2) {
+            return ['status' => 'error', 'message' => 'Variantlar yetarli emas (kamida 2 ta).'];
+        }
+        if (!array_key_exists($correctOption, $answers)) {
+            return ['status' => 'error', 'message' => "To'g'ri javob ($correctOption) variantlar orasida mavjud emas."];
+        }
+        $fullContentToCheck = $questionText . " " . implode(" ", $answers);
+        $detectedType = $this->detectQuestionType($fullContentToCheck);
+        return [
+            'status' => 'success',
+            'data' => [
+                'question' => $questionText,
+                'answers' => $answers,
+                'correct' => $correctOption,
+                'type' => $detectedType
+            ]
+        ];
+    }
+
+    public function update(Request $request, $id)
+    {
+        if (\auth()->user()->can('subjects.resource.create')) {
+            $request->validate([
+                'language_id' => 'required',
+            ], [
+                'language_id.required' => 'Savol tili tanlanishi shart.'
+            ]);
+            $file = $request->file('questions_file');
+            if ($file->getClientOriginalExtension() !== 'txt') {
+                return redirect()->back()->withErrors(['questions_file' => 'Faqat .txt fayl yuklang!']);
+            }
+
+            try {
+                $file = $request->file('questions_file');
+                $lines = file($file->getRealPath(), FILE_IGNORE_NEW_LINES);
+                $parseResult = $this->parseAikenWithErrors($lines);
+                $validQuestions = $parseResult['valid'];
+                $errors = $parseResult['errors'];
+                if (empty($validQuestions) && !empty($errors)) {
+                    return redirect()->back()->with('error', 'Fayldagi barcha savollarda xatolik topildi.<br>' . implode('<br>', array_slice($errors, 0, 5)));
+                }
+                if (empty($validQuestions)) {
+                    return redirect()->back()->with('error', 'Fayl bo‘sh yoki format noto‘g‘ri.');
+                }
+                // DB tranzaksiyasi
+                DB::beginTransaction();
+
+                foreach ($validQuestions as $data) {
+                    $question = Question::create([
+                        'question_text' => $data['question'],
+                        'user_id' => auth('web')->id(),
+                        'subject_id' => $id,
+                        'language_id' => $request->language_id,
+                        'type' => $data['type'],
+                        'status' => '1'
+                    ]);
+                    // Variantlarni saqlash
+                    foreach ($data['answers'] as $key => $text) {
+                        Answer::create([
+                            'question_id' => $question->id,
+                            'answer' => $text,
+                            'correct' => ($key === $data['correct']) ? '1' : '0',
+                            'type' => $data['type'],
+                            'status' => '1',
+                        ]);
+                    }
+                }
+
+                DB::commit();
+
+                $successMsg = count($validQuestions) . ' ta savol muvaffaqiyatli yuklandi.';
+
+                if (count($errors) > 0) {
+                    $errorMsg = "<br><br><b>" . count($errors) . " ta savol xatolik tufayli yuklanmadi:</b><br>" . implode('<br>', array_slice($errors, 0, 10));
+                    return redirect()->back()->with('warning', $successMsg . $errorMsg);
+                }
+
+                return redirect()->back()->with('success', $successMsg);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error("Savol yuklashda xatolik: " . $e->getMessage());
+                return redirect()->back()->with('error', 'Tizim xatoligi: ' . $e->getMessage());
+            }
+        }
+        abort(404);
+    }
+
+    public function destroy($id)
+    {
+        if (\auth()->user()->can('subjects.resource.delete')) {
+            $question = Question::findOrFail($id);
+            if ($question->user_id !== auth('web')->id()) {
+                return redirect()->back()->with('error', 'Sizga tegishli bo‘lmagan savolni o‘chirib bo‘lmaydi!');
+            }
+            $hasAttempt = DB::table('attempts')->where('question_id', $id)->exists();
+            if ($hasAttempt) {
+                return redirect()->back()->with('error', 'Bu savoldan imtihonda foydalanilgan (urinishlar mavjud), uni o‘chirish taqiqlanadi!');
+            }
+            $question->delete();
+            return redirect()->back()->with('success', 'Savol muvaffaqiyatli o‘chirildi.');
+        }
+        abort(404);
+    }
+
+    public function destroyMany(Request $request)
+    {
+        if (\auth()->user()->can('subjects.resource.delete')) {
+            $request->validate([
+                'ids' => 'required|array',
+                'ids.*' => 'exists:questions,id'
+            ]);
+            $totalRequested = count($request->ids);
+            $deletedCount = Question::whereIn('id', $request->ids)->where('user_id', auth('web')->id())
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('attempts')->whereColumn('attempts.question_id', 'questions.id');
+                })->delete();
+
+            if ($deletedCount > 0) {
+                $message = $deletedCount . ' ta savol o‘chirildi.';
+                if ($deletedCount < $totalRequested) {
+                    $failedCount = $totalRequested - $deletedCount;
+                    $message .= ' Qolgan ' . $failedCount . ' ta savol imtihonda tushgani yoki sizga tegishli bo‘lmagani uchun o‘chirilishiga ruxsat berilmadi.';
+                }
+                return redirect()->back()->with('success', $message);
+            }
+            return redirect()->back()->with('error', 'Hech qanday savol o‘chirilmadi. Tanlangan savollar allaqachon imtihonda ishlatilgan bo‘lishi mumkin.');
+        }
+        abort(404);
+    }
+}

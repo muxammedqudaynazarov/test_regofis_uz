@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\LogsTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class Student extends Authenticatable
+{
+    use HasFactory, LogsTrait;
+
+    protected $table = 'students';
+    protected $primaryKey = 'id';
+
+    public $incrementing = false;
+
+    protected $fillable = [
+        'id', 'name', 'picture', 'hemis_id', 'curriculum_id', 'specialty_id', 'language_id'
+    ];
+
+    public function specialty(): HasOne
+    {
+        return $this->hasOne(Specialty::class, 'id', 'specialty_id');
+    }
+
+    public function curriculum(): HasOne
+    {
+        return $this->hasOne(Curriculum::class, 'id', 'curriculum_id');
+    }
+
+    public function exams(): HasMany
+    {
+        return $this->hasMany(Exam::class, 'student_id', 'id');
+    }
+
+    public function language(): HasOne
+    {
+        return $this->hasOne(Language::class, 'id', 'language_id');
+    }
+}

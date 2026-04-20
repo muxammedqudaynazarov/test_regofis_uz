@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\LogsTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Question extends Model
+{
+    use HasFactory, LogsTrait;
+
+    protected $fillable = [
+        'question_text',
+        'user_id',
+        'subject_id',
+        'language_id',
+        'type',
+        'status',
+    ];
+
+    public function answers(): HasMany
+    {
+        return $this->hasMany(Answer::class, 'question_id', 'id');
+    }
+}
