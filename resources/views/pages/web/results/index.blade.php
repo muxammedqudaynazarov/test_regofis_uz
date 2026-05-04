@@ -92,6 +92,7 @@
                                 <th style="width: 7%">To‘plagan ball</th>
                                 <th style="width: 7%">Urinish</th>
                                 <th style="width: 7%">Holati</th>
+                                <th style="width: 7%">Vaqti</th>
                                 @if($status=='uploaded' || $status=='archived')
                                     <th style="width: 7%">Amalni bajardi</th>
                                 @endif
@@ -184,6 +185,9 @@
                                                 Yakunlangan
                                             </div>
                                         @endif
+                                    </td>
+                                    <td>
+                                        {{ $exam->created_at->format('d.m.Y H:i:s') }}
                                     </td>
                                     @if($status=='uploaded' || $status=='archived')
                                         <td class="text-nowrap">
