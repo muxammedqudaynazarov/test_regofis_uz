@@ -17,6 +17,11 @@ class Application extends Model
         'retrain_id'
     ];
 
+    public function retrain(): hasOne
+    {
+        return $this->hasOne(Retrain::class, 'id', 'retrain_id');
+    }
+
     public function student(): HasOne
     {
         return $this->hasOne(Student::class, 'id', 'student_id');

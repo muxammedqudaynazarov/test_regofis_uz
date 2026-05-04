@@ -12,8 +12,11 @@
         <td>
             {{ optional($item->student->specialty)->code }} - {{ optional($item->student->specialty)->name }}
         </td>
-        <td>
+        <td class="text-nowrap">
             {{ optional($item->edu_year)->name }}
+        </td>
+        <td class="text-nowrap">
+            {{ optional($item->retrain)->name }}
         </td>
         <td>
             @foreach($item->exams as $subject)

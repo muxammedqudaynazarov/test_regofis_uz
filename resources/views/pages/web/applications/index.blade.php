@@ -60,10 +60,11 @@
                             <thead>
                             <tr>
                                 <th style="width: 8%">#</th>
-                                <th style="text-align: left; width: 30%">Ariza beruvchi</th>
+                                <th style="text-align: left; width: 25%">Ariza beruvchi</th>
                                 <th>Mutaxassislik / Yo‘nalish</th>
                                 <th>O‘quv yili</th>
-                                <th>Fanlari</th>
+                                <th class="text-nowrap">Qayta o‘qish</th>
+                                <th style="width: 30%;">Fanlari</th>
                                 <th class="text-right"></th>
                             </tr>
                             </thead>
