@@ -13,7 +13,8 @@ class Application extends Model
     use HasFactory, LogsTrait;
 
     protected $fillable = [
-        'id', 'application_number', 'student_id', 'education_year', 'status', 'created_at'
+        'id', 'application_number', 'student_id', 'education_year', 'status', 'created_at',
+        'retrain_id'
     ];
 
     public function student(): HasOne

@@ -26,6 +26,7 @@ class Exam extends Model
         'status',
         'finished_at',
         'last_activity_at',
+        'retrain_id',
     ];
 
     public function application(): HasOne

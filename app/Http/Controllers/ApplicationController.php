@@ -11,6 +11,7 @@ use App\Models\Exam;
 use App\Models\Group;
 use App\Models\GroupSubject;
 use App\Models\Result;
+use App\Models\Retrain;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\SubjectList;
@@ -193,13 +194,15 @@ class ApplicationController extends Controller
                     }
                 }
             }
-            DB::transaction(function () use ($apps, $subjects) {
+            $retrain = Retrain::where('status', '1')->first();
+            DB::transaction(function () use ($retrain, $apps, $subjects) {
                 foreach ($apps as $app) {
                     $application = Application::updateOrCreate([
                         'id' => $app['id'],
                         'application_number' => $app['application_number'],
                     ], [
                         'student_id' => $app['student_id'],
+                        'retrain_id' => $retrain->id,
                         'education_year' => $app['education_year'],
                         'status' => $app['status'],
                         'created_at' => $app['created_at'],
@@ -250,6 +253,7 @@ class ApplicationController extends Controller
                                     ], [
                                         'semester_id' => $semester_id,
                                         'status' => '0',
+                                        'retrain_id' => $retrain->id,
                                     ]);
                                 }
                             }
