@@ -34,6 +34,11 @@ class Exam extends Model
         return $this->hasOne(Application::class, 'id', 'application_id');
     }
 
+    public function retrain(): HasOne
+    {
+        return $this->hasOne(Retrain::class, 'id', 'retrain_id');
+    }
+
     public function results(): HasMany
     {
         return $this->hasMany(Result::class, 'exam_id', 'id');

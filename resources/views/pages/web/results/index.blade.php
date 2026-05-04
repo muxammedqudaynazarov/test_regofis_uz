@@ -90,6 +90,7 @@
                                 <th style="width: 7%">Ta’lim tili</th>
                                 <th style="width: 10%">Semestr / Kredit</th>
                                 <th style="width: 7%">To‘plagan ball</th>
+                                <th style="width: 7%">Qayta oqish</th>
                                 <th style="width: 7%">Urinish</th>
                                 <th style="width: 7%">Holati</th>
                                 <th style="width: 7%">Vaqti</th>
@@ -167,6 +168,9 @@
                                     </td>
                                     <td>
                                         {{ number_format($exam->results->first()->point ?? 0, 2) }}
+                                    </td>
+                                    <td>
+                                        {{ $exam->retrain->name ?? '?' }}
                                     </td>
                                     <td>
                                         {{ $exam->attempt }}
