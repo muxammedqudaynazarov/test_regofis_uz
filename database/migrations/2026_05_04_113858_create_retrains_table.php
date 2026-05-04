@@ -17,9 +17,11 @@ return new class extends Migration {
         Schema::table('applications', function (Blueprint $table) {
             $table->foreignId('retrain_id')->after('education_year')->nullable()->constrained('retrains')->cascadeOnDelete();
         });
+
         Schema::table('exams', function (Blueprint $table) {
             $table->foreignId('retrain_id')->after('user_id')->nullable()->constrained('retrains')->cascadeOnDelete();
         });
+
         Schema::table('results', function (Blueprint $table) {
             $table->foreignId('retrain_id')->after('exam_id')->nullable()->constrained('retrains')->cascadeOnDelete();
         });
