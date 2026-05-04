@@ -189,33 +189,23 @@ class ExamController extends Controller
         return redirect()->back()->with('error', 'Talabaning natijalarini arxivlab bo‘lmaydi yoki oldindan arxiv ma’lumotlar mavjud!');
     }
 
-    public function download()
+    public function download(Request $request)
     {
         if (!auth()->user()->can('statistics.view.sv')) abort(404);
-
-        // 1. Har bir talaba va fan kesimida faqat eng oxirgi imtihon ID'larini (MAX id) ajratib olamiz
-        $latestExamIds = Exam::where('status', '2')
-            ->select(DB::raw('MAX(id) as id'))
-            ->groupBy('student_id', 'subject_id') // Talaba va fan bo'yicha guruhlaymiz
-            ->pluck('id');
-
-        // 2. Faqatgina ajratib olingan (oxirgi) ID'lar bo'yicha to'liq ma'lumotlarni tortib kelamiz
-        // Export klassida ishlatilgan barcha munosabatlarni (with) shu yerda chaqiramiz, so'rovlar soni oshib ketmasligi uchun.
+        $query = Exam::where('status', '2');
+        if ($request->filled('optional_id')) {
+            $query->whereHas('application', function ($q) use ($request) {
+                $q->where('retrain_id', $request->optional_id);
+            });
+        }
+        $latestExamIds = $query->select(DB::raw('MAX(id) as id'))->groupBy('student_id', 'subject_id')->pluck('id');
         $exams = Exam::with([
             'application.student.specialty.department',
-            'failed_subject',
-            'semester',
-            'results',
-            'result'
-        ])
-            ->whereIn('id', $latestExamIds)
-            ->orderBy('id', 'desc') // Ro'yxat eng yangilaridan boshlanishi uchun
-            ->get();
-
+            'failed_subject', 'semester', 'results', 'result'
+        ])->whereIn('id', $latestExamIds)->orderBy('id', 'desc')->get();
         if ($exams->isEmpty()) {
-            return back()->with('error', 'Yuklab olish uchun yakunlangan imtihonlar topilmadi.');
+            return back()->with('error', 'Tanlangan parametr bo‘yicha yuklab olish uchun yakunlangan imtihonlar topilmadi.');
         }
-
         return Excel::download(new FinishedExamsExport($exams), 'Yakuniy_natijalar_' . date('dmY-His') . '.xlsx');
     }
 }

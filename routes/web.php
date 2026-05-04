@@ -82,7 +82,7 @@ Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::prefix('statistics')->group(function () {
         Route::get('/departments/show/download', [DepartmentController::class, 'download'])->name('departments.download');
         Route::get('/lessons/empty/download', [LessonController::class, 'empty_lessons_download'])->name('lessons.empty.download');
-        Route::get('/final-results/download', [ExamController::class, 'download'])->name('final-results.download');
+        Route::post('/final-results/download', [ExamController::class, 'download'])->name('final-results.download');
         Route::get('/department/resources', [ApplicationController::class, 'empty_lessons_download'])->name('applications.lessons.empty.download');
         Route::get('/lessons/status/download', [ApplicationController::class, 'untaken_exams_download'])->name('exam.status.new.download');
         Route::get('/department/resources/download', [DepartmentRoleInfoController::class, 'export_role_department'])->name('statistics.department.resources.export');
