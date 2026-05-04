@@ -59,6 +59,8 @@ class DepartmentSubjectExport implements FromGenerator, WithHeadings, WithStyles
                 $row = [
                     'id' => $subject->id,
                     'subject' => $subject->subject->name ?? '-',
+                    'curriculum' => $subject->curriculum->name ?? '-',
+                    'semester' => $subject->semester->name ?? '-',
                     'teachers' => $teachersString,
                     'faculty' => $dept->faculty->name ?? '-',
                     'department' => $dept->name,
@@ -80,7 +82,7 @@ class DepartmentSubjectExport implements FromGenerator, WithHeadings, WithStyles
     public function headings(): array
     {
         $activeLanguages = Language::where('status', '1')->pluck('name')->toArray();
-        return array_merge(['#', 'Fan nomi', 'O‘qituvchilar', 'Fakultet', 'Kafedra'], $activeLanguages);
+        return array_merge(['#', 'Fan nomi', 'O‘quv reja', 'Semestr', 'O‘qituvchilar', 'Fakultet', 'Kafedra'], $activeLanguages);
     }
 
     public function styles(Worksheet $sheet)

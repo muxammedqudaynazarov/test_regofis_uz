@@ -22,6 +22,7 @@ class EmptyLessonsExport implements FromQuery, WithMapping, WithHeadings, WithSt
         return [
             $lesson->id,
             $lesson->subject->name ?? '-',
+            $lesson->curriculum->name ?? '-',
             $lesson->semester->name ?? '-',
             $lesson->department->faculty->name ?? '-',
             $lesson->department->name ?? '-',
@@ -30,7 +31,7 @@ class EmptyLessonsExport implements FromQuery, WithMapping, WithHeadings, WithSt
 
     public function headings(): array
     {
-        return ['#', 'Fan nomi', 'Semestr', 'Fakultet', 'Kafedra'];
+        return ['#', 'Fan nomi', 'O‘quv reja', 'Semestr', 'Fakultet', 'Kafedra'];
     }
 
     public function styles(Worksheet $sheet)
