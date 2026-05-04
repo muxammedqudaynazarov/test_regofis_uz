@@ -13,6 +13,7 @@ use App\Http\Controllers\OfficeApplicationController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\RetrainController;
 use App\Http\Controllers\Statistics\DepartmentRoleInfoController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\StudentController;
@@ -71,6 +72,7 @@ Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::resource('curriculum', CurriculumController::class)->only(['index', 'destroy']);
     Route::resource('subjects-register', SubjectTeacherController::class)->only(['index', 'create', 'store', 'edit', 'destroy']);
     Route::resource('lessons', LessonController::class)->only(['index', 'show', 'update']);
+    Route::resource('retrains', RetrainController::class);
     Route::resource('languages', LanguageController::class)->only(['index', 'update']);
     Route::delete('/questions/destroy-many', [QuestionController::class, 'destroyMany'])->name('questions.destroyMany');
     Route::resource('questions', QuestionController::class)->only(['update', 'destroy']);

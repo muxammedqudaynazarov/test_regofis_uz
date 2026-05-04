@@ -141,6 +141,17 @@
                             </a>
                         </li>
                     @endcan
+                    @can('retrains.view')
+                        <li class="nav-item">
+                            <a href="{{ route('retrains.index') }}"
+                               class="nav-link {{ Request::is('home/retrains*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-reply"></i>
+                                <p>
+                                    Qayta o‘qishni boshqarish
+                                </p>
+                            </a>
+                        </li>
+                    @endcan
                     @can('applications.view')
                         <li class="nav-item {{ (Request::is('home/applications*') || Request::is('home/office_applications*')) ? 'menu-is-opening menu-open' : '' }}">
                             <a href="#" class="nav-link">
