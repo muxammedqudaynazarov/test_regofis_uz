@@ -190,7 +190,7 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="small">
                                         {{ $exam->created_at->format('d.m.Y H:i:s') }}
                                     </td>
                                     @if($status=='uploaded' || $status=='archived')
@@ -243,7 +243,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center py-4 text-muted">
+                                    <td colspan="12" class="text-center py-4 text-muted">
                                         <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                                         Ma’lumot topilmadi.
                                     </td>

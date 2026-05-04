@@ -65,6 +65,7 @@
                                 <th>O‘quv yili</th>
                                 <th class="text-nowrap">Qayta o‘qish</th>
                                 <th style="width: 30%;">Fanlari</th>
+                                <th>Vaqti</th>
                                 <th class="text-right"></th>
                             </tr>
                             </thead>

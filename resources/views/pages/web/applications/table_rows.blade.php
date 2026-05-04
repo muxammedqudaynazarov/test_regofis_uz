@@ -25,6 +25,10 @@
                 </div>
             @endforeach
         </td>
+        <td class="small">
+            {{ $item->created_at->format('d.m.Y H:i:s') }}
+        </td>
+
         <td class="text-nowrap">
             <a href="{{ route('applications.show', $item->application_number) }}"
                class="btn btn-default btn-sm shadow-sm">
