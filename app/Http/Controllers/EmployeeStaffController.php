@@ -11,9 +11,12 @@ class EmployeeStaffController extends Controller
     {
         $res = Result::whereNull('retrain_id')->get();
         foreach ($res as $value) {
+            $all = $value->exam->attempts->count();
+            $cur = 0;
             foreach ($value->exam->attempts as $attempt) {
-                dd($attempt);
+                if ($attempt->answer_id == null) $cur++;
             }
+            if ($cur == $all) echo $value->student_id;
         }
     }
 }
