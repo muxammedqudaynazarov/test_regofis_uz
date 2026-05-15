@@ -16,7 +16,7 @@ class EmployeeStaffController extends Controller
             foreach ($value->exam->attempts as $attempt) {
                 if ($attempt->answer_id == null) $cur++;
             }
-            if ($cur == $all) echo $value->student_id;
+            if ($cur == $all) echo $value->student_id . '<br>';
         }
     }
 }
