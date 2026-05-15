@@ -83,4 +83,9 @@ class Exam extends Model
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
+
+    public function attempts(): HasMany
+    {
+        return $this->hasMany(Attempt::class, 'exam_id', 'id');
+    }
 }

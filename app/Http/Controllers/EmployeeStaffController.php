@@ -11,7 +11,7 @@ class EmployeeStaffController extends Controller
     {
         $res = Result::whereNull('retrain_id')->get();
         foreach ($res as $value) {
-            dd($value->exam);
+            dd($value->exam->attempts);
         }
     }
 }
