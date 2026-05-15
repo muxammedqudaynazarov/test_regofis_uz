@@ -53,6 +53,7 @@ class ResultController extends Controller
                 Result::firstOrCreate([
                     'student_id' => auth('student')->id(),
                     'exam_id' => $exam->id,
+                    'retrain_id' => $exam->retrain_id,
                     'point' => $point,
                     'status' => ($point < $min_points) ? '0' : '1',
                 ]);
