@@ -238,7 +238,10 @@ class TestController extends Controller
 
     public function upload_answer(Request $request)
     {
-        Attempt::where('exam_id', $exam->id)
+        $student = Auth::guard('student')->user();
+        $exam = Exam::find($request->exam_id);
+
+        Attempt::where('exam_id', $request->exam_id)
             ->with(['question', 'positions' => function ($query) {
                 $query->orderBy('pos', 'asc')->with('answer');
             }])->get();
@@ -247,8 +250,6 @@ class TestController extends Controller
             'question_id' => 'required',
             'answer_id' => 'required',
         ]);
-        $student = Auth::guard('student')->user();
-        $exam = Exam::find($request->exam_id);
         if (!$exam || $exam->student_id != $student->id) {
             return response()->json(['status' => 'error', 'message' => 'Test topilmadi'], 404);
         }

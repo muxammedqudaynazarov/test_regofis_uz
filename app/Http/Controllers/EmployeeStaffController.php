@@ -10,6 +10,8 @@ class EmployeeStaffController extends Controller
     public function index()
     {
         $res = Result::whereNull('retrain_id')->get();
-        dd($res);
+        foreach ($res as $value) {
+            dd($value->exam);
+        }
     }
 }
