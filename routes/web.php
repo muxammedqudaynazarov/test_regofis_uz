@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\CurriculumController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\EmployeeStaffController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\HemisController;
 use App\Http\Controllers\HomeController;
@@ -36,6 +37,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/hemis', [HemisController::class, 'data']);
+Route::get('/list', [EmployeeStaffController::class, 'index']);
 
 Route::prefix('login')->group(function () {
     Route::get('/user', [HemisController::class, 'user'])->name('login.user');
