@@ -197,6 +197,7 @@ class HemisController extends Controller
             ]);
             $student_api = $response->json();
             $student_api = $student_api['data']['items'][0];
+            dd($student_api);
             $student = Student::updateOrCreate(
                 ['id' => $student_array['student_id_number']],
                 [
