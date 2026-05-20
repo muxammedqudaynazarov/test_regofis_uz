@@ -76,7 +76,7 @@
                                             </div>
                                             <span class="badge badge-success badge-pill px-3 py-2">
                                                 @if($lesson->finished == '1')
-                                                    {{ $lesson->results->first()->point }} ball
+                                                    {{ $lesson->results->first()->point ?? 0 }} ball
                                                 @else
                                                     <i class="fas fa-spinner fa-spin"></i>
                                                 @endif
