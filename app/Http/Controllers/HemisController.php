@@ -154,8 +154,7 @@ class HemisController extends Controller
      * @param Request $request
      * @return RedirectResponse|Response
      */
-    public
-    function student(Request $request)
+    public function student(Request $request)
     {
         $employeeProvider = new GenericProvider([
             'clientId' => env('HEMIS_CLIENT_ID'),

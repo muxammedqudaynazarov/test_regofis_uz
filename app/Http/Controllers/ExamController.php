@@ -39,6 +39,7 @@ class ExamController extends Controller
                 }
             }
             $exams = $query->orderBy('created_at', 'desc')->paginate(20);
+            dd($exams);
             return view('pages.web.results.index', compact(['exams', 'status']));
         }
 
