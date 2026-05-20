@@ -95,7 +95,7 @@
                                             </td>
                                             <td class="text-nowrap">
                                                 <div class="badge badge-success">
-                                                    {{ $subject->results->first()->point }} ball
+                                                    {{ $subject->results->first()->point ?? 0 }} ball
                                                 </div>
                                             </td>
                                             <td class="text-nowrap">
