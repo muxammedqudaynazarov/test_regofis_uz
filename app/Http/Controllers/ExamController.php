@@ -179,6 +179,7 @@ class ExamController extends Controller
                 $newExam->archived = '0';
                 $newExam->attempt = 2;
                 $newExam->status = '0';
+                $newExam->retrain_id = $exam->retrain_id;
                 $newExam->finished_at = null;
                 $newExam->save();
                 $exam->archived = '1';
