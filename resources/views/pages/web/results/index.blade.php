@@ -210,7 +210,8 @@
                                     @if($status == 'all')
                                         <td class="text-nowrap">
                                             @if($exam->status == '2')
-                                                @if($exam->results->first()->point >= $min_point)
+                                                @php($mpoint = $exam->results->first()->point ?? 0)
+                                                @if($mpoint >= $min_point)
                                                     @can('exam.upload')
                                                         <a href="{{ route('final-results.show', $exam->id) }}"
                                                            class="btn btn-outline-primary btn-sm"
