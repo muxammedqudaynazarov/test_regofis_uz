@@ -56,7 +56,7 @@ class FinishedExamsExport implements FromCollection, WithHeadings, WithMapping, 
             $exam->failed_subject->subject_name ?? 'Noma’lum fan',
             $exam->semester->name,
             $exam->results->first()->point ?? '-',
-            ($exam->result->uploaded == '1') ? 'Ha' : 'Yo‘q',
+            ($exam->result?->uploaded == '1') ? 'Ha' : 'Yo‘q',
             'Yakunlangan',
             $exam->updated_at ? $exam->updated_at->format('d.m.Y H:i') : '-',
         ];
