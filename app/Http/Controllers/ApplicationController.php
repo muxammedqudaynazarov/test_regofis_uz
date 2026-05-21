@@ -86,6 +86,7 @@ class ApplicationController extends Controller
                 $exam->attempt = 1;
                 $exam->status = '0';
                 $exam->user_id = auth()->id();
+                $exam->finished_at = null;
                 $exam->save();
                 Attempt::where('exam_id', $exam->id)->delete();
                 Result::where('exam_id', $exam->id)->delete();
