@@ -113,24 +113,34 @@
                                             <td class="align-middle">{{ $detail['credit'] }}</td>
                                             <td class="align-middle">
                                                 @php
+                                                    $groupId = $detail['student_group']['id'] ?? null;
+
                                                     $inExam = Exam::where('failed_subject_id', $detail['failed_subject_id'])
-                                                    ->where('group_id', $detail['student_group']['id'])->exists();
+                                                    ->where('group_id', $groupId)->exists();
+
                                                     $subject_id = null;
                                                     $accessCreate = false;
+
                                                     if (!$inExam) {
                                                         $subjects = Subject::where('name', $detail['subject_name'])->get();
+
                                                         foreach ($subjects as $subject) {
                                                             $accessCreate = SubjectList::where('subject_id', $subject->id)
                                                                     ->where('semester_id', $detail['semester_code'])
                                                                     ->where('curriculum_id', $student->curriculum_id)->exists();
+
                                                             if ($accessCreate) {
                                                                 $subject_id = $subject->id;
                                                                 break;
                                                             }
                                                         }
-                                                        if (empty($detail['student_group'])) $accessCreate = false;
+
+                                                        if (empty($detail['student_group'])) {
+                                                            $accessCreate = false;
+                                                        }
                                                     }
                                                 @endphp
+
                                                 @if($accessCreate)
                                                     <form action="{{ route('office_applications.store') }}"
                                                           method="POST">
