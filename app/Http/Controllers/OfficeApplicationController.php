@@ -74,13 +74,13 @@ class OfficeApplicationController extends Controller
                 'status' => 'approved'
             ]);
 
-            $st_group = Group::firstOrCreate([
+            $st_group = Group::updateOrCreate([
                 'id' => $detail->student_group->id,
             ], [
                 'name' => $detail->student_group->name,
             ]);
 
-            GroupSubject::firstOrCreate([
+            GroupSubject::updateOrCreate([
                 'id' => $detail->id,
                 'failed_subject_id' => $detail->failed_subject_id,
                 'subject_id' => $detail->subject_id,
@@ -92,7 +92,7 @@ class OfficeApplicationController extends Controller
                 'credit' => $detail->credit,
             ]);
 
-            Exam::firstOrCreate([
+            Exam::updateOrCreate([
                 'application_id' => $application->id,
                 'student_id' => $application->student_id,
                 'subject_id' => $mySubject->id,
