@@ -82,9 +82,9 @@ class OfficeApplicationController extends Controller
 
             GroupSubject::updateOrCreate([
                 'id' => $detail->id,
+            ], [
                 'failed_subject_id' => $detail->failed_subject_id,
                 'subject_id' => $detail->subject_id,
-            ], [
                 'application_id' => $application->id,
                 'group_id' => $st_group->id,
                 'subject_name' => $detail->subject_name,
