@@ -13,6 +13,7 @@ class SubjectList extends Model
 {
     use HasFactory, LogsTrait;
 
+    public $incrementing = false;
     protected $fillable = [
         'id',
         'department_id',

@@ -13,6 +13,7 @@ class Subject extends Model
 {
     use HasFactory, LogsTrait;
 
+    public $incrementing = false;
     protected $fillable = ['id', 'name', 'code'];
 
     public function lists(): hasMany
