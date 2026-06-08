@@ -80,7 +80,7 @@ class ApplicationController extends Controller
     {
         $exam = Exam::findOrFail($exam);
         if ($exam->status == '2') {
-            if ($exam->results->first()->point < 60) {
+            if ($exam->results->first()->point < 60 || !isset($exam->results->first()->point)) {
                 $exam->finished = '0';
                 $exam->archived = '0';
                 $exam->attempt = 1;
