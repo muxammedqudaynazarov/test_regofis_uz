@@ -37,20 +37,22 @@ class EmployeeStaffController extends Controller
                 $resData = $response->json();
                 $items = $resData['data']['items'] ?? [];
                 foreach ($items as $curr) {
-                    Subject::updateOrCreate(
+                    Subject::withTrashed()->updateOrCreate(
                         ['id' => $curr['subject']['id']],
                         [
                             'name' => $curr['subject']['name'],
                             'code' => $curr['subject']['code'] ?? null,
+                            'deleted_at' => null, // Agar savatda bo'lsa, qayta tiklab qo'yadi
                         ]
                     );
-                    SubjectList::updateOrCreate(
+                    SubjectList::withTrashed()->updateOrCreate(
                         ['id' => $curr['id']],
                         [
                             'subject_id' => $curr['subject']['id'],
                             'department_id' => $curr['department']['id'] ?? null,
                             'curriculum_id' => $curr['_curriculum'] ?? $curriculumId,
                             'semester_id' => $curr['semester']['code'] ?? null,
+                            'deleted_at' => null,
                         ]
                     );
                 }
