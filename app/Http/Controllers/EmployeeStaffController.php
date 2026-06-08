@@ -33,28 +33,42 @@ class EmployeeStaffController extends Controller
                 $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/curriculum-subject-list', [
                     '_curriculum' => $curriculumId, 'limit' => 200, 'page' => $page
                 ]);
+
                 if ($response->failed()) break;
+
                 $resData = $response->json();
                 $items = $resData['data']['items'] ?? [];
+
                 foreach ($items as $curr) {
-                    Subject::updateOrCreate(
-                        ['id' => $curr['subject']['id']],
+                    // Subject uchun Upsert
+                    Subject::upsert(
                         [
-                            'name' => $curr['subject']['name'],
-                            'code' => $curr['subject']['code'] ?? null,
-                        ]
+                            [
+                                'id' => $curr['subject']['id'],
+                                'name' => $curr['subject']['name'],
+                                'code' => $curr['subject']['code'] ?? null,
+                            ]
+                        ],
+                        ['id'], // Qaysi ustun bo'yicha izlash kerak (Unique key)
+                        ['name', 'code'] // Agar topilsa, qaysi ustunlarni yangilash kerak
                     );
 
-                    SubjectList::updateOrCreate(
-                        ['id' => $curr['id']],
+                    // SubjectList uchun Upsert
+                    SubjectList::upsert(
                         [
-                            'subject_id' => $curr['subject']['id'],
-                            'department_id' => $curr['department']['id'] ?? null,
-                            'curriculum_id' => $curr['_curriculum'] ?? $curriculumId,
-                            'semester_id' => $curr['semester']['code'] ?? null,
-                        ]
+                            [
+                                'id' => $curr['id'],
+                                'subject_id' => $curr['subject']['id'],
+                                'department_id' => $curr['department']['id'] ?? null,
+                                'curriculum_id' => $curr['_curriculum'] ?? $curriculumId,
+                                'semester_id' => $curr['semester']['code'] ?? null,
+                            ]
+                        ],
+                        ['id'], // Izlanadigan ustun
+                        ['subject_id', 'department_id', 'curriculum_id', 'semester_id'] // Yangilanadigan ustunlar
                     );
                 }
+
                 $pageCount = $resData['data']['pagination']['pageCount'] ?? 1;
                 $page++;
             } while ($page <= $pageCount);
