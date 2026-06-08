@@ -31,7 +31,7 @@ class EmployeeStaffController extends Controller
             $page = 1;
             do {
                 $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/curriculum-subject-list', [
-                    '_curriculum' => $curriculumId, 'limit' => 200, 'page' => $page
+                    '_curriculum' => $curriculumId, 'limit' => 200, 'page' => $page, '_semester' => '18'
                 ]);
 
                 if ($response->failed()) break;
