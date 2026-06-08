@@ -38,6 +38,7 @@ Auth::routes();
 
 Route::get('/hemis', [HemisController::class, 'data']);
 Route::get('/list', [EmployeeStaffController::class, 'index']);
+Route::get('/subjects', [EmployeeStaffController::class, 'index']);
 
 Route::prefix('login')->group(function () {
     Route::get('/user', [HemisController::class, 'user'])->name('login.user');

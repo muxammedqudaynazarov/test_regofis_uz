@@ -18,7 +18,8 @@ class SubjectList extends Model
         'department_id',
         'curriculum_id',
         'request_delete',
-        'semester_id'
+        'semester_id',
+        'subject_id'
     ];
 
     public function curriculum(): hasOne
