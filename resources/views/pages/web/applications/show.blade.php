@@ -142,18 +142,20 @@
                                                 {{ number_format(($exam->results->first()->point ?? 0), 2) }}
                                             </td>
                                             <td class="text-nowrap">
-                                                @php($minPoint = $exam->results->first()->point ?? 0)
-                                                @if($exam->status == '2' &&  $minPoint < 60)
-                                                    <form action="{{ route('applications.update', $exam->id) }}"
-                                                          method="POST">
-                                                        @method('PUT')
-                                                        @csrf
-                                                        <button class="btn btn-dark btn-xs"
-                                                                onclick="return confirm('Talabaning hamma natijalarini bekor qilishni tasdiqlaysizmi? Eslatma: tasdiqlash bosilgandan keyin talabaga tegishli bo‘lgan urinishlar bekor qilinadi va yangi ariza holatiga qaytadi!')">
-                                                            Natijani bekor qilish
-                                                        </button>
-                                                    </form>
-                                                @endif
+                                                @can('results.delete')
+                                                    @php($minPoint = $exam->results->first()->point ?? 0)
+                                                    @if($exam->status == '2' &&  $minPoint < 60)
+                                                        <form action="{{ route('applications.update', $exam->id) }}"
+                                                              method="POST">
+                                                            @method('PUT')
+                                                            @csrf
+                                                            <button class="btn btn-dark btn-xs"
+                                                                    onclick="return confirm('Talabaning hamma natijalarini bekor qilishni tasdiqlaysizmi? Eslatma: tasdiqlash bosilgandan keyin talabaga tegishli bo‘lgan urinishlar bekor qilinadi va yangi ariza holatiga qaytadi!')">
+                                                                Natijani bekor qilish
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                @endcan
                                             </td>
                                         </tr>
                                     @empty

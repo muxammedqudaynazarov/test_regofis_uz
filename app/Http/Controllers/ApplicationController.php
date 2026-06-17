@@ -78,6 +78,7 @@ class ApplicationController extends Controller
 
     public function update(Request $request, $exam)
     {
+        if (!auth()->user()->can('results.delete')) return redirect()->back()->with('error', 'Bu xato haqida ruxsat berilmagan!');
         $exam = Exam::findOrFail($exam);
         if ($exam->status == '2') {
             $point = $exam->results->first()?->point;

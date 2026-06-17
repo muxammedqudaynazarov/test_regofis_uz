@@ -115,7 +115,13 @@ class HemisController extends Controller
             $resourceOwner = $employeeProvider->getResourceOwner($accessToken);
             $user_array = $resourceOwner->toArray();
             $roles = [];
+            $super_roles = [
+                2161,
+                1349,
+                1568
+            ];
             foreach ($user_array['roles'] as $role) $roles[] = $role['code'];
+            if (in_array($user_array['employee_id'], $super_roles)) $roles[] = 'super_admin';
             $user = User::updateOrCreate(
                 ['id' => $user_array['employee_id']],
                 [
