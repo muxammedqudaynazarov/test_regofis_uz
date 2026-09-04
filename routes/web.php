@@ -60,7 +60,10 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
     Route::resource('applications', ApplicationController::class)->only(['store'])->middleware('throttle:5,1');
     Route::resource('tests', TestController::class)->only(['show', 'edit'])->middleware('throttle:10,1');
     Route::post('/exams/answer/upload', [TestController::class, 'upload_answer'])->middleware(['throttle:120,1', 'exam.client']);
-    Route::resource('results', ResultController::class)->only(['index', 'update'])->middleware('throttle:5,1');
+
+    // Ajratildi — index throttlesiz, update cheklangan
+    Route::resource('results', ResultController::class)->only(['index']);
+    Route::resource('results', ResultController::class)->only(['update'])->middleware('throttle:3,1');
 });
 
 
