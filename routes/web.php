@@ -36,7 +36,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/hemis', [HemisController::class, 'data']);
+//Route::get('/hemis', [HemisController::class, 'data']);
 //Route::get('/list', [EmployeeStaffController::class, 'index']);
 //Route::get('/subjects', [EmployeeStaffController::class, 'subjects']);
 
@@ -53,13 +53,14 @@ Route::get('/logout', function () {
 Route::get('/login', function () {
     return redirect('/');
 });
+
 Route::prefix('student')->middleware('auth:student')->group(function () {
     Route::get('/', [StudentController::class, 'index'])->name('student.home');
     Route::resource('subjects', SubjectController::class)->only(['index']);
-    Route::resource('applications', ApplicationController::class)->only(['store']);
-    Route::resource('tests', TestController::class)->only(['show', 'edit']);
-    Route::post('/exams/answer/upload', [TestController::class, 'upload_answer']);
-    Route::resource('results', ResultController::class)->only(['index', 'update']);
+    Route::resource('applications', ApplicationController::class)->only(['stsudo supervisorctl statusore'])->middleware('throttle:application-store');
+    Route::resource('tests', TestController::class)->only(['show'])->middleware('throttle:exam-start');
+    Route::post('/exams/answer/upload', [TestController::class, 'upload_answer'])->middleware(['throttle:120,1', 'exam.client']);
+    Route::resource('results', ResultController::class)->only(['index', 'update'])->middleware('throttle:5,1');
 });
 
 

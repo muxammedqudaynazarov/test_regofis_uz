@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\EmptyExamsExport;
 use App\Exports\UntakenExamsExport;
+use App\Jobs\SyncStudentApplicationsJob;
 use App\Models\Application;
 use App\Models\Attempt;
 use App\Models\EduYear;
@@ -138,6 +139,18 @@ class ApplicationController extends Controller
     public function store(Request $request)
     {
         try {
+            SyncStudentApplicationsJob::dispatch(auth('student')->id())->onQueue('default');
+            return redirect()->route('subjects.index')
+                ->with('info', 'Ma’lumotlar yangilanmoqda. Bir necha soniyadan so‘ng sahifani yangilang.');
+        } catch (\Exception $e) {
+            Log::error('Dispatch xatolik: ' . $e->getMessage());
+            return redirect()->route('subjects.index')
+                ->with('error', 'Xatolik yuz berdi. Iltimos qayta urinib ko‘ring.');
+        }
+    }
+    /*public function store(Request $request)
+    {
+        try {
             $response = Http::withToken(env('REGOFIS_TOKEN'))
                 ->timeout(15)
                 ->get('https://edu.regofis.uz/api/applications/', [
@@ -240,8 +253,7 @@ class ApplicationController extends Controller
                                         if ($semester_id == $detail['semester_code']) break;
                                     }
                                 }
-                                /*                                if (auth('student')->id() == 346231101232)
-                                                                    dd($subjects, $subject_id, $semester_id, auth('student')->user()->curriculum_id);*/
+                                // if (auth('student')->id() == 346231101232) dd($subjects, $subject_id, $semester_id, auth('student')->user()->curriculum_id);
                                 $db_subject_list = SubjectList::where('subject_id', $subject_id)
                                     ->where('curriculum_id', auth('student')->user()->curriculum_id)
                                     ->where('semester_id', $semester_id)
@@ -271,126 +283,6 @@ class ApplicationController extends Controller
             // 5. Tashqi API qulaganini ushlab qolish
             return redirect()->route('subjects.index')
                 ->with('error', 'Tashqi tizimlar (RegOFIS/HEMIS) javob bermayapti. Iltimos, serverlar ishlayotganini tekshiring.');
-        } catch (\Exception $e) {
-            Log::error('RegOFIS Store Xatoligi: ' . $e->getMessage(), ['line' => $e->getLine(), 'file' => $e->getFile()]);
-            return redirect()->route('subjects.index')
-                ->with('error', 'Kutilmagan xatolik yuz berdi. Iltimos, administratorga murojaat qiling.');
-        }
-    }
-    /*public function store(Request $request)
-    {
-        try {
-            $response = Http::withToken(env('REGOFIS_TOKEN'))
-                ->timeout(60)->get('https://edu.regofis.uz/api/applications/', [
-                    'student_id' => auth('student')->id(),
-                    'pageSize' => 100,
-                ]);
-
-            if (!$response->successful()) {
-                return redirect()->route('subjects.index')
-                    ->with('error', 'RegOFIS tizimi bilan aloqa o‘rnatilmadi. Qayta urinib ko‘ring.');
-            }
-
-            $data = $response->json();
-            $apps = $data['data'][0]['items'] ?? []; // Xavfsiz olish
-
-            if (empty($apps)) {
-                return redirect()->route('subjects.index')
-                    ->with('info', 'Sizda tasdiqlangan arizalar mavjud emas.');
-            }
-
-            //$hemisResponse = Http::withToken(env('API_HEMIS'))->timeout(60)
-            //    ->get('https://student.karsu.uz/rest/v1/data/curriculum-subject-list', [
-            //        '_curriculum' => auth('student')->user()->curriculum_id,
-            //        'limit' => 200,
-            //    ]);
-
-
-            $page = 1;
-            $subjects = [];
-            do {
-                $hemisPerformances = Http::withToken(env('API_HEMIS'))->timeout(60)
-                    ->get('https://student.karsu.uz/rest/v1/data/student-performance-list', [
-                        '_student' => auth('student')->user()->hemis_id,
-                        'limit' => 200,
-                        'page' => $page
-                    ]);
-                $hemisResponses = $hemisPerformances->json();
-                foreach ($hemisResponses['data']['items'] as $item) {
-                    if ($item['examType']['code'] == '13' && $item['grade'] < 30) $subjects[] = $item;
-                }
-                $pageCount = $hemisResponses['data']['pagination']['pageCount'] ?? 1;
-                $page++;
-            } while ($page <= $pageCount);
-
-
-            foreach ($apps as $app) {
-                if ($app['status'] == 'approved') {
-                    $application = Application::updateOrCreate([
-                        'id' => $app['id'],
-                        'application_number' => $app['application_number'],
-                    ], [
-                        'student_id' => $app['student_id'],
-                        'education_year' => $app['education_year'],
-                        'status' => $app['status'],
-                        'created_at' => $app['created_at'],
-                    ]);
-                    $details = $app['details'] ?? [];
-                    foreach ($details as $detail) {
-                        if (!empty($detail['student_group'])) {
-                            $group = Group::updateOrCreate([
-                                'id' => $detail['student_group']['id'],
-                            ], [
-                                'name' => $detail['student_group']['name'],
-                            ]);
-                            GroupSubject::updateOrCreate([
-                                'id' => $detail['id'],
-                                'failed_subject_id' => $detail['failed_subject_id'],
-                                'subject_id' => $detail['subject_id'],
-                            ], [
-                                'application_id' => $application->id,
-                                'group_id' => $group->id,
-                                'subject_name' => $detail['subject_name'],
-                                'semester_code' => $detail['semester_code'],
-                                'credit' => $detail['credit'],
-                            ]);
-
-                            $subject_id = null;
-                            $semester_id = null;
-                            foreach ($subjects as $list) {
-                                if (isset($list['subject']['name']) && trim($list['subject']['name']) == trim($detail['subject_name'])) {
-                                    $subject_id = $list['subject']['id'];
-                                    $semester_id = $list['semester']['code'];
-                                    if ($semester_id == $detail['semester_code']) break;
-                                }
-                            }
-
-                            $db_subject_list = SubjectList::where('subject_id', $subject_id)
-                                ->where('curriculum_id', auth('student')->user()->curriculum_id)
-                                ->where('semester_id', $semester_id)
-                                ->first();
-                            if ($db_subject_list) {
-                                Exam::updateOrCreate([
-                                    'application_id' => $application->id,
-                                    'student_id' => $app['student_id'],
-                                    'subject_id' => $db_subject_list->id,
-                                    'failed_subject_id' => $detail['failed_subject_id'],
-                                    'group_id' => $group->id,
-                                ], [
-                                    'semester_id' => $semester_id,
-                                    'status' => '0',
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
-            return redirect()->route('subjects.index')
-                ->with('success', 'Fan ma’lumotlari muvaffaqiyatli yangilandi.');
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            return redirect()->route('subjects.index')
-                ->with('error', 'Tashqi tizimlar (RegOFIS/HEMIS) bilan aloqa yo‘q. Iltimos, birozdan so‘ng qayta urinib ko‘ring.');
-
         } catch (\Exception $e) {
             Log::error('RegOFIS Store Xatoligi: ' . $e->getMessage(), ['line' => $e->getLine(), 'file' => $e->getFile()]);
             return redirect()->route('subjects.index')

@@ -26,8 +26,8 @@ class OfficeApplicationController extends Controller
                 return redirect()->route('office_applications.index')
                     ->with('error', "Kiritilgan ID ({$studentId}) bo'yicha talaba topilmadi.");
             }
-            $response = Http::withToken(env('REGOFIS_TOKEN'))->timeout(15)
-                ->get('https://edu.regofis.uz/api/applications/', [
+            $response = Http::withToken(config('services.regofis.token'))->timeout(15)
+                ->get(config('services.regofis.api_url') . '/applications/', [
                     'student_id' => $studentId,
                     'pageSize' => 100,
                 ]);

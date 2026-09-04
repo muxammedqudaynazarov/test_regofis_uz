@@ -25,17 +25,20 @@ class ResultController extends Controller
         abort(404);
     }
 
-    public function update($id, Request $request)
+    /*public function update($id, Request $request)
     {
-        $qCount = Option::where('key', 'questions')->value('value');
-        $max_points = Option::where('key', 'max_points')->value('value');
+        $qCount = (int)(Option::where('key', 'questions')->value('value') ?: 50);
+        $max_points = (float)(Option::where('key', 'max_points')->value('value') ?: 100);
         $min_points = Option::where('key', 'min_points')->value('value');
-        $per_point = $max_points / $qCount;
+        $per_point = $qCount > 0 ? $max_points / $qCount : 0;
         $examId = $request->exam_id;
         $attemptsData = $request->input('attempt', []); // attempt massivini olamiz
         $correctCount = 0;
         DB::transaction(function () use ($min_points, $per_point, $attemptsData, $examId, &$correctCount) {
             $exam = Exam::findOrFail($examId);
+            if ($exam->student_id !== auth('student')->id()) {
+                abort(403, 'Bu imtihon sizga tegishli emas.');
+            }
             if ($exam->status == '1' || $exam->status == '4' || $exam->status == '7') {
                 foreach ($attemptsData as $attemptId => $answerId) {
                     $attempt = Attempt::where('question_id', $attemptId)->where('exam_id', $exam->id)->where('student_id', auth('student')->id())->first();
@@ -61,6 +64,87 @@ class ResultController extends Controller
             } else return redirect()->back()->with('error', 'Imtihon yakunlangan, uni yana yuborib bo‘lmaydi');
         });
         return redirect(route('results.index'))->with('success', 'Imtihon yakunlandi. Natijalar serverga qayta ishlash uchun yuborildi.');
+    }*/
+    public function update($id, Request $request)
+    {
+        $qCount = (int)(Option::where('key', 'questions')->value('value') ?: 50);
+        $max_points = (float)(Option::where('key', 'max_points')->value('value') ?: 100);
+        $min_points = (float)(Option::where('key', 'min_points')->value('value') ?: 60);
+        $per_point = $qCount > 0 ? $max_points / $qCount : 0;
+
+        $examId = $request->exam_id;
+        $attemptsData = $request->input('attempt', []);
+        $correctCount = 0;
+
+        try {
+            DB::transaction(function () use (
+                $min_points, $per_point, $attemptsData,
+                $examId, &$correctCount
+            ) {
+                $exam = Exam::findOrFail($examId);
+
+                // Egalik tekshiruvi
+                if ($exam->student_id !== auth('student')->id()) {
+                    throw new \Exception('Bu imtihon sizga tegishli emas.', 403);
+                }
+
+                // Status tekshiruvi
+                if (!in_array($exam->status, ['1', '4', '7'])) {
+                    throw new \Exception(
+                        'Imtihon allaqachon yakunlangan yoki boshlanmagan.',
+                        422
+                    );
+                }
+
+                foreach ($attemptsData as $questionId => $answerId) {
+                    $attempt = Attempt::where('question_id', $questionId)
+                        ->where('exam_id', $exam->id)
+                        ->where('student_id', auth('student')->id())
+                        ->first();
+
+                    if ($attempt) {
+                        $isCorrect = Answer::where('id', $attempt->answer_id)
+                            ->where('correct', '1')
+                            ->exists();
+                        if ($isCorrect) $correctCount++;
+                    }
+                }
+
+                $point = $correctCount * $per_point;
+                $examStatus = match ($exam->status) {
+                    '4' => '5',
+                    '7' => '8',
+                    default => '2',
+                };
+
+                $exam->status = $examStatus;
+                $exam->finished = '1';
+                $exam->save();
+
+                Result::firstOrCreate(
+                    [
+                        'student_id' => auth('student')->id(),
+                        'exam_id' => $exam->id,
+                        'retrain_id' => $exam->retrain_id,
+                    ],
+                    [
+                        'point' => $point,
+                        'status' => ($point < $min_points) ? '0' : '1',
+                    ]
+                );
+            });
+
+            return redirect(route('results.index'))
+                ->with('success', 'Imtihon yakunlandi.');
+
+        } catch (\Exception $e) {
+            $httpCode = $e->getCode();
+            if (in_array($httpCode, [403, 422])) {
+                return redirect()->back()->with('error', $e->getMessage());
+            }
+            \Log::error('ResultController update xatolik: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Tizim xatoligi yuz berdi.');
+        }
     }
 
     public function autoFinishExams()
@@ -69,7 +153,8 @@ class ResultController extends Controller
         $maxPoints = (float)Option::where('key', 'max_points')->value('value') ?: 100;
         $minPoints = (float)Option::where('key', 'min_points')->value('value') ?: 60;
         $perPoint = $maxPoints / $qCount;
-        $exams = Exam::whereIn('status', ['1', '4', '7'])->where('finished_at', '<=', now())->get();
+        $exams = Exam::whereIn('status', ['1', '4', '7'])->where('finished_at', '<=', now())
+            ->with(['attempts.answer'])->get();
         foreach ($exams as $exam) {
             DB::transaction(function () use ($exam, $perPoint, $minPoints) {
                 $attempts = Attempt::where('exam_id', $exam->id)->get();

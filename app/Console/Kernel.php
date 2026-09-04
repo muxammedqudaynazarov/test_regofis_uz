@@ -16,6 +16,12 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             (new ResultController)->autoFinishExams();
         })->everyMinute();
+
+        $schedule->call(function () {
+            \Spatie\Activitylog\Models\Activity::where('log_name', 'page_view')
+                ->where('created_at', '<', now()->subDays(30))
+                ->delete();
+        })->daily();
     }
 
     /**

@@ -154,6 +154,10 @@ class TestController extends Controller
         $studentId = $student->id;
         $studentLangId = $student->language_id;
 
+        if ($exam->student_id !== $studentId) {
+            abort(403, 'Bu imtihon sizga tegishli emas.');
+        }
+
         // XAVFSIZ TEKSHIRUV: resource orqali emas, to'g'ridan-to'g'ri baza (SQL) orqali tekshiramiz
         $hasQuestions = Question::where('subject_id', $exam->subject_id)
             ->where('language_id', $studentLangId)

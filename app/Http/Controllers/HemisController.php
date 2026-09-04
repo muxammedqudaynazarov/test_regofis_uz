@@ -27,45 +27,6 @@ use League\OAuth2\Client\Provider\GenericProvider;
 
 class HemisController extends Controller
 {
-    public function data()
-    {
-        $departments = Department::where('structure', '12')->get()->pluck('id')->toArray();
-        foreach ($departments as $department) {
-            $page = 1;
-            do {
-                $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/employee-list', [
-                    'type' => 'all', '_department' => $department, 'limit' => 200, 'page' => $page
-                ]);
-                if ($response->failed()) break;
-                $resData = $response->json();
-                $items = $resData['data']['items'] ?? [];
-                foreach ($items as $item) {
-                    User::firstOrCreate([
-                        'id' => $item['id'],
-                        'name' => json_encode([
-                            'full_name' => $item['full_name'],
-                            'second_name' => $item['second_name'],
-                            'third_name' => $item['third_name'],
-                            'short_name' => $item['short_name'],
-                        ]),
-                        'hemis_id' => $item['employee_id_number'],
-                        'current_role' => 'teacher',
-                        'hemis_roles' => json_encode(['teacher']),
-                        'picture' => $item['image_full'],
-                    ]);
-                    Workplace::firstOrCreate([
-                        'user_id' => $item['id'],
-                        'department_id' => $item['department']['id'],
-                        'head_type' => $department['staffPosition']['code'] == '16' ? 'department' : 'user',
-                        'is_main' => $department['employmentForm']['code'] == '11' ? '1' : '0',
-                    ]);
-                }
-                $pageCount = $resData['data']['pagination']['pageCount'] ?? 1;
-                $page++;
-            } while ($page <= $pageCount);
-        }
-    }
-
     private function handleOAuthAuthorization(Request $request, GenericProvider $provider, string $redirectPath)
     {
         if (!$request->has('code')) {
@@ -163,12 +124,12 @@ class HemisController extends Controller
     public function student(Request $request)
     {
         $employeeProvider = new GenericProvider([
-            'clientId' => env('HEMIS_CLIENT_ID'),
-            'clientSecret' => env('HEMIS_CLIENT_SECRET'),
-            'redirectUri' => env('HEMIS_REDIRECT_URI_STUD'),
-            'urlAuthorize' => env('HEMIS_STUD_URL') . '/oauth/authorize',
-            'urlAccessToken' => env('HEMIS_STUD_URL') . '/oauth/access-token',
-            'urlResourceOwnerDetails' => env('HEMIS_STUD_URL') . '/oauth/api/user?fields=id,uuid,employee_id_number,type,roles,name,login,email,picture,firstname,surname,patronymic,birth_date,university_id,phone'
+            'clientId' => config('services.hemis.client_id'),
+            'clientSecret' => config('services.hemis.client_secret'),
+            'redirectUri' => config('services.hemis.redirect_user'),
+            'urlAuthorize' => config('services.hemis.user_url') . '/oauth/authorize',
+            'urlAccessToken' => config('services.hemis.user_url') . '/oauth/access-token',
+            'urlResourceOwnerDetails' => config('services.hemis.user_url') . '/oauth/api/user?fields=id,uuid,employee_id_number,type,roles,name,login,email,picture,firstname,surname,patronymic,birth_date,university_id,phone'
         ]);
         $authResponse = $this->handleOAuthAuthorization($request, $employeeProvider, '/login/student/');
         if ($authResponse) {
@@ -197,9 +158,10 @@ class HemisController extends Controller
                 ['name' => $student_array['group']['educationLang']['name']]
             );
 
-            $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/student-list', [
-                'search' => $student_array['student_id_number']
-            ]);
+            $response = Http::withToken(config('services.hemis.token'))
+                ->get(config('services.hemis.student_url') . '/rest/v1/data/student-list', [
+                    'search' => $student_array['student_id_number']
+                ]);
             $student_api = $response->json();
             //dd($student_api);
             $student_api = $student_api['data']['items'][0];

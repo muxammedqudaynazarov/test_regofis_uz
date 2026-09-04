@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Jobs\LogPageViewJob;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -11,17 +12,16 @@ class PageViewLogger
     {
         $response = $next($request);
 
-        // Faqat login qilgan foydalanuvchilar va GET so'rovlar uchun log yozamiz
         if (auth()->check() && $request->isMethod('get')) {
-            activity('page_view')
-                ->causedBy(auth()->user())
-                ->withProperties([
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                    'url' => $request->fullUrl(),
-                    'method' => $request->method()
-                ])
-                ->log("Sahifa: " . $request->path());
+            // DB ga to'g'ri yozish o'rniga queue'ga yuborish
+            dispatch(new LogPageViewJob(
+                auth()->id(),
+                auth()->user()->getTable(), // 'users'
+                $request->ip(),
+                $request->userAgent(),
+                $request->fullUrl(),
+                $request->path()
+            ))->onQueue('logs');
         }
 
         return $response;

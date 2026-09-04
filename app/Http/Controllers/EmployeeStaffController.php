@@ -30,7 +30,8 @@ class EmployeeStaffController extends Controller
         foreach ($curriculums as $curriculumId) {
             $page = 1;
             do {
-                $response = Http::withToken(env('API_HEMIS'))->get('https://student.karsu.uz/rest/v1/data/curriculum-subject-list', [
+                $response = Http::withToken(config('services.hemis.token'))
+                    ->get(config('services.hemis.student_url') . '/rest/v1/data/curriculum-subject-list', [
                     '_curriculum' => $curriculumId, 'limit' => 200, 'page' => $page, '_semester' => '18'
                 ]);
 
