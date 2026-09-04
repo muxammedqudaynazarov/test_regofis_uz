@@ -63,7 +63,6 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
     Route::resource('results', ResultController::class)->only(['index', 'update'])->middleware('throttle:5,1');
 });
 
-
 Route::prefix('home')->middleware('auth:web')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/user/{role}', [HomeController::class, 'switch_role'])->name('switch.role');
