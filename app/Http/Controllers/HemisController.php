@@ -124,27 +124,27 @@ class HemisController extends Controller
     public function student(Request $request)
     {
         $employeeProvider = new GenericProvider([
-            'clientId' => config('services.hemis.client_id'),
-            'clientSecret' => config('services.hemis.client_secret'),
-            'redirectUri' => config('services.hemis.redirect_user'),
-            'urlAuthorize' => config('services.hemis.student_url') . '/oauth/authorize',
-            'urlAccessToken' => config('services.hemis.student_url') . '/oauth/access-token',
+            'clientId'                => config('services.hemis.client_id'),
+            'clientSecret'            => config('services.hemis.client_secret'),
+            'redirectUri'             => config('services.hemis.redirect_stud'), // ✅ to'g'irlandi
+            'urlAuthorize'            => config('services.hemis.student_url') . '/oauth/authorize',
+            'urlAccessToken'          => config('services.hemis.student_url') . '/oauth/access-token',
             'urlResourceOwnerDetails' => config('services.hemis.student_url') . '/oauth/api/user?fields=id,uuid,employee_id_number,type,roles,name,login,email,picture,firstname,surname,patronymic,birth_date,university_id,phone'
         ]);
+
         $authResponse = $this->handleOAuthAuthorization($request, $employeeProvider, '/login/student/');
-        if ($authResponse) {
-            return $authResponse;
-        }
+        if ($authResponse) return $authResponse;
+
         try {
-            $accessToken = $employeeProvider->getAccessToken('authorization_code', [
+            $accessToken   = $employeeProvider->getAccessToken('authorization_code', [
                 'code' => $request->code
             ]);
             $resourceOwner = $employeeProvider->getResourceOwner($accessToken);
-            $student_array = $resourceOwner->toArray();
-            $student_array = $student_array['data'];
+            $student_array = $resourceOwner->toArray()['data'];
+
             $specialty = Specialty::firstOrCreate(
                 [
-                    'uuid' => $student_array['specialty']['id'],
+                    'uuid'          => $student_array['specialty']['id'],
                     'department_id' => $student_array['faculty']['id'],
                 ],
                 [
@@ -154,39 +154,55 @@ class HemisController extends Controller
             );
 
             $language = Language::firstOrCreate(
-                ['id' => $student_array['group']['educationLang']['code']],
+                ['id'   => $student_array['group']['educationLang']['code']],
                 ['name' => $student_array['group']['educationLang']['name']]
             );
 
-            $response = Http::withToken(config('services.hemis.token'))
+            $response    = Http::withToken(config('services.hemis.token'))
+                ->timeout(15)
                 ->get(config('services.hemis.student_url') . '/rest/v1/data/student-list', [
                     'search' => $student_array['student_id_number']
                 ]);
-            $student_api = $response->json();
-            //dd($student_api);
-            $student_api = $student_api['data']['items'][0];
+            $student_api = $response->json()['data']['items'][0] ?? null;
+
+            if (!$student_api) {
+                \Log::error('HEMIS student-list bo\'sh qaytdi', ['student_id' => $student_array['student_id_number']]);
+                return response('Talaba ma\'lumotlari topilmadi.', 500);
+            }
+
             $student = Student::updateOrCreate(
                 ['id' => $student_array['student_id_number']],
                 [
                     'name' => json_encode([
-                        'first_name' => $student_array['first_name'],
+                        'first_name'  => $student_array['first_name'],
                         'second_name' => $student_array['second_name'],
-                        'third_name' => $student_array['third_name'],
-                        'full_name' => $student_array['full_name'],
-                        'short_name' => $student_array['short_name'],
+                        'third_name'  => $student_array['third_name'],
+                        'full_name'   => $student_array['full_name'],
+                        'short_name'  => $student_array['short_name'],
                     ]),
-                    'hemis_id' => $student_array['id'],
-                    'picture' => $student_array['image'],
+                    'hemis_id'      => $student_array['id'],
+                    'picture'       => $student_array['image'],
                     'curriculum_id' => $student_api['_curriculum'],
-                    'specialty_id' => $specialty->id,
-                    'language_id' => $language->id,
+                    'specialty_id'  => $specialty->id,
+                    'language_id'   => $language->id,
                 ]
             );
 
             Auth::guard('student')->login($student);
             return redirect('/student');
+
         } catch (IdentityProviderException $e) {
-            return response($e->getMessage(), 500);
+            \Log::error('OAuth IdentityProviderException (student): ' . json_encode($e->getResponseBody()));
+            return response('HEMIS autentifikatsiya xatoligi: ' . $e->getMessage(), 500);
+
+        } catch (\UnexpectedValueException $e) {
+            // "did not contain a JSON body" — shu yerda ushlanadi
+            \Log::error('OAuth JSON xatolik (student): ' . $e->getMessage());
+            return response('HEMIS server noto\'g\'ri javob qaytardi. Qayta urinib ko\'ring.', 500);
+
+        } catch (\Exception $e) {
+            \Log::error('OAuth umumiy xatolik (student): ' . $e->getMessage());
+            return response('Kutilmagan xatolik: ' . $e->getMessage(), 500);
         }
     }
 }
