@@ -55,12 +55,12 @@ class HemisController extends Controller
     public function user(Request $request)
     {
         $employeeProvider = new GenericProvider([
-            'clientId' => env('HEMIS_CLIENT_ID'),
-            'clientSecret' => env('HEMIS_CLIENT_SECRET'),
-            'redirectUri' => env('HEMIS_REDIRECT_URI_USER'),
-            'urlAuthorize' => env('HEMIS_USER_URL') . '/oauth/authorize',
-            'urlAccessToken' => env('HEMIS_USER_URL') . '/oauth/access-token',
-            'urlResourceOwnerDetails' => env('HEMIS_USER_URL') . '/oauth/api/user?fields=id,uuid,employee_id_number,type,roles,name,login,email,picture,firstname,surname,patronymic,birth_date,university_id,phone'
+            'clientId' => config('services.hemis.client_id'),
+            'clientSecret' => config('services.hemis.client_secret'),
+            'redirectUri' => config('services.hemis.redirect_user'),
+            'urlAuthorize' => config('services.hemis.user_url') . '/oauth/authorize',
+            'urlAccessToken' => config('services.hemis.user_url') . '/oauth/access-token',
+            'urlResourceOwnerDetails' => config('services.hemis.user_url') . '/oauth/api/user?fields=id,uuid,employee_id_number,type,roles,name,login,email,picture,firstname,surname,patronymic,birth_date,university_id,phone'
         ]);
 
         // Handle OAuth authorization
@@ -127,9 +127,9 @@ class HemisController extends Controller
             'clientId' => config('services.hemis.client_id'),
             'clientSecret' => config('services.hemis.client_secret'),
             'redirectUri' => config('services.hemis.redirect_user'),
-            'urlAuthorize' => config('services.hemis.user_url') . '/oauth/authorize',
-            'urlAccessToken' => config('services.hemis.user_url') . '/oauth/access-token',
-            'urlResourceOwnerDetails' => config('services.hemis.user_url') . '/oauth/api/user?fields=id,uuid,employee_id_number,type,roles,name,login,email,picture,firstname,surname,patronymic,birth_date,university_id,phone'
+            'urlAuthorize' => config('services.hemis.student_url') . '/oauth/authorize',
+            'urlAccessToken' => config('services.hemis.student_url') . '/oauth/access-token',
+            'urlResourceOwnerDetails' => config('services.hemis.student_url') . '/oauth/api/user?fields=id,uuid,employee_id_number,type,roles,name,login,email,picture,firstname,surname,patronymic,birth_date,university_id,phone'
         ]);
         $authResponse = $this->handleOAuthAuthorization($request, $employeeProvider, '/login/student/');
         if ($authResponse) {
