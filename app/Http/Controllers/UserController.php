@@ -13,29 +13,24 @@ class UserController extends Controller
     {
         if (!auth()->user()->can('users.view')) abort(404);
 
-        $search     = $request->input('search', '');
+        $search     = trim($request->input('search', ''));
         $searchType = $request->input('search_type', 'name');
 
         $query = User::with(['roles', 'workplaces.department'])
-            // Faqat teacher emas yoki bir nechta roli borlarni ko'rsatish
+            // Faqat teacher EMAS yoki bir nechta roli borlar
             ->where(function ($q) {
-                $q->whereRaw("JSON_LENGTH(hemis_roles) > 1")
+                $q->whereRaw("JSON_LENGTH(COALESCE(hemis_roles, '[]')) > 1")
                   ->orWhereRaw("NOT JSON_CONTAINS(COALESCE(hemis_roles, '[]'), '\"teacher\"')");
             });
 
         if ($search !== '') {
-            switch ($searchType) {
-                case 'id':
-                    $query->where('id', $search);
-                    break;
-                case 'hemis_id':
-                    $query->where('hemis_id', 'LIKE', "%{$search}%");
-                    break;
-                case 'name':
-                default:
-                    $query->where('name', 'LIKE', "%{$search}%");
-                    break;
-            }
+            $query->where(function ($q) use ($search, $searchType) {
+                match ($searchType) {
+                    'id'       => $q->where('id', $search),
+                    'hemis_id' => $q->where('hemis_id', 'LIKE', "%{$search}%"),
+                    default    => $q->where('name', 'LIKE', "%{$search}%"),
+                };
+            });
         }
 
         $users = $query->orderBy('id', 'desc')
