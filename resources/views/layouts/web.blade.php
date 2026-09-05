@@ -304,7 +304,7 @@
                             </a>
                         </li>
                     @endcan
-                    @can('system.view')
+                    @can('users.view')
                         <li class="nav-item">
                             <a href="{{ route('users.index') }}"
                                class="nav-link {{ Request::is('home/users*') ? 'active' : '' }}">
@@ -312,6 +312,8 @@
                                 <p>Foydalanuvchilar</p>
                             </a>
                         </li>
+                    @endcan
+                    @can('system.view')
                         <li class="nav-item">
                             <a href="{{ route('options.index') }}"
                                class="nav-link {{ Request::is('home/options*') ? 'active' : '' }}">
