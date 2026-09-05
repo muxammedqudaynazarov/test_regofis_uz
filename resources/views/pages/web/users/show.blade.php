@@ -71,7 +71,7 @@
                                 <h6 class="card-title font-weight-bold mb-0">
                                     <i class="fas fa-user-tag mr-2"></i>Rollar
                                 </h6>
-                                <small class="text-muted">HEMIS rollari: {{ implode(', ', $user->hemis_roles ?? []) }}</small>
+                                <small class="text-muted">HEMIS rollari: {{ implode(', ', $user->hemis_roles_array) }}</small>
                             </div>
                             <div class="card-body">
                                 @foreach($allRoles as $role)

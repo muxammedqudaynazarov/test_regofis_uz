@@ -50,13 +50,8 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     @php
-                        $hemisRoles = Auth::user()->hemis_roles;
-                        if (is_array($hemisRoles)) {
-                            $userRoleNames = $hemisRoles;
-                        } else {
-                            $userRoleNames = json_decode($hemisRoles, true) ?? [];
-                        }
-                        $roles = \Spatie\Permission\Models\Role::whereIn('name', $userRoleNames)->get();
+                        $hemisRoles = Auth::user()->hemis_roles_array;
+                        $roles = \Spatie\Permission\Models\Role::whereIn('name', $hemisRoles)->get();
                     @endphp
                     @if($roles->count() > 1)
                         <span class="dropdown-header small font-weight-bold">Foydalanuvchi roli</span>

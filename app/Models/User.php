@@ -19,6 +19,15 @@ class User extends Authenticatable
 
     protected $fillable = ['id', 'name', 'current_role', 'hemis_roles', 'hemis_id', 'uuid', 'picture'];
 
+    // hemis_roles har doim array qaytaradi (eski double-encoded qiymatlar uchun)
+    public function getHemisRolesArrayAttribute(): array
+    {
+        $val = $this->hemis_roles;
+        if (is_array($val)) return $val;
+        if (is_string($val)) return json_decode($val, true) ?? [];
+        return [];
+    }
+
     public function workplaces(): HasMany
     {
         return $this->hasMany(Workplace::class, 'user_id', 'id');

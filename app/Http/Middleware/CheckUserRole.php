@@ -22,7 +22,7 @@ class CheckUserRole
 
             // User modelidagi ma'lumotlarni olamiz
             $currentRole = $user->current_role;
-            $hemisRoles = $user->hemis_roles; // Casts bo'lgani uchun bu array bo'lib qaytadi
+            $hemisRoles = $user->hemis_roles_array; // har doim array qaytaradi
 
             // 2. Agar hemis_roles mavjud bo'lsa va massiv bo'lsa
             if (!empty($hemisRoles) && is_array($hemisRoles)) {
