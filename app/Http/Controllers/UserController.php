@@ -12,6 +12,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if (!auth()->user()->can('users.view')) abort(404);
+<<<<<<< HEAD
 
         $search     = trim($request->input('search', ''));
         $searchType = $request->input('search_type', 'name');
@@ -31,35 +32,33 @@ class UserController extends Controller
                     default    => $q->where('name', 'LIKE', "%{$search}%"),
                 };
             });
+=======
+        $search = $request->input('search', '');
+        $query = User::with(['roles', 'workplaces.department'])->where(function ($q) {
+            $q->where('hemis_roles', '!=', '"[\"teacher\"]"');
+        });
+        if (!empty($search)) {
+            $search = strtoupper($search);
+            $query->where('hemis_id', 'LIKE', "%{$search}%")
+                ->orWhere('id', $search)
+                ->orWhere('name', 'LIKE', "%{$search}%");
+>>>>>>> 6a62006 (0509926 1304)
         }
-
-        $users = $query->orderBy('id', 'desc')
-            ->paginate(20)
-            ->appends($request->all());
-
-        return view('pages.web.users.index', compact('users', 'search', 'searchType'));
+        $users = $query->orderBy('id', 'desc')->paginate(20)->appends($request->all());
+        //dd($users, $search);
+        return view('pages.web.users.index', compact(['users', 'search']));
     }
 
     public function show($id)
     {
         if (!auth()->user()->can('users.view')) abort(404);
-
-        $user    = User::with(['roles', 'permissions', 'workplaces.department'])->findOrFail($id);
+        $user = User::with(['roles', 'permissions', 'workplaces.department'])->findOrFail($id);
         $allRoles = Role::orderBy('name')->get();
         $allPerms = Permission::orderBy('name')->get();
-
-        // To'g'ridan-to'g'ri biriktirilgan permissionlar (roldan emas)
         $directPermNames = $user->getDirectPermissions()->pluck('name')->toArray();
-
-        // Rol orqali kelgan permissionlar (faqat ko'rsatish uchun)
         $rolePermNames = $user->getPermissionsViaRoles()->pluck('name')->toArray();
-
         $userRoles = $user->roles->pluck('name')->toArray();
-
-        return view('pages.web.users.show', compact(
-            'user', 'allRoles', 'allPerms',
-            'directPermNames', 'rolePermNames', 'userRoles'
-        ));
+        return view('pages.web.users.show', compact(['user', 'allRoles', 'allPerms', 'directPermNames', 'rolePermNames', 'userRoles']));
     }
 
     public function update(Request $request, $id)
@@ -67,11 +66,11 @@ class UserController extends Controller
         if (!auth()->user()->can('users.update')) abort(404);
 
         $request->validate([
-            'roles.*'       => 'exists:roles,name',
+            'roles.*' => 'exists:roles,name',
             'permissions.*' => 'exists:permissions,name',
         ]);
 
-        $user  = User::findOrFail($id);
+        $user = User::findOrFail($id);
         $roles = $request->input('roles', []);
         $perms = $request->input('permissions', []);
 
