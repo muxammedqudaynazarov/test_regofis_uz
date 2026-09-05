@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\Exam;
 use App\Models\Group;
 use App\Models\GroupSubject;
+use App\Models\Retrain;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\SubjectList;
@@ -92,19 +93,23 @@ class OfficeApplicationController extends Controller
                 'credit' => $detail->credit,
             ]);
 
-            Exam::updateOrCreate([
-                'application_id' => $application->id,
-                'student_id' => $application->student_id,
-                'subject_id' => $mySubject->id,
-                'failed_subject_id' => $detail->failed_subject_id,
-                'group_id' => $st_group->id,
-            ], [
-                'semester_id' => $detail->semester_code,
-                'status' => '0',
-            ]);
+            $retrain = Retrain::where('status', '1')->first();
+            Exam::updateOrCreate(
+                [
+                    'application_id' => $application->id,
+                    'student_id' => $application->student_id,
+                    'subject_id' => $mySubject->id,
+                    'failed_subject_id' => $detail->failed_subject_id,
+                    'group_id' => $st_group->id,
+                ],
+                [
+                    'semester_id' => $detail->semester_code,
+                    'status' => '0',
+                    'retrain_id' => $retrain?->id,
+                ]
+            );
 
         });
-
         return redirect()->back()->with('success', 'Talabaga fan bo‘yicha imtihon yaratildi!');
     }
 }
