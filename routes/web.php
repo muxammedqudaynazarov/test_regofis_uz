@@ -58,8 +58,8 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
     Route::get('/', [StudentController::class, 'index'])->name('student.home');
     Route::resource('subjects', SubjectController::class)->only(['index']);
     Route::resource('applications', ApplicationController::class)->only(['store'])->middleware('throttle:5,1');
-    Route::resource('tests', TestController::class)->only(['show', 'edit'])->middleware('throttle:10,1');
-    Route::post('/exams/answer/upload', [TestController::class, 'upload_answer'])->middleware(['throttle:120,1', 'exam.client']);
+    Route::resource('tests', TestController::class)->only(['show', 'edit'])->middleware('throttle:50,1');
+    Route::post('/exams/answer/upload', [TestController::class, 'upload_answer'])->middleware(['throttle:420,1', 'exam.client']);
 
     // Ajratildi — index throttlesiz, update cheklangan
     Route::resource('results', ResultController::class)->only(['index']);
