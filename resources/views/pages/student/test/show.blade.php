@@ -258,10 +258,11 @@
                                         <div class="quiz-map">
                                             @foreach($attempts as $index => $att)
                                                 @php $targetPage = floor($index / 10) + 1; @endphp
-                                                <a href="#q_{{ $att->id }}"
+                                                <a href="javascript:void(0)"
                                                    id="map_btn_{{ $att->pos }}"
                                                    class="map-item {{ $att->answer_id ? 'answered' : '' }}"
-                                                   onclick="goToPage({{ $targetPage }})">
+                                                   data-question-id="{{ $att->id }}"
+                                                   onclick="goToPageAndScroll({{ $targetPage }}, '{{ $att->id }}')">
                                                     {{ $att->pos }}
                                                 </a>
                                             @endforeach
@@ -300,22 +301,29 @@
         }
 
         function goToPage(page) {
-            // Hamma savollarni yashiramiz
             document.querySelectorAll('.question-card').forEach(card => card.style.display = 'none');
-            // Kerakli sahifani ochamiz
             document.querySelectorAll('.page-' + page).forEach(card => card.style.display = 'block');
 
             currentPage = page;
 
-            // Textni yangilaymiz
             let pageText = document.getElementById('current-page-text');
             if (pageText) pageText.innerText = currentPage;
 
-            // Tugmalarni holatini yangilaymiz
             let btnPrev = document.getElementById('btn-prev');
             let btnNext = document.getElementById('btn-next');
             if (btnPrev) btnPrev.style.display = (currentPage === 1) ? 'none' : 'block';
             if (btnNext) btnNext.style.display = (currentPage === totalPages) ? 'none' : 'block';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Xaritadan bosish: sahifani ochib, savolga scroll qilish
+        function goToPageAndScroll(page, questionId) {
+            goToPage(page);
+            setTimeout(function () {
+                var el = document.getElementById('q_' + questionId);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
 
         /* =========================================
@@ -445,27 +453,47 @@
             }
         };
 
-        let violationCount = 0;
+        // Qoidabuzarlik soni serverdan yuklanadi (session orqali)
+        let violationCount = parseInt('{{ $violationCount }}') || 0;
         const MAX_VIOLATIONS = 3;
+
+        function recordViolation() {
+            return fetch('{{ route("exams.violation") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ exam_id: {{ $lesson->id }} })
+            }).then(r => r.json());
+        }
+
         document.addEventListener("visibilitychange", function () {
             if (document.hidden) {
-                if (++violationCount >= MAX_VIOLATIONS) {
-                    Swal.fire({
-                        title: 'Test to‘xtatildi!',
-                        text: 'Siz limitdan oshdingiz.',
-                        icon: 'error',
-                        timer: 4000,
-                        showConfirmButton: false
-                    }).then(() => submitExam(true));
-                } else {
-                    Swal.fire({
-                        title: 'Ogohlantirish!',
-                        text: `Boshqa oynaga o'tish taqiqlanadi. Qolgan imkoniyat: ${MAX_VIOLATIONS - violationCount}`,
-                        icon: 'warning'
-                    });
-                }
+                recordViolation().then(function (data) {
+                    violationCount = data.count;
+                    if (data.should_terminate) {
+                        Swal.fire({
+                            title: 'Test toxtatildi!',
+                            text: 'Siz ' + MAX_VIOLATIONS + ' marta limitdan oshdingiz.',
+                            icon: 'error',
+                            timer: 4000,
+                            showConfirmButton: false
+                        }).then(() => submitExam(true));
+                    } else {
+                        Swal.fire({
+                            title: 'Ogohlantirish!',
+                            text: "Boshqa oynaga o'tish taqiqlanadi. Qolgan imkoniyat: " + data.remaining,
+                            icon: 'warning'
+                        });
+                    }
+                }).catch(function () {
+                    violationCount++;
+                    if (violationCount >= MAX_VIOLATIONS) submitExam(true);
+                });
             }
         });
+
 
         document.addEventListener('keydown', function (event) {
             if (event.key === 'F5' || (event.ctrlKey && (event.key === 'r' || event.key === 'R'))) {

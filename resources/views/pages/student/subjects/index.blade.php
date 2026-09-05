@@ -107,35 +107,27 @@
                                                     Yakunlangan
                                                 @endif
                                             </td>
-                                            <td class="text-nowrap">
+                                            <td class="text-nowrap" id="action-cell-{{ $subject->id }}">
                                                 @if(auth()->user()->specialty->department->access == '1')
-                                                    @php
-                                                        $studentLangId = auth()->user()->language_id;
-                                                        $hasQuestions = $subject->resource->questions()->where('language_id', $studentLangId)->exists();
-                                                    @endphp
-                                                    @if($hasQuestions)
-                                                        @if($subject->finished == '0')
-                                                            @if($subject->status == '0')
-                                                                <a href="javascript:void(0)"
-                                                                   data-url="{{ route('tests.show', $subject->id) }}"
-                                                                   class="btn btn-primary btn-sm start-test-btn">
-                                                                    <i class="fas fa-play mr-1"
-                                                                       style="font-size: 10px"></i> Testni boshlash
-                                                                </a>
-                                                            @elseif($subject->status == '1')
-                                                                <a href="{{ route('tests.show', $subject->id) }}"
-                                                                   class="btn btn-warning btn-sm text-white font-weight-bold shadow-sm">
-                                                                    <i class="fas fa-spinner fa-spin mr-1"></i>
-                                                                    Davom ettirish
-                                                                </a>
-                                                            @endif
-                                                        @else
-
+                                                    @if($subject->finished == '0')
+                                                        @if($subject->status == '0')
+                                                            {{-- Tekshirish tugmasi — status 0 (boshlanmagan) --}}
+                                                            <button type="button"
+                                                                    class="btn btn-outline-primary btn-sm check-questions-btn"
+                                                                    data-exam-id="{{ $subject->id }}"
+                                                                    data-check-url="{{ route('tests.check', $subject->id) }}"
+                                                                    data-start-url="{{ route('tests.show', $subject->id) }}">
+                                                                <i class="fas fa-search mr-1" style="font-size:10px"></i>
+                                                                Savollarni tekshirish
+                                                            </button>
+                                                        @elseif($subject->status == '1')
+                                                            {{-- Davom ettirish — status 1 (jarayonda) --}}
+                                                            <a href="{{ route('tests.show', $subject->id) }}"
+                                                               class="btn btn-warning btn-sm text-white font-weight-bold shadow-sm">
+                                                                <i class="fas fa-spinner fa-spin mr-1"></i>
+                                                                Davom ettirish
+                                                            </a>
                                                         @endif
-                                                    @else
-                                                        <a class="btn btn-danger btn-sm disabled shadow-sm p-2">
-                                                            <i class="fas fa-times-circle mr-1"></i> Resurs yo'q
-                                                        </a>
                                                     @endif
                                                 @else
                                                     <div class="badge badge-light text-info border shadow-sm p-2">
@@ -165,22 +157,59 @@
 @section('scripts')
     <script>
         $(document).ready(function () {
-            $(document).on('click', '.start-test-btn', function (e) {
-                e.preventDefault();
-                var targetUrl = $(this).data('url');
-                Swal.fire({
-                    title: 'Testni boshlashga tayyormisiz?',
-                    text: "Ushbu fandan test boshlangandan keyin uni to‘xtatib bo‘lmaydi. Eslatma: test davomida boshqa sahifaga o‘tish yoki boshqa dasturlardan foydalanish testni vaqtidan avval yakunlanishiga olib kelishi mumkin. Tayyormisiz?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#007bff',
-                    confirmButtonText: 'Ha, boshlaymiz!',
-                    cancelButtonText: 'Yo‘q, qaytish',
-                    heightAuto: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = targetUrl;
+            // ── Savollarni tekshirish tugmasi ──
+            $(document).on('click', '.check-questions-btn', function () {
+                var btn      = $(this);
+                var examId   = btn.data('exam-id');
+                var checkUrl = btn.data('check-url');
+                var startUrl = btn.data('start-url');
+                var cell     = $('#action-cell-' + examId);
+
+                btn.prop('disabled', true)
+                   .html('<i class="fas fa-spinner fa-spin mr-1"></i> Tekshirilmoqda...');
+
+                $.ajax({
+                    url: checkUrl,
+                    method: 'GET',
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    success: function (res) {
+                        if (res.ok) {
+                            Swal.fire({
+                                title: 'Savollar tayyor!',
+                                html: '<span class="text-success"><i class="fas fa-check-circle"></i> ' + res.reason + '</span>'
+                                    + '<hr><small class="text-muted">Test boshlangandan keyin uni toxtatib bolmaydi.</small>',
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonColor: '#28a745',
+                                cancelButtonColor:  '#6c757d',
+                                confirmButtonText:  '<i class="fas fa-play mr-1"></i> Ha, boshlaymiz!',
+                                cancelButtonText:   'Qaytish',
+                            }).then(function (result) {
+                                if (result.isConfirmed) {
+                                    window.location.href = startUrl;
+                                } else {
+                                    btn.prop('disabled', false)
+                                       .html('<i class="fas fa-search mr-1" style="font-size:10px"></i> Savollarni tekshirish');
+                                }
+                            });
+                        } else {
+                            cell.html(
+                                '<div class="d-flex flex-column align-items-start">'
+                                + '<span class="badge badge-danger mb-1"><i class="fas fa-times-circle mr-1"></i> Test boshlash mumkin emas</span>'
+                                + '<small class="text-danger" style="font-size:11px">' + res.reason + '</small>'
+                                + '<button type="button" class="btn btn-outline-secondary btn-sm mt-1 check-questions-btn" '
+                                +   'data-exam-id="' + examId + '" '
+                                +   'data-check-url="' + checkUrl + '" '
+                                +   'data-start-url="' + startUrl + '">'
+                                +   '<i class="fas fa-redo mr-1"></i> Qayta tekshirish</button>'
+                                + '</div>'
+                            );
+                        }
+                    },
+                    error: function () {
+                        btn.prop('disabled', false)
+                           .html('<i class="fas fa-search mr-1" style="font-size:10px"></i> Savollarni tekshirish');
+                        toastr.error('Server bilan aloqa yoq. Qayta urinib koring.');
                     }
                 });
             });

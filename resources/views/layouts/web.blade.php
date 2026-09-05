@@ -311,12 +311,17 @@
                     @endcan
                     @can('system.view')
                         <li class="nav-item">
+                            <a href="{{ route('users.index') }}"
+                               class="nav-link {{ Request::is('home/users*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-users-cog"></i>
+                                <p>Foydalanuvchilar</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('options.index') }}"
                                class="nav-link {{ Request::is('home/options*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-cogs"></i>
-                                <p>
-                                    Tizim sozlamalari
-                                </p>
+                                <p>Tizim sozlamalari</p>
                             </a>
                         </li>
                     @endcan
