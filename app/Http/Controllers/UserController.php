@@ -12,27 +12,6 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if (!auth()->user()->can('users.view')) abort(404);
-<<<<<<< HEAD
-
-        $search     = trim($request->input('search', ''));
-        $searchType = $request->input('search_type', 'name');
-
-        $query = User::with(['roles', 'workplaces.department'])
-            // Faqat teacher EMAS yoki bir nechta roli borlar
-            ->where(function ($q) {
-                $q->whereRaw("JSON_LENGTH(COALESCE(hemis_roles, '[]')) > 1")
-                  ->orWhereRaw("NOT JSON_CONTAINS(COALESCE(hemis_roles, '[]'), '\"teacher\"')");
-            });
-
-        if ($search !== '') {
-            $query->where(function ($q) use ($search, $searchType) {
-                match ($searchType) {
-                    'id'       => $q->where('id', $search),
-                    'hemis_id' => $q->where('hemis_id', 'LIKE', "%{$search}%"),
-                    default    => $q->where('name', 'LIKE', "%{$search}%"),
-                };
-            });
-=======
         $search = $request->input('search', '');
         $query = User::with(['roles', 'workplaces.department'])->where(function ($q) {
             $q->where('hemis_roles', '!=', '"[\"teacher\"]"');
@@ -42,7 +21,6 @@ class UserController extends Controller
             $query->where('hemis_id', 'LIKE', "%{$search}%")
                 ->orWhere('id', $search)
                 ->orWhere('name', 'LIKE', "%{$search}%");
->>>>>>> 6a62006 (0509926 1304)
         }
         $users = $query->orderBy('id', 'desc')->paginate(20)->appends($request->all());
         //dd($users, $search);
