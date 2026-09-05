@@ -92,7 +92,6 @@ class OfficeApplicationController extends Controller
                 'semester_code' => $detail->semester_code,
                 'credit' => $detail->credit,
             ]);
-
             $retrain = Retrain::where('status', '1')->first();
             Exam::updateOrCreate(
                 [

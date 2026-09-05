@@ -24,19 +24,18 @@ class ResultController extends Controller
         }
         abort(404);
     }
-
     public function update($id, Request $request)
     {
-        $qCount     = (int)(Option::where('key', 'questions')->value('value') ?: 50);
+        $qCount = (int)(Option::where('key', 'questions')->value('value') ?: 50);
         $max_points = (float)(Option::where('key', 'max_points')->value('value') ?: 100);
         $min_points = (float)(Option::where('key', 'min_points')->value('value') ?: 60);
-        $per_point  = $qCount > 0 ? $max_points / $qCount : 0;
+        $per_point = $qCount > 0 ? $max_points / $qCount : 0;
 
-        $examId       = $request->exam_id;
-        $studentId    = auth('student')->id();
+        $examId = $request->exam_id;
+        $studentId = auth('student')->id();
 
         // Forma yuborgan javoblar: [question_id => answer_id]
-        $formAnswers  = $request->input('attempt', []);
+        $formAnswers = $request->input('attempt', []);
 
         try {
             DB::transaction(function () use (
@@ -76,12 +75,12 @@ class ResultController extends Controller
                 $point = $correctCount * $per_point;
 
                 // 5. Exam statusini yangilash
-                $newStatus = match($exam->status) {
-                    '4'     => '5',
-                    '7'     => '8',
+                $newStatus = match ($exam->status) {
+                    '4' => '5',
+                    '7' => '8',
                     default => '2',
                 };
-                $exam->status   = $newStatus;
+                $exam->status = $newStatus;
                 $exam->finished = '1';
                 $exam->save();
 
@@ -90,13 +89,13 @@ class ResultController extends Controller
                 // Faqat unique identifierlar — izlash uchun
                     [
                         'student_id' => $studentId,
-                        'exam_id'    => $exam->id,
+                        'exam_id' => $exam->id,
                     ],
                     // Topilmasa yaratish uchun qiymatlar
                     [
                         'retrain_id' => $exam->retrain_id,
-                        'point'      => $point,
-                        'status'     => ($point < $min_points) ? '0' : '1',
+                        'point' => $point,
+                        'status' => ($point < $min_points) ? '0' : '1',
                     ]
                 );
             });
@@ -110,7 +109,7 @@ class ResultController extends Controller
                 return redirect()->back()->with('error', $e->getMessage());
             }
             Log::error('ResultController::update xatolik: ' . $e->getMessage(), [
-                'exam_id'    => $examId,
+                'exam_id' => $examId,
                 'student_id' => $studentId,
             ]);
             return redirect()->back()->with('error', 'Tizim xatoligi yuz berdi.');
@@ -119,10 +118,10 @@ class ResultController extends Controller
 
     public function autoFinishExams()
     {
-        $qCount     = (int)(Option::where('key', 'questions')->value('value') ?: 1);
-        $maxPoints  = (float)(Option::where('key', 'max_points')->value('value') ?: 100);
-        $minPoints  = (float)(Option::where('key', 'min_points')->value('value') ?: 60);
-        $perPoint   = $qCount > 0 ? $maxPoints / $qCount : 0;
+        $qCount = (int)(Option::where('key', 'questions')->value('value') ?: 1);
+        $maxPoints = (float)(Option::where('key', 'max_points')->value('value') ?: 100);
+        $minPoints = (float)(Option::where('key', 'min_points')->value('value') ?: 60);
+        $perPoint = $qCount > 0 ? $maxPoints / $qCount : 0;
 
         $exams = Exam::whereIn('status', ['1', '4', '7'])
             ->where('finished_at', '<=', now())
@@ -137,27 +136,27 @@ class ResultController extends Controller
                     ->whereHas('answer', fn($q) => $q->where('correct', '1'))
                     ->count();
 
-                $point     = $correctCount * $perPoint;
-                $newStatus = match($exam->status) {
-                    '4'     => '5',
-                    '7'     => '8',
+                $point = $correctCount * $perPoint;
+                $newStatus = match ($exam->status) {
+                    '4' => '5',
+                    '7' => '8',
                     default => '2',
                 };
 
                 $exam->update([
-                    'status'   => $newStatus,
+                    'status' => $newStatus,
                     'finished' => '1',
                 ]);
 
                 Result::updateOrCreate(
                     [
-                        'exam_id'    => $exam->id,
+                        'exam_id' => $exam->id,
                         'student_id' => $exam->student_id,
                     ],
                     [
                         'retrain_id' => $exam->retrain_id, // ✅ qo'shildi
-                        'point'      => $point,
-                        'status'     => ($point < $minPoints) ? '0' : '1',
+                        'point' => $point,
+                        'status' => ($point < $minPoints) ? '0' : '1',
                     ]
                 );
             });
