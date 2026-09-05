@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Attempt extends Model
 {
@@ -35,4 +36,8 @@ class Attempt extends Model
         return $this->hasMany(Position::class, 'attempt_id', 'id');
     }
 
+    public function answer(): BelongsTo
+    {
+        return $this->belongsTo(Answer::class, 'answer_id');
+    }
 }
