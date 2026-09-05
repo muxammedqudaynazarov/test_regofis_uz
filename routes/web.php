@@ -63,7 +63,7 @@ Route::prefix('student')->middleware('auth:student')->group(function () {
 
     // Ajratildi — index throttlesiz, update cheklangan
     Route::resource('results', ResultController::class)->only(['index']);
-    Route::resource('results', ResultController::class)->only(['update'])->middleware('throttle:3,1');
+    Route::resource('results', ResultController::class)->only(['update'])->middleware('throttle:10,1');
 });
 
 
