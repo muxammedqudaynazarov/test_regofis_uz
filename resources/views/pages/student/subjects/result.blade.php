@@ -1,4 +1,7 @@
-@php use App\Models\Option; @endphp
+@php
+    use App\Models\Option;
+    $minPoints = Option::where('key', 'min_points')->value('value') ?? 60;
+@endphp
 @extends('layouts.app')
 
 @section('style')
@@ -16,13 +19,13 @@
                 <div class="row mb-2">
                     <div class="col-sm-6">
                         <div class="font-weight-bold h3">
-                            Akademik qarzdorliklar
+                            Natijalar
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}">Bosh sahifa</a></li>
-                            <li class="breadcrumb-item active">Qarzdor fanlar</li>
+                            <li class="breadcrumb-item"><a href="{{ route('student.home') }}">Bosh sahifa</a></li>
+                            <li class="breadcrumb-item active">Natijalar</li>
                         </ol>
                     </div>
                 </div>
@@ -79,7 +82,7 @@
                                                 </code>
                                             </td>
                                             <td class="small">
-                                                60 ball
+                                                {{ $minPoints }} ball
                                             </td>
                                             <td class="small">
                                                 @if($subject->status == '0')

@@ -1,4 +1,7 @@
-@php use App\Models\Option; @endphp
+@php
+    use App\Models\Option;
+    $minPoints = Option::where('key', 'min_points')->value('value') ?? 60;
+@endphp
 @extends('layouts.app')
 
 @section('style')
@@ -90,7 +93,7 @@
                                                 </code>
                                             </td>
                                             <td class="small">
-                                                60 ball
+                                                {{ $minPoints }} ball
                                             </td>
                                             <td class="small">
                                                 {{ $subject->attempt }}
@@ -108,7 +111,7 @@
                                                 @if(auth()->user()->specialty->department->access == '1')
                                                     @php
                                                         $studentLangId = auth()->user()->language_id;
-                                                        $hasQuestions = $subject->resource->questions->where('language_id', $studentLangId)->count() > 0;
+                                                        $hasQuestions = $subject->resource->questions()->where('language_id', $studentLangId)->exists();
                                                     @endphp
                                                     @if($hasQuestions)
                                                         @if($subject->finished == '0')
@@ -160,8 +163,6 @@
 @endsection
 
 @section('scripts')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
             $(document).on('click', '.start-test-btn', function (e) {

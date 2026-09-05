@@ -153,10 +153,7 @@
             scroll-behavior: smooth;
         }
     </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
 
 @section('content')
@@ -382,8 +379,19 @@
             });
         }
 
+        let isSubmitting = false;
         function submitExam(isAuto = false) {
+            if (isSubmitting) return;
+            isSubmitting = true;
             window.onbeforeunload = null;
+
+            // Yakunlash tugmasini o'chirish va loading ko'rsatish
+            const btn = document.querySelector('[onclick="finishExam()"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Yuklanmoqda...';
+            }
+
             document.getElementById('examForm').submit();
         }
 
